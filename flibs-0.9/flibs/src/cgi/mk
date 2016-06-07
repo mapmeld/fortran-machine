@@ -1,0 +1,3 @@
+#/bin/sh
+#
+g95 -o cgi_protocol cgi_protocol.f90 -ftrace=full

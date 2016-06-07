@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# mklib --
+#     Generate an import library from the SQLite DLL
+#
+dlltool -l sqlite3.lib -d ../../../sqlite/sqlite3.def -D sqlite.dll ../../../sqlite/sqlite.dll

@@ -1,0 +1,591 @@
+
+<html><head>
+<title>flibs/m_vstringlist - flibs </title>
+</head>
+<! -- Generated from file 'm_vstringlist.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com
+   -->
+<! -- CVS: $Id: m_vstringlist.html,v 1.1 2008/06/13 10:09:18 relaxmike Exp $ flibs/m_vstringlist.n
+   -->
+
+<body>
+<h1> flibs/m_vstringlist(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/m_vstringlist - Processing string list
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#overview">OVERVIEW</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#design">Design</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#preprocessing">Preprocessing</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#methods">METHODS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#todo">TODO</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><strong>vstrlist_new</strong> (<i class='arg'>this</i> ?args?)</a></td></tr>
+<tr valign=top ><td ><a href="#2"><strong>vstrlist_new</strong> (<i class='arg'>this</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#3"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#4"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>char_string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#5"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>array</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#6"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>list</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#7"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>length</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#8"><strong>vstrlist_free</strong> (<i class='arg'>this</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#9"><strong>vstrlist_length</strong> (<i class='arg'>this</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#10"><strong>vstrlist_exists</strong> (<i class='arg'>this</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#11"><strong>vstrlist_index</strong> (<i class='arg'>this</i> <i class='arg'>, icomponent</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#12"><strong>vstrlist_append</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#13"><strong>vstrlist_append</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#14"><strong>vstrlist_append</strong> (<i class='arg'>this</i> <i class='arg'>, list</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#15"><strong>vstrlist_concat</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#16"><strong>vstrlist_concat</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#17"><strong>vstrlist_concat</strong> (<i class='arg'>this</i> <i class='arg'>, list</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#18"><strong>vstrlist_insert</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#19"><strong>vstrlist_insert</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#20"><strong>vstrlist_range</strong> (<i class='arg'>this</i> <i class='arg'>, first</i> <i class='arg'>, last</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#21"><strong>vstrlist_range</strong> (<i class='arg'>this</i> <i class='arg'>, first</i> <i class='arg'>, last</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#22"><strong>vstrlist_set</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#23"><strong>vstrlist_set</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#24"><strong>vstrlist_split</strong> (<i class='arg'>this</i> ?, splitChars?)</a></td></tr>
+<tr valign=top ><td ><a href="#25"><strong>vstrlist_split</strong> (<i class='arg'>this</i> ?, splitChars?)</a></td></tr>
+<tr valign=top ><td ><a href="#26"><strong>vstrlist_join</strong> (<i class='arg'>this</i> ?, joinString?)</a></td></tr>
+<tr valign=top ><td ><a href="#27"><strong>vstrlist_join</strong> (<i class='arg'>this</i> ?, joinString?)</a></td></tr>
+<tr valign=top ><td ><a href="#28"><strong>vstrlist_search</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a></td></tr>
+<tr valign=top ><td ><a href="#29"><strong>vstrlist_search</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a></td></tr>
+<tr valign=top ><td ><a href="#30"><strong>vstrlist_lsearch</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a></td></tr>
+<tr valign=top ><td ><a href="#31"><strong>vstrlist_lsearch</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a></td></tr>
+<tr valign=top ><td ><a href="#32"><strong>vstrlist_sort</strong> (<i class='arg'>this</i> ?, increasing? ?, classtype? ?, unique?)</a></td></tr>
+<tr valign=top ><td ><a href="#33"><strong>vstrlist_sort</strong> (<i class='arg'>this</i> <i class='arg'>, command</i> ?, unique?)</a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+   This module provides OO services to manage lists of 
+   vstrings.
+
+<h2><a name="overview">OVERVIEW</a></h2>
+<p>
+
+   A list of strings can be created with vstrlist_new and 
+   several kinds of input arguments. With no additionnal arguments,
+   the vstrlist_new method creates a list with no items :
+   
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      call vstrlist_new ( list )
+</pre></td></tr></table></p>
+
+   If one gives one string, the list is created with 1 element.
+   One can also give an array of strings to the vstrlist_new method.
+   The list is destroyed with vstrlist_free.
+   The number of elements in the list can be computed with 
+   vstrlist_length while vstrlist_exists allows to known 
+   if a list has been created.
+
+   Several methods are provided to acces to the elements of one list 
+   of strings, for example vstrlist_index, vstrlist_range and vstrlist_set.
+   The vstrlist_set method allows to set the element at a given index.
+   The strindex-th item of the list can be accessed with vstrlist_index :
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+     string1 = vstrlist_index ( list , 2 )
+</pre></td></tr></table></p>
+
+   The vstrlist_range method returns a new list made of the elements
+   which index is between two given integers :
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+     list2 = vstrlist_range ( list , 2 , 3 )
+</pre></td></tr></table></p>
+
+   To add items to a list, one can use vstrlist_append, vstrlist_concat 
+   or vstrlist_insert.
+   The vstrlist_concat and vstrlist_insert methods return a new list 
+   while vstrlist_append add one item to an existing list (therefore 
+   increasing the number of elements in the list). In the following 
+   example, a new list made of 3 items is created :
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+     call vstrlist_new ( list )
+     call vstrlist_append ( list , &quot;fortran 77&quot; )
+     call vstrlist_append ( list , &quot;fortran 90&quot; )
+     call vstrlist_append ( list , &quot;fortran 95&quot; )
+     call vstrlist_append ( list , &quot;fortran 2003&quot; )
+     call vstrlist_free ( list )
+</pre></td></tr></table></p>
+
+   The vstrlist_split method allows to split a vstring into an list  
+   of vstrings each time one character is found in a vstring. 
+   The vstrlist_join method concatenates an list of vstrings,
+   using a vstring as the join between the components.
+   In the following example, the string is split at each dot 
+   and the number of components is 3 :
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+     call vstring_new ( string1 , &quot;comp.lang.fortran&quot; )
+     strlist = vstrlist_split ( string1 , &quot;.&quot; )
+</pre></td></tr></table></p>
+
+   One can search for a pattern in a list. The vstrlist_search
+   returns the index of the found string while vstrlist_lsearch
+   returns the list of matching strings. These methods 
+   are based on vstring_match and therefore are powerfull 
+   tools to process strings.
+   In the following example, one searches for all fortran
+   compilers from the 90s (based on the previous sample list):
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+     list2 = vstrlist_search ( list , &quot;fortran 9*&quot; )
+</pre></td></tr></table></p>
+
+<h3><a name="design">Design</a></h3>
+<p>
+
+   This component has been designed with OO principles in mind.
+   This is why the first argument of every method is named &quot;this&quot;,
+   which is the current object.
+   If another string is required as a second argument, it may be either 
+   of type dynamic or as a character(len=*) type, to improve
+   usability.
+   This component is meant to evolve following the fortran 2003 standard 
+   and OO type-bound procedures.
+
+<h3><a name="preprocessing">Preprocessing</a></h3>
+<p>
+The following preprocessing macro must be considered :
+<ul>
+<li> _VSTRINGLIST_ALLOCATABLE or _VSTRINGLIST_POINTER : see the section
+&quot;Allocatable or pointer&quot; in the documentation of the m_vstring module.
+</ul>
+
+
+
+<h2><a name="methods">METHODS</a></h2>
+<p>
+
+In the following definitions, the <i class='arg'>this</i> argument has, 
+depending on the method, one of the the following definitions :
+<dl>
+<dt>type ( t_vstringlist ) , intent(inout) :: <i class='arg'>this</i><dd>
+</dl>
+<dl>
+<dt>type ( t_vstringlist ) , intent(in) :: <i class='arg'>this</i><dd>
+</dl>
+The &quot;intent(in)&quot; or &quot;intent(inout)&quot; declaration depends on the 
+method and is what it is expected to be (if not, it is a bug).
+
+<dl>
+
+<dt><a name="1"><strong>vstrlist_new</strong> (<i class='arg'>this</i> ?args?)</a><dd>
+
+
+Generic constructor. Creates the new string list &quot;this&quot;.
+
+<br><br>
+<dt><a name="2"><strong>vstrlist_new</strong> (<i class='arg'>this</i>)</a><dd>
+
+Creates a new empty string list with 0 string.
+
+<br><br>
+<dt><a name="3"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>string</i>)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ) , intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Creates a new string list with one element : the string <i class='arg'>string</i>.
+
+<br><br>
+<dt><a name="4"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>char_string</i>)</a><dd>
+
+<dl>
+<dt>character(LEN=*), intent(in) :: <i class='arg'>char_string</i><dd>
+</dl>
+Creates a new string list with one element : the character(len=*) string <i class='arg'>string</i>.
+
+<br><br>
+<dt><a name="5"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>array</i>)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ) , dimension (:), intent(in) :: <i class='arg'>array</i><dd>
+</dl>
+Creates a new string list with the strings of the array <i class='arg'>array</i>.
+The number of elements in the new string list is the length of the array.
+
+<br><br>
+<dt><a name="6"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>list</i>)</a><dd>
+
+<dl>
+<dt>type ( t_vstringlist ), intent(in) :: <i class='arg'>list</i><dd>
+</dl>
+Creates a new string list with from the existing list of strings <i class='arg'>list</i>.
+This implements the copy of a list of strings.
+
+<br><br>
+<dt><a name="7"><strong>vstrlist_new</strong> (<i class='arg'>this</i> <i class='arg'>length</i>)</a><dd>
+
+<dl>
+<dt>integer , intent(in) :: <i class='arg'>length</i><dd>
+</dl>
+Creates a new string list made of <i class='arg'>length</i> empty strings.
+
+<br><br>
+<dt><a name="8"><strong>vstrlist_free</strong> (<i class='arg'>this</i>)</a><dd>
+
+Destructor.
+<br><br>
+     The use of the destructor is OPTIONAL.
+     See the thread &quot; New ISO_VARYING_STRING implementation 
+     (without memory leaks)&quot; on comp.lang.fortran :
+     &quot;On most systems, memory is memory :-).  However, there is a
+     difference between how ALLOCATABLE variables and POINTER
+     variables are handled.  ALLOCATABLE variables are always
+     deallocated automatically when thay go out of scope (unless
+     they have the SAVE attribute).  POINTER variables usually
+     are not.  The reason is that the program may have associated
+     additional pointers, that aren't going out of scope, with the
+     same target as the one that is.&quot;
+
+<br><br>
+<dt><a name="9"><strong>vstrlist_length</strong> (<i class='arg'>this</i>)</a><dd>
+
+Returns the length, that is, the number of strings, in the current 
+list of strings.
+
+
+<br><br>
+<dt><a name="10"><strong>vstrlist_exists</strong> (<i class='arg'>this</i>)</a><dd>
+
+Returns .true. if the string list has allready been created.
+
+<br><br>
+<dt><a name="11"><strong>vstrlist_index</strong> (<i class='arg'>this</i> <i class='arg'>, icomponent</i>)</a><dd>
+
+<dl>
+<dt>integer , intent(in) :: <i class='arg'>icomponent</i><dd>
+</dl>
+Returns a new vstring by getting the vstring at the given index <i class='arg'>icomponent</i>
+in the list.
+Generates an error if the given index <i class='arg'>icomponent</i> does not exist, that is,
+is lower than 1 or greater than the number of strings in the list.
+
+<br><br>
+<dt><a name="12"><strong>vstrlist_append</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ) , intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Add the given vstring at the end of the current list.
+
+<br><br>
+<dt><a name="13"><strong>vstrlist_append</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>character(len=*) , intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Add the given character(len=*) string at the end of the current list.
+
+<br><br>
+<dt><a name="14"><strong>vstrlist_append</strong> (<i class='arg'>this</i> <i class='arg'>, list</i>)</a><dd>
+
+<dl>
+<dt>type ( t_vstringlist ) , intent(in) :: <i class='arg'>list</i><dd>
+</dl>
+Add the given <i class='arg'>list</i> at the end of the current list.
+
+
+<br><br>
+<dt><a name="15"><strong>vstrlist_concat</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ) , intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Returns a new list by concatenating the current list to the given <i class='arg'>string</i>.
+
+
+<br><br>
+<dt><a name="16"><strong>vstrlist_concat</strong> (<i class='arg'>this</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>character (len=*), intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Returns a new list by concatenating the current list to the given character(len=*) <i class='arg'>string</i>.
+
+
+<br><br>
+<dt><a name="17"><strong>vstrlist_concat</strong> (<i class='arg'>this</i> <i class='arg'>, list</i>)</a><dd>
+
+<dl>
+<dt>type ( t_vstringlist ) , intent(in) :: <i class='arg'>list</i><dd>
+</dl>
+Returns a new list by concatenating the current list to the given <i class='arg'>list</i>.
+
+
+<br><br>
+<dt><a name="18"><strong>vstrlist_insert</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>integer , intent (in) :: <i class='arg'>strindex</i><dd>
+<dt>type ( t_vstring ) , intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Creates a new list by inserting the given <i class='arg'>string</i> into the current list just 
+before the given index <i class='arg'>strindex</i>.
+
+
+<br><br>
+<dt><a name="19"><strong>vstrlist_insert</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>integer , intent (in) :: <i class='arg'>strindex</i><dd>
+<dt>character (len=*), intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Creates a new list by inserting the given character (len=*) <i class='arg'>string</i> into the current list just 
+before the given index <i class='arg'>strindex</i>.
+
+
+<br><br>
+<dt><a name="20"><strong>vstrlist_range</strong> (<i class='arg'>this</i> <i class='arg'>, first</i> <i class='arg'>, last</i>)</a><dd>
+
+<dl>
+<dt>integer , intent (in) :: <i class='arg'>first</i><dd>
+<dt>integer , intent (in) :: <i class='arg'>last</i><dd>
+</dl>
+Returns a new list by extracting items of index  
+from <i class='arg'>first</i> and <i class='arg'>last</i> (included).
+
+
+<br><br>
+<dt><a name="21"><strong>vstrlist_range</strong> (<i class='arg'>this</i> <i class='arg'>, first</i> <i class='arg'>, last</i>)</a><dd>
+
+<dl>
+<dt>integer , intent (in) :: <i class='arg'>first</i><dd>
+<dt>integer , intent (in) :: <i class='arg'>last</i><dd>
+</dl>
+Returns a new list by extracting items of index  
+from <i class='arg'>first</i> and <i class='arg'>last</i> (included).
+
+
+<br><br>
+<dt><a name="22"><strong>vstrlist_set</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>integer , intent (in) :: <i class='arg'>strindex</i><dd>
+<dt>type ( t_vstring ), intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Set the vstring <i class='arg'>string</i> at the given <i class='arg'>strindex</i> in the list,
+replacing the existing vstring by the new one.
+
+<br><br>
+<dt><a name="23"><strong>vstrlist_set</strong> (<i class='arg'>this</i> <i class='arg'>, strindex</i> <i class='arg'>, string</i>)</a><dd>
+
+<dl>
+<dt>integer , intent (in) :: <i class='arg'>strindex</i><dd>
+<dt>character (len=*), intent(in) :: <i class='arg'>string</i><dd>
+</dl>
+Set the character(len=*) <i class='arg'>string</i> at the given <i class='arg'>strindex</i> in the list,
+replacing the existing vstring by the new one.
+
+
+
+<br><br>
+<dt><a name="24"><strong>vstrlist_split</strong> (<i class='arg'>this</i> ?, splitChars?)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ), intent(in), optional :: <i class='arg'>splitChars</i><dd>
+</dl>
+Returns an list of vstrings whose elements are the components in the current string.
+Returns a list of vstrings created by splitting string at each character that is in
+the <i class='arg'>splitChars</i> argument. Each element of the result array will consist of
+the characters from string that lie between instances of the characters in
+<i class='arg'>splitChars</i>. The number of components is zero if string contains adjacent
+characters in <i class='arg'>splitChars</i>. If <i class='arg'>splitChars</i> is an empty string then each character of string
+becomes a separate element of the result list. <i class='arg'>SplitChars</i> defaults to the
+standard white-space characters (space, newline, carriage return and tab).
+
+
+<br><br>
+<dt><a name="25"><strong>vstrlist_split</strong> (<i class='arg'>this</i> ?, splitChars?)</a><dd>
+
+<dl>
+<dt>character(len=*), intent(in), optional :: <i class='arg'>splitChars</i><dd>
+</dl>
+Same as previous but with character(len=*) <i class='arg'>splitChars</i>.
+
+
+<br><br>
+<dt><a name="26"><strong>vstrlist_join</strong> (<i class='arg'>this</i> ?, joinString?)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ), intent(in), optional :: <i class='arg'>joinString</i><dd>
+</dl>
+Returns the string formed by joining all
+of the elements of list together with <i class='arg'>joinString</i> separating
+each adjacent pair of elements.
+The <i class='arg'>joinString</i> argument defaults to a space character.
+
+
+<br><br>
+<dt><a name="27"><strong>vstrlist_join</strong> (<i class='arg'>this</i> ?, joinString?)</a><dd>
+
+<dl>
+<dt>character(len=*), intent(in), optional :: <i class='arg'>joinString</i><dd>
+</dl>
+Same as previous but with character(len=*) <i class='arg'>joinString</i>.
+
+
+
+
+<br><br>
+<dt><a name="28"><strong>vstrlist_search</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ) , intent(in) :: <i class='arg'>pattern</i><dd> 
+<dt>integer , intent(in), optional :: <i class='arg'>first</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>notmatch</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>exact</i><dd>
+</dl>
+This command searches the elements of list to see if one of them matches
+<i class='arg'>pattern</i>. If so, the command returns the index of the first matching element.
+If not, the command returns 0.
+If the optional argument <i class='arg'>first</i> is provided, then the list is searched
+starting at position <i class='arg'>first</i>.
+Default value of <i class='arg'>first</i> is 1
+If the optional argument <i class='arg'>notmatch</i> is provided, this negates the sense 
+of the match, returning the index of the first non-matching value in the list.
+Default value of <i class='arg'>notmatch</i> is .false.
+Set <i class='arg'>exact</i> to .true. so that the list element must contain exactly the same string as pattern.
+Default value of <i class='arg'>exact</i> is .false.
+
+
+<br><br>
+<dt><a name="29"><strong>vstrlist_search</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a><dd>
+
+<dl>
+<dt>character (len=*) , intent(in) :: <i class='arg'>pattern</i><dd> 
+<dt>integer , intent(in), optional :: <i class='arg'>first</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>notmatch</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>exact</i><dd>
+</dl>
+Same as previous with character (len=*) <i class='arg'>pattern</i>.
+
+
+
+<br><br>
+<dt><a name="30"><strong>vstrlist_lsearch</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a><dd>
+
+<dl>
+<dt>type ( t_vstring ) , intent(in) :: <i class='arg'>pattern</i><dd> 
+<dt>integer , intent(in), optional :: <i class='arg'>first</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>notmatch</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>exact</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>allitems</i><dd>
+</dl>
+This command searches the elements of list to see if one of them matches
+pattern. If so, the command returns the list of the first matching element.
+If not, the command returns an empty list.
+If the optional argument <i class='arg'>first</i> is provided, then the list is searched
+starting at position <i class='arg'>first</i>.
+Default value of <i class='arg'>first</i> is 1
+If the optional argument <i class='arg'>notmatch</i> is provided, this negates the sense 
+of the match, returning the index of the first non-matching value in the list.
+Default value of <i class='arg'>notmatch</i> is .false.
+Set <i class='arg'>exact</i> to .true. so that the list element must contain exactly the same string as pattern.
+Default value of <i class='arg'>exact</i> is .false.
+If <i class='arg'>allitems</i> is provided and true, returns the list of all matching elements.
+Default value of <i class='arg'>allitems</i> is .false.
+
+
+<br><br>
+<dt><a name="31"><strong>vstrlist_lsearch</strong> (<i class='arg'>this</i> <i class='arg'>pattern</i> ?, first? ?, notmatch? ?, exact?)</a><dd>
+
+<dl>
+<dt>character (len=*) , intent(in) :: <i class='arg'>pattern</i><dd> 
+<dt>integer , intent(in), optional :: <i class='arg'>first</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>notmatch</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>exact</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>allitems</i><dd>
+</dl>
+Same as previous with character (len=*) <i class='arg'>pattern</i>.
+
+
+
+<br><br>
+<dt><a name="32"><strong>vstrlist_sort</strong> (<i class='arg'>this</i> ?, increasing? ?, classtype? ?, unique?)</a><dd>
+
+<dl>
+<dt>logical , intent(in), optional :: <i class='arg'>increasing</i><dd> 
+<dt>character(len=*), intent(in), optional :: <i class='arg'>classtype</i><dd>
+<dt>logical , intent(in), optional :: <i class='arg'>unique</i><dd>
+</dl>
+This command sorts the elements of list and returns a new list in sorted order.
+If <i class='arg'>increasing</i> is provided and true or not provided, sort the list in increasing order
+(``smallest'' items first).
+If <i class='arg'>increasing</i> is provided and false, sort the list in decreasing order (``largest'' items first).
+Default value of <i class='arg'>increasing</i> is true.
+If <i class='arg'>classtype</i> is provided, converts the items of the list into that class of data before comparing
+the items. The possible values of <i class='arg'>classtype</i> are :
+<br><br>
+<ul>
+<li> &quot;ascii&quot; : compare items as strings ( default )
+<br><br>
+<li> &quot;integer&quot; : convert strings into integer before comparing items
+<br><br>
+<li> &quot;real&quot; : convert strings into real before comparing items
+<br><br>
+<li> &quot;dictionnary&quot; : use dictionary-style comparison.
+This is the same as &quot;ascii&quot; except case is ignored.
+</ul>
+If <i class='arg'>classtype</i> is not provided, the default value is &quot;ascii&quot;.
+If <i class='arg'>unique</i> is provided and true, then only the last set of duplicate
+elements found in the list will be retained. Note that duplicates are
+determined relative to the comparison used in the sort.
+Two items are considered the same if the comparison command returns 0.
+
+
+
+
+<br><br>
+<dt><a name="33"><strong>vstrlist_sort</strong> (<i class='arg'>this</i> <i class='arg'>, command</i> ?, unique?)</a><dd>
+
+<dl>
+<dt>integer function <i class='arg'>command</i><dd> 
+<dt>logical , intent(in), optional :: <i class='arg'>unique</i><dd>
+</dl>
+This command sorts the elements of list and returns a new list in sorted order.
+The <i class='arg'>command</i> is a function used as a comparison operator.
+The <i class='arg'>command</i> is expected to return -1, 0, or 1, depending on whether 
+string_a is lexicographically less than, equal to, or greater than string_b.
+It is expected that the command has the following interface :
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    interface
+       integer function command ( string_a , string_b )
+         use m_vstring, only : t_vstring
+         type(t_vstring), intent(in) :: string_a
+         type(t_vstring), intent(in) :: string_b
+       end function command 
+    end interface
+</pre></td></tr></table></p>
+If <i class='arg'>unique</i> is provided and true, then only the last set of duplicate
+elements found in the list will be retained. Note that duplicates are
+determined relative to the comparison used in the sort.
+Two items are considered the same if the comparison command returns 0.
+
+
+</dl>
+
+<h2><a name="todo">TODO</a></h2>
+<p>
+Refactor the component and use datastructures/vectors.f90
+
+
+
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com<br>
+</body></html>

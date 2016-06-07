@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>C to Fortran wrapper</title>
+</head>
+<body>
+<h2>C to Fortran wrapper</h2>
+<p>
+The C to Fortran wrapper is implemented in Tcl, so you need an
+installation of this dynamic language or a run-time shell (see
+below) to use it.
+<p>
+
+<h3>Instructions for use</h3>
+
+The wrapper can be run as follows:
+<pre>
+    tclsh cwrap.tcl header.h header2.h ...
+</pre>
+
+Or, if you use the tclkit run-time shell:
+<pre>
+    tclkit cwrap.tcl header.h header2.h ...
+</pre>
+(and type "exit" to stop the program)
+<p>
+It will produce the following Fortran and C files:
+<ul>
+<li>
+header_wrap.c: The C wrapper functions that transform the Fortran call
+into a proper C call
+<li>
+header_mod.f90: A Fortran module (called "header") that contains the
+interfaces for the wrapper functions
+<li>
+header_iso.f90: A Fortran 2003 module containing interfaces to the C
+functions using the standard ISO C binding module.
+</ul>
+
+<h2>Limitations</h2>
+This is a first version of the wrapper, it is not able to
+do very much. In particular:
+<ul>
+<li>
+No conversion yet of Fortran strings to C strings
+<li>
+Only one calling convention for passing the length of strings
+<li>
+No customisation for user-defined types
+<li>
+No support for functions that return pointers
+<li>
+No support for structs or complicated typedefs
+<li>
+No support for function arguments
+</ul>
+
+Something that would be nice to have is a way of dealing with NULLs
+in Fortran, as NULLs are frequently used in C as defaults or missing
+arguments.
+<p>
+It is very probable that the wrapper breaks if the C header has a
+somewhat unusual layout.
+
+
+<h2>Getting a Tcl run-time shell</h2>
+To use this wrapper you need to know nothing of Tcl, but you do need
+the Tcl shell or the Tclkit shell.
+<p>
+If you work on a Linux or UNIX system or on MacOS, chances are that
+you already have the Tcl shell, tclsh.
+<p>
+If you are on Windows, you may either want to install Tcl (for instance:
+from http://www.activestate.com) or, alternatively, get the Tclkit
+shell. This is a single-file run-time environment for Tcl and its
+graphical user-interface component Tk. You can get it from:
+<a href="http://www.equi4.com">http://www.equi4.com</a>
+<p>
+More information on Tcl and Tk:
+<br>
+<a href="http://www.tcl.tk"/>http://www.tcl.tk</a>
+<br>
+<a href="http://wiki.tcl.tk"/>http://wiki.tcl.tk</a>
+
+<p>
+There is an abundance of online tutorials on Tcl/Tk.
+</body>
+</html>

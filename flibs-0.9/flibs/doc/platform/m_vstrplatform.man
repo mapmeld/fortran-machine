@@ -1,0 +1,181 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/m_vstrplatform n 1.0]
+[copyright {2008 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[copyright {2008 Michael Baudin <michael.baudin@gmail.com>}]
+[moddesc flibs]
+[titledesc {Platform-dependent routines and features}]
+
+[description]
+
+The [strong m_vstrplatform] module provides several routines,
+which take dynamic strings arguments, to interact
+with the operating system.
+
+[section OVERVIEW]
+
+The goal of this module is to provide system access with
+commands which take dynamic strings as arguments.
+It is based on m_platform, which takes character-based arguments.
+
+In the following example, extracted from the m_vfile module included 
+in flibs, one sets the current working directory
+by using vstrplatform_cd on a dynamic string variable.
+
+[example {
+    type ( t_vstring ) :: dirname
+    integer :: status
+    call vstrplatform_cd ( dirname , status )
+}]
+
+
+[para]
+This is a sketch of available routines :
+[list_begin bullet]
+[bullet] vstrplatform_system                       Executes an external command on the system
+[bullet] vstrplatform_get_environment_variable     Get to one environment variable
+[bullet] vstrplatform_cd                           Change the system current directory
+[bullet] vstrplatform_stat                         Get status of a file
+[list_end]
+
+[subsection "Dynamic or static buffer"]
+
+The internal algorithms provided by m_vstrplatform are based on
+basic fortran character strings. In several situations, the
+dynamic vstring has to be converted into a basic fortran character
+buffer string, which size has to be given explicitely in the source
+code, with the [emph "len = <something>"] statement (in the
+[emph "character ( len = <something>)"]).
+[list_begin bullet]
+[bullet] If the _VSTRPLATFORM_STATIC_BUFFER macro is defined, then character strings of
+constant size VSTRPLATFORM_MAXIMUM_ENVVAR_LENGTH are used as buffers.
+[bullet] If the _VSTRPLATFORM_STATIC_BUFFER macro is not defined (which is the default),
+then character strings of dynamic size are used as buffers
+with the fortran 90 "len = vstring_length(this)" statement.
+[list_end]
+
+The second solution is more efficient, because the strings are not
+oversized or undersized, depending on the real number of characters
+in the dynamic string. But the feature may not be provided
+by the compiler at hand. For example, problems with the dynamic
+length character string have been experienced with Intel Fortran 8.
+
+[subsection "Pre-processing"]
+
+The following preprocessing macro may be defined :
+[list_begin bullet]
+[bullet] _VSTRPLATFORM_STATIC_BUFFER : see  the section "Dynamic or static buffer"
+[list_end]
+
+
+
+
+
+
+[section ROUTINES]
+The module contains the following routines.
+
+[list_begin definitions]
+
+
+[call [cmd "vstrplatform_system"] ([arg command] [opt ", status"])]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) ::"] command]
+[arg_def [type "integer, intent (out), optional ::"] status]
+[list_end]
+
+Run an external [arg command], optionally retrieving the status of
+that command. Under Windows the "call system" may generate the display of a console.
+If [arg status] is supplied, it contains 0 on success or nonzero error code
+upon return.
+
+[call [cmd "vstrplatform_osstring"]() result ( [arg currentos] )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) ::"] currentos]
+[list_end]
+Returns a string containing the current operating system running on the current machine,
+one of "Windows 95", "Windows NT", "MacOS", "SunOS", 
+"Linux" or "Unix".
+
+[call [cmd "vstrplatform_platformstring"]() result ( [arg currentplatform] )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) ::"] currentplatform]
+[list_end]
+Returns a string containing the current platform running on the current machine,
+one of "Windows", "Mac", "Unix".
+
+
+
+[call [cmd "vstrplatform_getenvvar"]([arg envvar]) result ( [arg value] )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ), intent(in) ::"] envvar]
+[arg_def [type "type ( t_vstring ) ::"] value]
+[list_end]
+Returns the value of the environment variable [arg envvar].
+
+
+[call [cmd "vstrplatform_getenvvar"]([arg envvar]) result ( [arg value] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] envvar]
+[arg_def [type "type ( t_vstring ) ::"] value]
+[list_end]
+Same as previous with [emph "character(len=*)"] [arg dirname].
+
+
+[call [cmd "vstrplatform_cd"] ( [arg dirname] [opt ", status"])]
+[list_begin arg]
+[arg_def [type "type(t_vstring), intent(in) ::"] dirname]
+[arg_def [type "integer, intent(out) , optional ::"] status]
+[list_end]
+Change working directory to [arg dirname]. 
+If [arg status] is supplied, it contains 0 on success or nonzero error code
+upon return
+
+[call [cmd "vstrplatform_cd"] ( [arg dirname] [opt ", status"])]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] dirname]
+[arg_def [type "integer, intent(out) , optional ::"] status]
+[list_end]
+Same as previous with [emph "character(len=*)"] [arg dirname].
+
+
+[call [cmd "platform_stat"] ( [arg filename] [arg ", statarray"] [opt ", status"])]
+[list_begin arg]
+[arg_def [type "type(t_vstring), intent(in) ::"] filename]
+[arg_def [type "integer, dimension (1:13) , intent(out) ::"] filename]
+[arg_def [type "integer, intent(out) , optional ::"] status]
+[list_end]
+Get status of the file [arg filename] and fills the array [arg statarray]
+with the following content.
+[list_begin bullet]
+[bullet] statarray(1) Device ID
+[bullet] statarray(2) Inode number
+[bullet] statarray(3) File mode
+[bullet] statarray(4) Number of links
+[bullet] statarray(5) Owner's uid
+[bullet] statarray(6) Owner's gid
+[bullet] statarray(7) ID of device containing directory entry for file (0 if not available)
+[bullet] statarray(8) File size (bytes)
+[bullet] statarray(9) Last access time
+[bullet] statarray(10) Last modification time
+[bullet] statarray(11) Last file status change time
+[bullet] statarray(12) Preferred I/O block size (-1 if not available)
+[bullet] statarray(13) Number of blocks allocated (-1 if not available)
+[list_end]
+If [arg status] is supplied, it contains 0 on success or nonzero error code
+upon return
+
+[call [cmd "platform_stat"] ( [arg filename] [arg ", statarray"] [opt ", status"])]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] filename]
+[arg_def [type "integer, dimension (1:13) , intent(out) ::"] filename]
+[arg_def [type "integer, intent(out) , optional ::"] status]
+[list_end]
+Same as previous with [emph "character(len=*)"] [arg dirname].
+
+
+
+[list_end]
+
+
+
+[manpage_end]

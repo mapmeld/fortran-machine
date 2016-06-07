@@ -1,0 +1,262 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>automatic_differentiation - flibs </title>
+</head>
+<! -- Generated from file 'automdiff.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: automdiff.html,v 1.2 2008/09/09 04:29:29 arjenmarkus Exp $ automatic_differentiation.n
+   -->
+
+<body>
+<h1> automatic_differentiation(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> automatic_differentiation - Implement the &quot;automatic differentation&quot; technique
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#example">EXAMPLE</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#data_types_and_routines">DATA TYPES AND ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#possible_extensions">POSSIBLE EXTENSIONS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use automatic_differentiation</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>type(AUTODERIV)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>x = derivvar( value )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>call find_root( f, xinit, tolerance, root, found )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call find_root_iter( fvalue, root, tolerance, found )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>automatic_differentiation</em> module defines a derived
+type that enables you (via overloading common mathematical
+functions and operators) to:
+
+<ul>
+<li>
+Define a mathematical function in the usual way
+
+<br><br>
+<li>
+Evaluate that function <em>and</em> its first derivative at the same
+time
+
+</ul>
+
+without having to program that first derivative.
+
+<p>
+
+The module uses real numbers of the kind &quot;wp&quot; as defined in the
+auxiliary module <em>select_precision</em>.
+
+<p>
+
+(I was pointed to this technique by Simon Geard, a couple of years ago,
+in the context of one of the many language shootouts on the Internet.)
+
+
+<h2><a name="example">EXAMPLE</a></h2>
+<p>
+
+In numerical methods like Newton-Raphson for finding a root of the
+equation &quot;f(x) = 0&quot;, you need the first derivative:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    x(k+1)  =  x(k)  - f(x(k)) / f'(x(k))
+</pre></td></tr></table></p>
+
+Rather than implementing the function and its first derivatives as
+separate functions, using this module you can dispense with manually
+determining the first derivative:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+program root
+    use automatic_differentation
+
+    type(AUTODERIV) :: x
+    type(AUTODERIV) :: res
+    integer         :: i
+
+    !
+    ! First estimate
+    !
+    x = derivvar( 1.0_wp )
+
+    do i = 1,10
+        res = f(x)
+        x = x - res.v / res.dv
+    enddo
+
+    write(*,*) 'Root: ', x.v
+contains
+
+type(AUTODERIV) function f(x)
+    type(AUTODERIV) :: x
+
+    f = x + cos(x)
+
+end function f
+end program
+</pre></td></tr></table></p>
+
+
+<h2><a name="data_types_and_routines">DATA TYPES AND ROUTINES</a></h2>
+<p>
+The module defines a single data type, AUTODERIV, and one specific
+function, derivvar().
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use automatic_differentiation</b> </a><dd>
+
+The name of the module
+
+<br><br>
+<dt><a name="2"><b class='cmd'>type(AUTODERIV)</b> </a><dd>
+
+The type has two fields:
+
+<br><br>
+<dl>
+
+<dt>real(wp) <i class='arg'>v</i><dd>
+The value of the variable/function (or any intermediate result)
+
+<br><br>
+<dt>real(wp) <i class='arg'>dv</i><dd>
+The first derivative
+
+</dl>
+<br><br>
+
+
+<dt><a name="3"><b class='cmd'>x = derivvar( value )</b> </a><dd>
+
+Use this function to properly initialise the program
+variable x as a &quot;mathematical&quot; variable. (It sets the derivative
+of x to 1, because otherwise it would be regarded as a constant).
+
+<br><br>
+<dl>
+
+<dt>real(wp) <i class='arg'>value</i><dd>
+The value of the &quot;mathematical&quot; variable.
+
+</dl>
+
+<dt><a name="4"><b class='cmd'>call find_root( f, xinit, tolerance, root, found )</b> </a><dd>
+
+This subroutine is a simple implementation of the Newton-Raphson
+method to find roots. The function f takes one argument, x.
+
+<br><br>
+<dl>
+<dt>type(AUTODERIV) function <i class='arg'>f(x)</i><dd>
+The function must have the interface:
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    interface
+        function f(x)
+            use automatic_differentiation_type
+            type(AUTODERIV), intent(in) :: x
+            type(AUTODERIV)             :: f
+        end function
+    end interface
+</pre></td></tr></table></p>
+
+Its return value is the function value at point x and its first
+derivative.
+
+
+<br><br>
+<dt>type(AUTODERIV), intent(in) <i class='arg'>xinit</i><dd>
+Initial estimate of the root - the end result may depend on this choice.
+
+<br><br>
+<dt>real(wp) <i class='arg'>tolerance</i><dd>
+Maximum allowable error in the absolute value of the root. If the
+difference between the old and the new estimate is smaller than this
+value, the iteration stops.
+
+<br><br>
+<dt>type(AUTODERIV), intent(out) <i class='arg'>root</i><dd>
+Final estimate of the root.
+
+<br><br>
+<dt>logical <i class='arg'>found</i><dd>
+Indicator whether a root was found or not. There is a maximum
+number of iterations and the root must not grow too large.
+
+</dl>
+
+
+<dt><a name="5"><b class='cmd'>call find_root_iter( fvalue, root, tolerance, found )</b> </a><dd>
+
+This subroutine performs a single iteration in the Newton-Raphson
+method to find roots. It can be used to implement a more general version
+of <em>find_root</em>, for instance if the interface to the function
+contains one or more asjustable parameters.
+
+<br><br>
+<dl>
+<dt>type(AUTODERIV) <i class='arg'>fvalue</i><dd>
+The value of the function (plus its first derivative)
+
+<br><br>
+<dt>type(AUTODERIV), intent(in) <i class='arg'>root</i><dd>
+Current estimate of the root
+
+<br><br>
+<dt>real(wp) <i class='arg'>tolerance</i><dd>
+Maximum allowable error in the absolute value of the root. If the
+difference between the old and the new estimate is smaller than this
+value, the indicator <em>found</em> is set to true.
+
+<br><br>
+<dt>logical <i class='arg'>found</i><dd>
+Indicator whether a root was found or not.
+
+</dl>
+
+
+</dl>
+
+
+<h2><a name="possible_extensions">POSSIBLE EXTENSIONS</a></h2>
+<p>
+You can extend the module in at least two ways:
+
+<ul>
+<li>
+Determine the second derivative, the third and so on. This is
+straightforward enough, but the formulae will get fairly complex after
+the second derivative.
+
+<br><br>
+<li>
+Determine the derivative of a function of two or more variables. This
+will require a bit more: such functions have a vector-valued
+derivative and each independent variable will have to have a
+vector-valued derivative as well. For instance:
+<br><br>
+A function f(x,y) evaluated at (1,2), would take as the actual arguments
+x = (1,1,0) (so no variation in the second direction) and y = (2,0,1)
+(no variation in the first direction).
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

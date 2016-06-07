@@ -1,0 +1,179 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin binary_streams n 1.0]
+[copyright {2006 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Implement binary streams}]
+
+[description]
+
+The [strong binary_streams] module defines a set of subroutines and
+functions that allows you to read a file as if it were a "stream"
+of bytes, rather than, as is more usual a set of records.
+
+[para]
+
+The module uses direct-access file I/O but hides the fact that
+you read from individual records. By providing two routines to
+query and set the position of the next read/write action and by
+automatically positioning a "file pointer" otherwise, the module offers
+the benefits of both direct-access files and sequential files.
+
+[para]
+
+[strong "Note:"] In Fortran 2003, the notion of "streams" is formalised.
+This module will be superfluous with compilers supporting Fortran 2003.
+Also there are a number of issues that may or may not come into play on
+a particular system - see the section on [sectref "IMPLEMENTATION NOTES"].
+
+
+[section "DATA TYPES AND ROUTINES"]
+The module defines a single data type, BINARY_STREAM, and several
+functions and subroutines:
+
+[list_begin definitions]
+
+[call [cmd "use binary_streams"]]
+The name of the module
+
+[call [cmd "type(BINARY_STREAM)"]]
+Files are opened and the necessary data are kept in variables of
+this type.
+
+
+[call [cmd "call binstream_open( stream, lun, filename, error )"]]
+Open the file "filename" using the LU-number "lun". If some error
+occurs, the argument "error" is set to true.
+
+[list_begin arg]
+
+[arg_def "type(binary_stream)" stream]
+The variable by which to reference the file
+
+[arg_def "integer, intent(in)" lun]
+The LU-number to connect the file to
+
+[arg_def "character(len=*), intent(in)" filename]
+The name of the file to open
+
+[arg_def "logical, intent(out)" error]
+Argument indicating whether opening the file was successful or not.
+Note that the file is opened with read/write access (though not
+explicitly) and that it is opened in such a way that the record length
+is 4 bytes. If this is not possible (for any number of reasons), an
+error is returned.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call binstream_close( stream )"]]
+Close the file that was opened as a stream.
+
+[list_begin arg]
+
+[arg_def "type(binary_stream)" stream]
+The variable by which to reference the file
+
+[list_end]
+[nl]
+
+
+[call [cmd "call binstream_seek( stream, start, offset )"]]
+Set the position in the file (either from the start or from the current
+position).
+
+[list_begin arg]
+
+[arg_def "type(binary_stream)" stream]
+The variable by which to reference the file
+
+[arg_def "logical, intent(in)" start]
+If true, the offset is from the start of the file. Otherwise it is an
+offset from the current position.
+
+[arg_def "integer, intent(in)" offset]
+The number of bytes to skip from the given position. Zero means either
+the start of the file or the same position.
+
+[list_end]
+[nl]
+
+
+[call [cmd "pos = binstream_tell( stream )"]]
+Return the current position in the file (in bytes, the first byte is
+taken as 0).
+
+[list_begin arg]
+
+[arg_def "type(binary_stream)" stream]
+The variable by which to reference the file
+
+[list_end]
+[nl]
+
+
+[call [cmd "call binstream_read( stream, var, error )"]]
+Read a variable "var" from the current position in the file.
+
+[list_begin arg]
+
+[arg_def "type(binary_stream)" stream]
+The variable by which to reference the file
+
+[arg_def "(...), intent(out)" var]
+The variable to be read. It can be either a character string, a
+(default) integer, a (default) real, a (default) logical or a
+double-precision real. Also one- and two-dimensional arrays of these
+types are supported.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call binstream_write( stream, var, error )"]]
+Write a variable "var" at the current position in the file.
+
+[list_begin arg]
+
+[arg_def "type(binary_stream)" stream]
+The variable by which to reference the file
+
+[arg_def "(...), intent(in)" var]
+The variable to be written. It can be either a character string, a
+(default) integer, a (default) real, a (default) logical or a
+double-precision real. Also one- and two-dimensional arrays of these
+types are supported.
+
+[list_end]
+
+[list_end]
+
+[section "IMPLEMENTATION NOTES"]
+The module makes a number of assumptions:
+[list_begin bullet]
+[bullet]
+Any file can be opened as a direct-acess file with any
+record length
+
+[bullet]
+To avoid complicated code the files are opened with
+records of 4 bytes long (ordinary the record length is 4
+or 1 - the length unit is system-dependent!). This means
+that systems where the unit is not 1 or 4 bytes are not
+supported - this could include 64-bits systems.
+
+[bullet]
+The end of a file may not be accurately detected. This
+is due to the behaviour of direct-access files: the
+last record may not be complete, if the file size is
+a multiple of 4 bytes.
+
+[bullet]
+A default integer is assumed to be 4 bytes, as is
+a default real and a default logical. A double precision
+real is assumed to be 8 bytes long. There is NO provision
+for situations where this is not true.
+
+[list_end]
+
+[manpage_end]

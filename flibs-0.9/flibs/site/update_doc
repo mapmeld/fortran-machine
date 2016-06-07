@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Script to update the project's website
+#
+#scp *.html arjenmarkus@shell.sourceforge.net:/home/groups/f/fl/flibs/htdocs
+#scp *.pdf arjenmarkus@shell.sourceforge.net:/home/groups/f/fl/flibs/htdocs
+
+rsync -av *.html arjenmarkus,flibs@web.sourceforge.net:htdocs
+rsync -av *.pdf  arjenmarkus,flibs@web.sourceforge.net:htdocs

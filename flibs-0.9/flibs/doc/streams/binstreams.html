@@ -1,0 +1,243 @@
+
+<html><head>
+<title>binary_streams - flibs </title>
+</head>
+<! -- Generated from file 'binstreams.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: binstreams.html,v 1.1 2008/06/13 10:32:30 relaxmike Exp $ binary_streams.n
+   -->
+
+<body>
+<h1> binary_streams(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> binary_streams - Implement binary streams
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#data_types_and_routines">DATA TYPES AND ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#implementation_notes">IMPLEMENTATION NOTES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use binary_streams</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>type(BINARY_STREAM)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>call binstream_open( stream, lun, filename, error )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>call binstream_close( stream )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call binstream_seek( stream, start, offset )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>pos = binstream_tell( stream )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>call binstream_read( stream, var, error )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>call binstream_write( stream, var, error )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>binary_streams</em> module defines a set of subroutines and
+functions that allows you to read a file as if it were a &quot;stream&quot;
+of bytes, rather than, as is more usual a set of records.
+
+<p>
+
+The module uses direct-access file I/O but hides the fact that
+you read from individual records. By providing two routines to
+query and set the position of the next read/write action and by
+automatically positioning a &quot;file pointer&quot; otherwise, the module offers
+the benefits of both direct-access files and sequential files.
+
+<p>
+
+<em>Note:</em> In Fortran 2003, the notion of &quot;streams&quot; is formalised.
+This module will be superfluous with compilers supporting Fortran 2003.
+Also there are a number of issues that may or may not come into play on
+a particular system - see the section on <a href="#implementation_notes">IMPLEMENTATION NOTES</a>.
+
+
+<h2><a name="data_types_and_routines">DATA TYPES AND ROUTINES</a></h2>
+<p>
+The module defines a single data type, BINARY_STREAM, and several
+functions and subroutines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use binary_streams</b> </a><dd>
+
+The name of the module
+
+<br><br>
+<dt><a name="2"><b class='cmd'>type(BINARY_STREAM)</b> </a><dd>
+
+Files are opened and the necessary data are kept in variables of
+this type.
+
+
+<br><br>
+<dt><a name="3"><b class='cmd'>call binstream_open( stream, lun, filename, error )</b> </a><dd>
+
+Open the file &quot;filename&quot; using the LU-number &quot;lun&quot;. If some error
+occurs, the argument &quot;error&quot; is set to true.
+
+<br><br>
+<dl>
+
+<dt>type(binary_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>lun</i><dd>
+The LU-number to connect the file to
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+The name of the file to open
+
+<br><br>
+<dt>logical, intent(out) <i class='arg'>error</i><dd>
+Argument indicating whether opening the file was successful or not.
+Note that the file is opened with read/write access (though not
+explicitly) and that it is opened in such a way that the record length
+is 4 bytes. If this is not possible (for any number of reasons), an
+error is returned.
+
+</dl>
+<br><br>
+
+
+<dt><a name="4"><b class='cmd'>call binstream_close( stream )</b> </a><dd>
+
+Close the file that was opened as a stream.
+
+<br><br>
+<dl>
+
+<dt>type(binary_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>call binstream_seek( stream, start, offset )</b> </a><dd>
+
+Set the position in the file (either from the start or from the current
+position).
+
+<br><br>
+<dl>
+
+<dt>type(binary_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+<br><br>
+<dt>logical, intent(in) <i class='arg'>start</i><dd>
+If true, the offset is from the start of the file. Otherwise it is an
+offset from the current position.
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>offset</i><dd>
+The number of bytes to skip from the given position. Zero means either
+the start of the file or the same position.
+
+</dl>
+<br><br>
+
+
+<dt><a name="6"><b class='cmd'>pos = binstream_tell( stream )</b> </a><dd>
+
+Return the current position in the file (in bytes, the first byte is
+taken as 0).
+
+<br><br>
+<dl>
+
+<dt>type(binary_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+</dl>
+<br><br>
+
+
+<dt><a name="7"><b class='cmd'>call binstream_read( stream, var, error )</b> </a><dd>
+
+Read a variable &quot;var&quot; from the current position in the file.
+
+<br><br>
+<dl>
+
+<dt>type(binary_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+<br><br>
+<dt>(...), intent(out) <i class='arg'>var</i><dd>
+The variable to be read. It can be either a character string, a
+(default) integer, a (default) real, a (default) logical or a
+double-precision real. Also one- and two-dimensional arrays of these
+types are supported.
+
+</dl>
+<br><br>
+
+
+<dt><a name="8"><b class='cmd'>call binstream_write( stream, var, error )</b> </a><dd>
+
+Write a variable &quot;var&quot; at the current position in the file.
+
+<br><br>
+<dl>
+
+<dt>type(binary_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+<br><br>
+<dt>(...), intent(in) <i class='arg'>var</i><dd>
+The variable to be written. It can be either a character string, a
+(default) integer, a (default) real, a (default) logical or a
+double-precision real. Also one- and two-dimensional arrays of these
+types are supported.
+
+</dl>
+
+</dl>
+
+<h2><a name="implementation_notes">IMPLEMENTATION NOTES</a></h2>
+<p>
+The module makes a number of assumptions:
+<ul>
+<li>
+Any file can be opened as a direct-acess file with any
+record length
+
+<br><br>
+<li>
+To avoid complicated code the files are opened with
+records of 4 bytes long (ordinary the record length is 4
+or 1 - the length unit is system-dependent!). This means
+that systems where the unit is not 1 or 4 bytes are not
+supported - this could include 64-bits systems.
+
+<br><br>
+<li>
+The end of a file may not be accurately detected. This
+is due to the behaviour of direct-access files: the
+last record may not be complete, if the file size is
+a multiple of 4 bytes.
+
+<br><br>
+<li>
+A default integer is assumed to be 4 bytes, as is
+a default real and a default logical. A double precision
+real is assumed to be 8 bytes long. There is NO provision
+for situations where this is not true.
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

@@ -1,0 +1,17 @@
+TODO:
+
+- Extra assertions:
+  - two arrays almost equal
+  - false
+  - comparing files
+  - file exists (does not exist)
+
+- Move routine test to module
+
+- Implement:
+  runtests_init
+  runtests_final
+  
+- Improve ftnunit_get_lun
+
+- Expand gentabletest.tcl

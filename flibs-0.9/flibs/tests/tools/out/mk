@@ -1,0 +1,4 @@
+# Do not bother to create a makefile, just a small shell script will do
+#
+g95 -c ../check_reals.f90
+g95 -o check_init _check_init.f90 check_reals.o

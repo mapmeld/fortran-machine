@@ -1,0 +1,19 @@
+OVERVIEW
+--------
+
+src/strings:
+------------
+The source files in this directory manipulate character strings in some
+way or another:
+
+- filedir.f90
+  Module to manipulate the parts of a file name (directory, name, extension)
+
+- textstr.f90
+  Small collection of modules that can help to store strings of arbitrary length.
+  It is not meant to implement a general arbitrary-length module: there are only a few
+  intrinsic functions emulated.
+
+- csv_file.f90
+  Module to help _write_ CSV files
+

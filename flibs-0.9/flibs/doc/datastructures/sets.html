@@ -1,0 +1,430 @@
+
+<html><head>
+<title>flibs/datastructures - flibs </title>
+</head>
+<! -- Generated from file 'sets.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: sets.html,v 1.1 2008/06/13 10:25:55 relaxmike Exp $ flibs/datastructures.n
+   -->
+
+<body>
+<h1> flibs/datastructures(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/datastructures - Unordered sets
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>call set_create( dataset )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>call set_destroy( dataset )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>size = set_size( dataset )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>call set_add( dataset, elem )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call set_delete_element( dataset, elem )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>has = set_haselement( dataset, elem )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>has = elem .elementof. dataset</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>equal = set_equal( set1, set2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>equal = set1 .eq. set2</b> </a></td></tr>
+<tr valign=top ><td ><a href="#10"><b class='cmd'>notequal = set_notequal( set1, set2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#11"><b class='cmd'>notequal = set1 .ne. set2</b> </a></td></tr>
+<tr valign=top ><td ><a href="#12"><b class='cmd'>has = set_hassubset( dataset, subset )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#13"><b class='cmd'>has = subset .subsetof. dataset</b> </a></td></tr>
+<tr valign=top ><td ><a href="#14"><b class='cmd'>newset = set_union( set1, set2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#15"><b class='cmd'>newset = set1 .union. set2</b> </a></td></tr>
+<tr valign=top ><td ><a href="#16"><b class='cmd'>newset = set_intersection( set1, set2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#17"><b class='cmd'>newset = set1 .intersect. set2</b> </a></td></tr>
+<tr valign=top ><td ><a href="#18"><b class='cmd'>newset = set_exclusion( set1, set2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#19"><b class='cmd'>newset = set1 .intersect. set2</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>sets.f90</em> source file allows you to implement
+<em>unordered sets</em> of any (derived) type without having to
+edit the supplied source code. To this end a simple technique is used,
+which is best illustrated by an example:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+!
+! The data that will be stored in the sets
+!
+type MYDATA
+    integer :: value
+end type MYDATA
+
+!
+! As derived types are compared, we need to define
+! how to compare them
+!
+interface operator(.eq.)
+    module procedure mydata_isequal
+end interface
+
+contains
+logical function mydata_isequal( v1, v2 )
+    type(MYDATA), intent(in) :: v1
+    type(MYDATA), intent(in) :: v2
+
+    mydata_isequal = v1%value .eq. v2%value
+end function mydata_isequal
+
+end module MYDATA_MODULE
+
+module MYDATA_SET_STRUCTS
+    use MYDATA_MODULE, SET_DATA =&gt; MYDATA
+
+    include &quot;data_for_sets.f90&quot;
+end module MYDATA_SET_STRUCTS
+
+module MYDATA_SETS
+    use MYDATA_SET_STRUCTS
+
+    include &quot;sets.f90&quot;
+end module MYDATA_SETS
+</pre></td></tr></table></p>
+
+The above code defines a module <em>MYDATA_MODULE</em> with the derived
+type that is to be stored in the sets. The name of that derived
+type can be anything.
+<p>
+It also defines a module <em>MYDATA_SET_STRUCTS</em> which prepares the
+underlying data structure. The reason for this two-layer process is that
+you need to be able to define the name of the modules that are involved
+yourself. (Otherwise it would be impossible to use two or more
+<em>sets</em> holding different types of data in one program.
+
+<p>
+It finally defines a module <em>MYDATA_SETS</em> which will be the
+module that holds the functionality to use unordered sets:
+
+<ul>
+
+<li>
+The module <em>MYDATA_MODULE</em> is <em>used</em>, but the derived type
+<em>MYDATA</em> is renamed to the (fixed) name <em>SET_DATA</em>. (This
+is the name used in the generic source file.)
+
+<br><br>
+<li>
+The source code for the actual routines is simply included via the
+INCLUDE statement.
+
+<br><br>
+<li>
+Nothing more is required, we can close the source text for the module.
+
+</ul>
+
+To use a single type of sets in a program, we can just use the
+MYDATA_SETS module. If you need more than one type of data in sets,
+then apply the same renaming trick on using the specific set
+modules.
+
+<p>
+In fact the example in the source file &quot;two_lists.f90&quot; shows the general
+technique of how to accomplish this.
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The source file <em>sets.f90</em> provides the following
+routines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>call set_create( dataset )</b> </a><dd>
+
+Create a new empty set.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The variable that will be used for accessing the set
+
+</dl>
+<br><br>
+
+
+<dt><a name="2"><b class='cmd'>call set_destroy( dataset )</b> </a><dd>
+
+Destroy the set. All elements contained in it will be destroyed as
+well.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The set to be destroyed
+
+</dl>
+<br><br>
+
+
+<dt><a name="3"><b class='cmd'>size = set_size( dataset )</b> </a><dd>
+
+Function to return the number of elements in the set.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The set in question
+
+</dl>
+<br><br>
+
+
+<dt><a name="4"><b class='cmd'>call set_add( dataset, elem )</b> </a><dd>
+
+Insert a new element in the set. If the element is already present,
+nothing is done.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The dataset to add the element to.
+
+<br><br>
+<dt>type(SET_DATA), intent(in) <i class='arg'>elem</i><dd>
+The element to be stored
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>call set_delete_element( dataset, elem )</b> </a><dd>
+
+Delete the given element from the set.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The list in question
+<br><br>
+<dt>type(SET_DATA) <i class='arg'>elem</i><dd>
+The element to be deleted
+
+</dl>
+<br><br>
+
+
+<dt><a name="6"><b class='cmd'>has = set_haselement( dataset, elem )</b> </a><dd>
+
+Returns whether or not the given element is in the set.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The set in question
+<br><br>
+<dt>type(SET_DATA) <i class='arg'>elem</i><dd>
+The element to be checked
+
+</dl>
+<br><br>
+
+
+<dt><a name="7"><b class='cmd'>has = elem .elementof. dataset</b> </a><dd>
+
+Returns whether or not the given element is in the set.
+(The operator version)
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The set in question
+<br><br>
+<dt>type(SET_DATA) <i class='arg'>elem</i><dd>
+The element to be checked
+
+</dl>
+<br><br>
+
+
+<dt><a name="8"><b class='cmd'>equal = set_equal( set1, set2 )</b> </a><dd>
+
+Returns whether or not the two sets contain the same elements.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>set1</i><dd>
+The first set
+<br><br>
+<dt>type(SET) <i class='arg'>set2</i><dd>
+The second set
+
+</dl>
+<br><br>
+
+
+<dt><a name="9"><b class='cmd'>equal = set1 .eq. set2</b> </a><dd>
+
+Returns whether or not the two sets contain the same elements.
+(The operator version)
+
+
+<br><br>
+<dt><a name="10"><b class='cmd'>notequal = set_notequal( set1, set2 )</b> </a><dd>
+
+Returns whether or not the two sets do not contain the same elements.
+(The operator version)
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>set1</i><dd>
+The first set
+<br><br>
+<dt>type(SET) <i class='arg'>set2</i><dd>
+The second set
+
+</dl>
+<br><br>
+
+
+<dt><a name="11"><b class='cmd'>notequal = set1 .ne. set2</b> </a><dd>
+
+Returns whether or not the two sets do not contain the same elements.
+(The operator version)
+
+
+<br><br>
+<dt><a name="12"><b class='cmd'>has = set_hassubset( dataset, subset )</b> </a><dd>
+
+Returns whether or not one set is contained in the other set.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The set that may hold the second one
+<br><br>
+<dt>type(SET) <i class='arg'>subset</i><dd>
+The set that may be a subset of the fist
+
+</dl>
+<br><br>
+
+
+<dt><a name="13"><b class='cmd'>has = subset .subsetof. dataset</b> </a><dd>
+
+Returns whether or not one set is contained in the other set.
+(The operator version)
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>subset</i><dd>
+The set that may be a subset of the other
+<br><br>
+<dt>type(SET) <i class='arg'>dataset</i><dd>
+The set that may hold the first one
+
+</dl>
+<br><br>
+
+
+<dt><a name="14"><b class='cmd'>newset = set_union( set1, set2 )</b> </a><dd>
+
+Returns the union of two sets.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>set1</i><dd>
+The first set
+<br><br>
+<dt>type(SET) <i class='arg'>set2</i><dd>
+The second set
+
+</dl>
+<br><br>
+
+<dt><a name="15"><b class='cmd'>newset = set1 .union. set2</b> </a><dd>
+
+Returns the union of two sets - operator version.
+
+
+<br><br>
+<dt><a name="16"><b class='cmd'>newset = set_intersection( set1, set2 )</b> </a><dd>
+
+Returns the intersection of two sets.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>set1</i><dd>
+The first set
+<br><br>
+<dt>type(SET) <i class='arg'>set2</i><dd>
+The second set
+
+</dl>
+<br><br>
+
+<dt><a name="17"><b class='cmd'>newset = set1 .intersect. set2</b> </a><dd>
+
+Returns the intersection of two sets - operator version.
+
+
+<br><br>
+<dt><a name="18"><b class='cmd'>newset = set_exclusion( set1, set2 )</b> </a><dd>
+
+Returns a copy of the first set with the elements of the second set
+excluded.
+
+<br><br>
+<dl>
+
+<dt>type(SET) <i class='arg'>set1</i><dd>
+The first set
+<br><br>
+<dt>type(SET) <i class='arg'>set2</i><dd>
+The second set
+
+</dl>
+<br><br>
+
+<dt><a name="19"><b class='cmd'>newset = set1 .intersect. set2</b> </a><dd>
+
+Returns a copy of the first set with the elements of the second set
+excluded - operator version.
+
+
+</dl>
+
+Notes:
+<ul>
+<li>
+The sets can only store data of the same derived type. In that sense
+the code is not generic.
+<br><br>
+<li>
+Currently, the sets can only store derived types that do not require
+an explicit destruction. If you want to store a derived type with
+pointers to allocated memory, you can do that however, by supplying an
+assignment operator. This would lead to a memory leak though. It is best
+to wait for the next version which will allow such derived types to be
+stored.
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

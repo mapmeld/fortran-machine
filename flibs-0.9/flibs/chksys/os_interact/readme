@@ -1,0 +1,26 @@
+Interaction with the operating system
+-------------------------------------
+
+This directory contains several programs that have the goal of
+probing the interaction with the operating system:
+
+* stopcode.f90:
+  Can the STOP statement be used to return a return code to the
+  operating system?
+
+  Run the program via chkstop.sh (for Linux, OSX and UNIX like systems)
+  or chkstop.bat (for Windows)
+
+* reopen_stdin.f90:
+  Can you reopen standard input so that after reading the contents
+  of a redirected file, you can interact directly with the user?
+
+  Run the program via reopen.sh (for Linux, OSX and UNIX like systems)
+  or reopen.bat (for Windows)
+
+* dirsep.f90:
+  This program tests the behaviour of a Fortran program where
+  file names with directories are concerned: do you need to use a
+  backslash or is a forward slash okay too on Windows. It appears that
+  most compilers behave as expected with / on Windows. So there would be
+  no need to distinguish the Windows and the Linux case then. Just use a /.

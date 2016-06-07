@@ -1,0 +1,149 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>flibs/strings - flibs </title>
+</head>
+<! -- Generated from file 'globmatch.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id$ flibs/strings.n
+   -->
+
+<body>
+<h1> flibs/strings(n) 1.1  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/strings - Glob matching
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#bugs">BUGS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use glob_matching</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>matches = string_match( string, pattern)</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>glob_matching</em> module provides a string matching method
+known as <em>glob matching</em>: it is used for instance under UNIX,
+Linux and DOS to select files whose names match a certain pattern -
+strings like &quot;*.f90&quot; describe all file swhose names end in &quot;.f90&quot;.
+<p>
+
+The method implemented in the module is somewhat simplified than the
+full glob matching possible under UNIX: it does not support character
+classes.
+<p>
+
+Glob patterns are intended to match the entire string. In this
+implementation, however, trailing blanks in both the string and the
+pattern are ignored, so that it is a bit easier to use in Fortran.
+<p>
+
+The module supports both &quot;*&quot; and &quot;?&quot; as wild cards, where &quot;*&quot; means any
+sequence of characters, including zero and &quot;?&quot; means a single character.
+If you need to match the <em>characters</em> &quot;*&quot; or &quot;?&quot;, then precede
+them with a backslash (&quot;\&quot;). If you need to match a backslash, you will
+need to use two:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    match = string_match( &quot;c:\somedir&quot; &quot;c:\\*&quot; )
+</pre></td></tr></table></p>
+
+will return <em>.true.</em>, while:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    match = string_match( &quot;c:\somedir&quot; &quot;c:\*&quot; )
+</pre></td></tr></table></p>
+
+will not match, as the backslash &quot;escapes&quot; the asterisk, which then
+becomes an ordinary character.
+
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module contains a single function:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use glob_matching</b> </a><dd>
+
+To import the glob matching function, use this module.
+
+<br><br>
+<dt><a name="2"><b class='cmd'>matches = string_match( string, pattern)</b> </a><dd>
+
+Check whether the (entire) string matches the given &quot;glob&quot; pattern.
+Trailing blanks in both the string and the pattern are ignored.
+The function returns .true. if the string matches the pattern, .false.
+otherwise.
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>string</i><dd>
+The string to be examined
+
+<br><br>
+<dt>character(len=*) <i class='arg'>pattern</i><dd>
+The string containing the pattern
+
+</dl>
+
+
+</dl>
+
+<h2><a name="bugs">BUGS</a></h2>
+<p>
+The matching algorithm is not flawless:
+
+<ul>
+
+<li>
+Patterns like &quot;e* *&quot; may fail, because trailing blanks are removed. The
+string &quot;e &quot; ought to match this pattern, but because only the substring
+&quot;e&quot; will be considered, the trailing blank that is necessary for
+matching between the two asterisks is removed from the matching process.
+<br><br>
+The test program contains a case that should fail on this, but it does
+not, oddly enough.
+
+<br><br>
+<li>
+Patterns like &quot;b*ba&quot; fail on a string like &quot;babababa&quot; because the
+algorithm finds an early match (the substring at 3:4) for the last
+literal substring &quot;ba&quot; in the pattern. It should instead skip
+over that substring and search for the substring 7:8.
+<br><br>
+
+There are two ways to deal with this:
+<br><br>
+<ul>
+<li>
+Insert an extra character at the end, which does not occur anywhere in
+the pattern.
+<br><br>
+<li>
+If the match fails, continue at a point after the position of the
+literal substring where matching failed.
+</ul>
+<br><br>
+The second is probably the way to go, but it may be a bit slower.
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

@@ -1,0 +1,108 @@
+Flibs, version 0.9, december 2008
+---------------------------------
+
+What is Flibs
+-------------
+Flibs is a collection of Fortran modules for various tasks:
+- [cgi] facilitate web programming via CGI
+- [checking] checking various aspects of the code via instrumentation
+   and static analysis
+- [computing] computational tasks, such as automatic differentiation
+- [controlstructures] flow control structures such as finite state machines
+- [datastructures] support for implementing linked lists, dictionaries
+  and the like
+- [filedir] OS-level tasks regarding files and directories
+- [funit] a framework for unit testing, inspired by JUnit
+- [ipc] inter-process communication
+- [lemon] Lex/Yacc-like parser generation
+- [platform] utilities to query the OS and the platform running the
+  program
+- [reporting] tools for generating reports in various formats
+  (notably LaTex and HTML)
+- [specs] tool to generate a robust reading routine from specifications,
+  geared to tabular input
+- [sqlite] interface to the SQLite database management system (http//www.sqlite.org)
+- [streams] modules to treat files as "streams" rather than record-oriented
+- [strings] modules to manipulate strings (tokenizing, varying-length strings)
+- [tools] preprocessor tool to manipulate the source code
+- [wrapper] tool to generate Fortran 90 and Fortran 2003 interfaces to C
+  routines from the C header files
+
+Furthermore:
+- [app] a tool for generating makefile dependencies from the Fortran
+  source code and an experiment at "literate programming".
+- [chksys] a collection of programs to probe the properties of the
+  Fortran compiler (with a similar program for C)
+- [doc] documentation for the various modules (in HTML form) and several
+  articles.
+- [experiments] various experiments with different programming
+  paradigms.
+- [testmake] a program suite to generate test programs from
+  simple specifications.
+
+Documentation is not complete, but most if not all modules and utilities
+come with a comprehensive example/test case.
+
+The Flibs project is located on SourceForge: http://flibs.sf.net
+
+
+Building the modules
+--------------------
+
+Each directory under the "src" directory contains one or more modules or
+tools. The corresponding directory under "tests" contains the
+test/example programs and makefiles (or in some case project files for
+MS Developer Studio with Compaq Visual Fortran as the Fortran compiler).
+Each set can be built on its own.
+
+The makefiles are set up using macros to take care of differences in
+compilers and compiler options. In principle it should not be necessary
+to adapt the makefiles to your particular compiler, unless it is doing
+things in a completely different way than:
+- Compile the individual sources
+- Link the resulting object files into an executable
+
+The simple configuration system (configure.sh and configure.bat) helps
+to set up the macros for the makefiles:
+- configure.sh probes various compilers under Linux, Cygwin or MinGW
+- configure.bat is meant for Windows
+
+
+Status of the modules
+---------------------
+
+Not all modules and utilities included in the 0.9 release are fully
+functional yet. They have been included mainly for completeness and
+as a reminder:
+
+- the genetic_algorithms module typically converges too fast, so that
+  a suboptimal solution is returned.
+- the tupleserver program is not quite finished yet, but as tuple spaces
+  are a very interesting construct to achieve concurrency, it is
+  included here.
+- the fwrapper program, meant to generate C/C++ interfaces from Fortran
+  code is still in its infancy. The cwrap program (written in Tcl) is
+  functional though.
+
+
+Tcl utilities
+-------------
+
+While most of the code is written in standard Fortran 90, as far as the
+authors are aware, the collection also contains several utilities
+written in Tcl. If you do not have a Tcl installation, you can either
+get a full installation from www.activestate.com or you can use a
+standalone runtime executable from www.equi4.com.
+
+
+Copyright
+---------
+
+Most of the source files have been written by Arjen Markus. The modules
+under "filedir", "platform" and several modules in other directories
+have been written by Michael Baudin. The date/time module under
+"computing" has been supplied by Arjan van Dijk.
+
+All source code in this project is licensed via the BSD license (see
+the "Copyright" file). Basically this means:
+Do what you want with it, but do not claim it is your original work.

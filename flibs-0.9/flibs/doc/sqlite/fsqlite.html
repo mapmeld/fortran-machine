@@ -1,0 +1,873 @@
+
+<html><head>
+<title>flibs/sqlite - flibs </title>
+</head>
+<! -- Generated from file 'fsqlite.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: fsqlite.html,v 1.1 2008/06/13 10:28:11 relaxmike Exp $ flibs/sqlite.n
+   -->
+
+<body>
+<h1> flibs/sqlite(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/sqlite - Interface to SQLite
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#data_types">DATA TYPES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#example">EXAMPLE</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#limitations">LIMITATIONS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#implementation_notes">IMPLEMENTATION NOTES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>type(SQLITE_DATABASE)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>type(SQLITE_STATEMENT)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>type(SQLITE_COLUMN)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>call sqlite3_column_props( column, name, type, length )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call sqlite3_column_query( column, name, type, length, function )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>call sqlite3_set_column( column, value )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>call sqlite3_get_column( column, value )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>call sqlite3_open( filename, db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>call sqlite3_close( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#10"><b class='cmd'>err = sqlite3_error( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#11"><b class='cmd'>errmsg = sqlite3_errmsg( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#12"><b class='cmd'>call sqlite3_do( db, command )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#13"><b class='cmd'>call sqlite3_begin( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#14"><b class='cmd'>call sqlite3_commit( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#15"><b class='cmd'>call sqlite3_rollback( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#16"><b class='cmd'>call sqlite3_create_table( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#17"><b class='cmd'>call sqlite3_delete_table( db )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#18"><b class='cmd'>call sqlite3_prepare_select( db, tablename, columns, stmt, extra_clause )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#19"><b class='cmd'>call sqlite3_prepare( db, command, stmt, columns )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#20"><b class='cmd'>call sqlite3_step( stmt, completion )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#21"><b class='cmd'>call sqlite3_reset( stmt )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#22"><b class='cmd'>call sqlite3_finalize( stmt )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#23"><b class='cmd'>call sqlite3_next_row( stmt, columns, finished )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#24"><b class='cmd'>call sqlite3_insert( db, tablename, columns )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#25"><b class='cmd'>call sqlite3_get_table( db, commmand, result, errmsg )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#26"><b class='cmd'>call sqlite3_query_table( db, tablename, columns )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>sqlite</em> module provides a Fortran interface to the
+SQLite database management system (SQLite 3 to be more precise).
+The interface has been implemented
+in such a way, that you can use a high-level interface for common tasks,
+such as inserting data into a database and querying the contents, as
+well as lower-level functionality, accessible via SQL statements, for
+instance.
+<p>
+
+To this end the module defines a set of routines and functions as well
+as several derived types to hide the low-level details.
+<p>
+
+In its current form, it does not provide a full Fortran API to all the
+functionality offered by SQLite, but it should be quite useable.
+
+<p>
+<em>Note:</em> When in doubt, consult the SQLite documentation at
+http://www.sqlite.org - most routines merely prepare SQL statements or
+are a simple interface to the original C functions.
+
+<h2><a name="data_types">DATA TYPES</a></h2>
+<p>
+The following derived types are defined:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>type(SQLITE_DATABASE)</b> </a><dd>
+
+Variables of this type are used to hold the connection to the database
+or databases. They are created by the subroutine <em>sqlite3_open</em>
+<br><br>
+The contents are valid until the database is closed (via
+<em>sqlite3_close</em>).
+
+<br><br>
+<dt><a name="2"><b class='cmd'>type(SQLITE_STATEMENT)</b> </a><dd>
+
+Variables of this type hold <em>prepared statements</em>, the common
+method for database management systems to efficiently execute SQL
+statements.
+
+<br><br>
+<dt><a name="3"><b class='cmd'>type(SQLITE_COLUMN)</b> </a><dd>
+
+To provide easy communication with the database, SQLITE_COLUMN can
+hold values of different types. This means you can use a single routine
+and variable to transfer strings, integers or reals to and from the
+database.
+
+</dl>
+
+The first two derived types are &quot;opaque&quot;, that is they are used only to
+communicate between the application and the database library and there
+is information of interest to be gotten from them.
+<p>
+
+The third type is rather crucial to the working of the implementation:
+By setting the properties of an SQLITE_COLUMN variable you put data into
+the database or you can retrieve data from the database. See the example
+below for how this works.
+<p>
+
+There are a number of routines that are meant to make this easier:
+
+<dl>
+
+<dt><a name="4"><b class='cmd'>call sqlite3_column_props( column, name, type, length )</b> </a><dd>
+
+Set the properties of a column
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_COLUMN) <i class='arg'>column</i><dd>
+The variable that holds the information on the column
+
+<br><br>
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the column in the table to which it belongs or will belong
+
+<br><br>
+<dt>integer <i class='arg'>type</i><dd>
+Type of the column: one of SQLITE_INT, SQLITE_REAL, SQLITE_DOUBLE or
+SQLITE_CHAR
+
+<br><br>
+<dt>integer, optional <i class='arg'>length</i><dd>
+Length of a character-valued column (defaults to 20 characters)
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>call sqlite3_column_query( column, name, type, length, function )</b> </a><dd>
+
+Set the properties of a column when constructing a SELECT query.
+The &quot;function&quot; argument, if present, is a string representing an SQL function
+like <em>count</em> or <em>max</em>.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_COLUMN) <i class='arg'>column</i><dd>
+The variable that holds the information on the column
+
+<br><br>
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the column in the table to which it belongs or will belong
+
+<br><br>
+<dt>integer <i class='arg'>type</i><dd>
+Type of the column: one of SQLITE_INT, SQLITE_REAL, SQLITE_DOUBLE or
+SQLITE_CHAR
+
+<br><br>
+<dt>integer, optional <i class='arg'>length</i><dd>
+Length of a character-valued column (defaults to 20 characters)
+
+<br><br>
+<dt>character(len=*), optional <i class='arg'>function</i><dd>
+Name of the SQL function to perform on the values.
+
+</dl>
+<br><br>
+
+
+<dt><a name="6"><b class='cmd'>call sqlite3_set_column( column, value )</b> </a><dd>
+
+Set the <em>value</em> of a column
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_COLUMN) <i class='arg'>column</i><dd>
+The variable that holds the information on the column
+
+<br><br>
+<dt>any type <i class='arg'>value</i><dd>
+The new value for the column. The type of the value that is passed can
+be integer, real, double precision real or character string.
+<br><br>
+<em>Note:</em> currently there is no conversion from the type of value that is
+stored to the type of the actual variable that is passed to the routine.
+If you ask for an integer and the column holds a real, then the result
+is undefined. Check the type with the value of the flag &quot;type_set&quot;.
+(This is one of the things that should be improved)
+
+</dl>
+<br><br>
+
+
+<dt><a name="7"><b class='cmd'>call sqlite3_get_column( column, value )</b> </a><dd>
+
+Get the <em>value</em> of a column
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_COLUMN) <i class='arg'>column</i><dd>
+The variable that holds the information on the column
+
+<br><br>
+<dt>any type <i class='arg'>value</i><dd>
+The value stored in the column. The type of the value that is passed can
+be integer, real, double precision real or character string.
+
+</dl>
+<br><br>
+
+</dl>
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The <em>sqlite</em> module currently provides the following functions:
+
+<dl>
+
+<dt><a name="8"><b class='cmd'>call sqlite3_open( filename, db )</b> </a><dd>
+
+Open a database file and store the connection for later use.
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+The name of the database file (it may also be &quot;:mem&quot; to get a
+memory-based database instead of a file on disk)
+
+<br><br>
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable to identify the database connection
+
+</dl>
+<br><br>
+
+
+<dt><a name="9"><b class='cmd'>call sqlite3_close( db )</b> </a><dd>
+
+Close the database connection. Simply an interface to the corresponding
+C function.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+</dl>
+<br><br>
+
+
+<dt><a name="10"><b class='cmd'>err = sqlite3_error( db )</b> </a><dd>
+
+Retrieve whether the previous command resulted in an error or not.
+Returns true if so, otherwise false.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+</dl>
+<br><br>
+
+
+<dt><a name="11"><b class='cmd'>errmsg = sqlite3_errmsg( db )</b> </a><dd>
+
+Retrieve the last error message as a string of at most 80 characters.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+</dl>
+<br><br>
+
+
+<dt><a name="12"><b class='cmd'>call sqlite3_do( db, command )</b> </a><dd>
+
+Run a single SQL command
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>command</i><dd>
+String holding a complete SQL command
+
+</dl>
+<br><br>
+
+
+<dt><a name="13"><b class='cmd'>call sqlite3_begin( db )</b> </a><dd>
+
+Start a transaction. When the corresponding routine sqlite3_commit is
+called, all changes will be made permanent. Use a transaction to gather
+lots of changes to the database - this is much faster than an automatic
+commission after each change.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+</dl>
+<br><br>
+
+
+<dt><a name="14"><b class='cmd'>call sqlite3_commit( db )</b> </a><dd>
+
+Commit the changes made since the start of a transaction. This makes the
+changes permanent.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+</dl>
+<br><br>
+
+
+<dt><a name="15"><b class='cmd'>call sqlite3_rollback( db )</b> </a><dd>
+
+Undo the changes made since the start a transaction. The database will
+be restored to the state it was in before the transaction was started.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+</dl>
+<br><br>
+
+
+<dt><a name="16"><b class='cmd'>call sqlite3_create_table( db )</b> </a><dd>
+
+Create a new table, based on the properties of the columns. Convenience
+routine that constructs an SQL statement to do the actual job.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>tablename</i><dd>
+Name of the table to be created
+
+<br><br>
+<dt>type(SQLITE_COLUMN), dimension(:) <i class='arg'>columns</i><dd>
+An array of the properties of the columns in the tables (name, type,
+...)
+
+<br><br>
+<dt>character(len=*), optional <i class='arg'>primary</i><dd>
+Name of the column that acts as the primary key (this gets the
+&quot;unique&quot; constraint)
+
+</dl>
+<br><br>
+
+
+<dt><a name="17"><b class='cmd'>call sqlite3_delete_table( db )</b> </a><dd>
+
+Delete an existing table by name. Convenience routine that constructs
+an SQL statement to do the actual job.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>tablename</i><dd>
+Name of the table to be deleted
+
+</dl>
+<br><br>
+
+
+<dt><a name="18"><b class='cmd'>call sqlite3_prepare_select( db, tablename, columns, stmt, extra_clause )</b> </a><dd>
+
+Prepare a SELECT query. Convenience routine that creates the SQL query
+and &quot;compiles&quot; (prepares) it for later actual execution.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>tablename</i><dd>
+Name of the table to be queried
+
+<br><br>
+<dt>type(SQLITE_COLUMN), dimension(:) <i class='arg'>columns</i><dd>
+An array of the properties of the columns to be returned
+
+<br><br>
+<dt>type(SQLITE_STATEMENT) <i class='arg'>stmt</i><dd>
+A derived type used as a handle to the prepared statement
+
+<br><br>
+<dt>character(len=*), optional <i class='arg'>extra_clause</i><dd>
+A string holding an extra clause, such as &quot;SORT BY&quot; or &quot;GROUP BY&quot;
+
+</dl>
+<br><br>
+
+
+<dt><a name="19"><b class='cmd'>call sqlite3_prepare( db, command, stmt, columns )</b> </a><dd>
+
+Prepare a general SQL statement for later actual execution. The
+statement can be any SQL statement.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>command</i><dd>
+The SQL statement to be prepared
+
+<br><br>
+<dt>type(SQLITE_STATEMENT) <i class='arg'>stmt</i><dd>
+A derived type used as a handle to the prepared statement
+
+<br><br>
+<dt>type(SQLITE_COLUMN), dimension(:), pointer <i class='arg'>columns</i><dd>
+An array of the properties of the columns that will be returned
+by the statement. The routine returns an allocated array. You must
+deallocate it yourself, when it is no longer needed.
+
+</dl>
+<br><br>
+
+
+<dt><a name="20"><b class='cmd'>call sqlite3_step( stmt, completion )</b> </a><dd>
+
+Run the prepared SQL statement for one step. The code in completion
+will tell whether it was successful or not. Simply an interface to the
+equivalent C routine.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_STATEMENT) <i class='arg'>stmt</i><dd>
+A derived type used as a handle to the prepared statement
+
+<br><br>
+<dt>integer <i class='arg'>completion</i><dd>
+One of the values SQLITE_DONE (success), SQLITE_MISUSE or
+SQLITE_ERROR
+
+</dl>
+<br><br>
+
+
+<dt><a name="21"><b class='cmd'>call sqlite3_reset( stmt )</b> </a><dd>
+
+Reset the prepared statement so that it can be used again.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_STATEMENT) <i class='arg'>stmt</i><dd>
+A derived type used as a handle to the prepared statement
+
+</dl>
+<br><br>
+
+
+<dt><a name="22"><b class='cmd'>call sqlite3_finalize( stmt )</b> </a><dd>
+
+Free all resources associated with the prepared statement.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_STATEMENT) <i class='arg'>stmt</i><dd>
+A derived type used as a handle to the prepared statement
+
+</dl>
+<br><br>
+
+
+<dt><a name="23"><b class='cmd'>call sqlite3_next_row( stmt, columns, finished )</b> </a><dd>
+
+Retrieve the next row of a SELECT query. If the argument &quot;finished&quot;
+is set to true, the previous row was the last one.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_STATEMENT) <i class='arg'>stmt</i><dd>
+A derived type used as a handle to the prepared statement
+
+<br><br>
+<dt>logical <i class='arg'>finished</i><dd>
+Set to true if the last row was retrieved.
+
+</dl>
+<br><br>
+
+
+<dt><a name="24"><b class='cmd'>call sqlite3_insert( db, tablename, columns )</b> </a><dd>
+
+Insert a complete new row into the table.
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>tablename</i><dd>
+Name of the table into which the row must be inserted
+
+<br><br>
+<dt>type(SQLITE_COLUMN), dimension(:) <i class='arg'>columns</i><dd>
+An array of values for all columns
+
+</dl>
+<br><br>
+
+
+<dt><a name="25"><b class='cmd'>call sqlite3_get_table( db, commmand, result, errmsg )</b> </a><dd>
+
+Get the result of a query in a single two-dimensional array
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>command</i><dd>
+The SQL command (query) to executed
+
+<br><br>
+<dt>character(len=*), dimension(:,:), pointer <i class='arg'>result</i><dd>
+A two-dimensional array that will be filled with the results of the
+SQl command. When done, you will have to deallocate it.
+
+<br><br>
+<dt>character(len=*) <i class='arg'>errmsg</i><dd>
+If there is an error, then &quot;result&quot; will not be allocated, and &quot;errmsg&quot;
+will contain the information about the error that occurred.
+
+</dl>
+<br><br>
+
+
+<dt><a name="26"><b class='cmd'>call sqlite3_query_table( db, tablename, columns )</b> </a><dd>
+
+Query the structure of the table
+
+<br><br>
+<dl>
+
+<dt>type(SQLITE_DATABASE) <i class='arg'>db</i><dd>
+Variable identifying the database connection
+
+<br><br>
+<dt>character(len=*) <i class='arg'>tablename</i><dd>
+Name of the table to be inspected
+
+<br><br>
+<dt>type(SQLITE_COLUMN), dimension(:), pointer <i class='arg'>columns</i><dd>
+An array with the properties of all columns. Deallocate it when you are
+done.
+
+</dl>
+<br><br>
+
+
+</dl>
+
+<h2><a name="example">EXAMPLE</a></h2>
+<p>
+To illustrate the usage of the library, here is a small example:
+<ul>
+<li>
+Store (fictitious) measurements of salinity and temperature from a CSV
+file in a single table of a new database.
+<br><br>
+<li>
+To check that it works, retrieve the average salinity and average
+temperature per station and print them sorted by station name
+</ul>
+
+The first part of the program simply defines the table:
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+   allocate( column(4) )
+   call sqlite3_column_props( column(1), name(1), SQLITE_CHAR, 10 )
+   call sqlite3_column_props( column(2), name(2), SQLITE_CHAR, 10 )
+   call sqlite3_column_props( column(3), name(3), SQLITE_REAL )
+   call sqlite3_column_props( column(4), name(4), SQLITE_REAL )
+   call sqlite3_create_table( db, 'measurements', column )
+</pre></td></tr></table></p>
+
+The second part reads the data file and stores the data in a new row:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+   call sqlite3_begin( db )
+   do
+      read( lun, *, iostat=ierr ) station, date, salin, temp
+
+      if ( ierr .ne. 0 ) exit
+
+      call sqlite3_set_column( column(1), station )
+      call sqlite3_set_column( column(2), date    )
+      call sqlite3_set_column( column(3), salin   )
+      call sqlite3_set_column( column(4), temp    )
+      call sqlite3_insert( db, 'measurements', column )
+
+   enddo
+
+   close( lun )
+
+   call sqlite3_commit( db )
+</pre></td></tr></table></p>
+
+Note that it uses a transaction (via calls to <em>sqlite3_begin</em> and
+<em>sqlite3_commit</em> pair), so that all the inserts can be done in
+one go. Inserting with autocommit is much slower, as the database file
+needs to be flushed very time.
+<p>
+
+The last part retrieves the data by constructing an SQL query that will
+actually look like:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    select station, avg(salinity), avg(temperature) from measurements
+        grouped by station order by station;
+</pre></td></tr></table></p>
+
+The routine <em>sqlite3_prepare_select</em> takes care of the actual
+construction of the above SQL query:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+   deallocate( column )
+   allocate( column(3) )
+   call sqlite3_column_query( column(1), 'station', SQLITE_CHAR )
+   call sqlite3_column_query( column(2), name(3), SQLITE_REAL, function='avg' )
+   call sqlite3_column_query( column(3), name(4), SQLITE_REAL, function='avg' )
+   call sqlite3_prepare_select( db, 'measurements', column, stmt, &amp;
+      'group by station order by station' )
+
+   write( *, '(3a20)' ) 'Station', 'Mean salinity', 'Mean temperature'
+   do
+      call sqlite3_next_row( stmt, column, finished )
+
+      if ( finished ) exit
+
+      call sqlite3_get_column( column(1), station )
+      call sqlite3_get_column( column(2), salin   )
+      call sqlite3_get_column( column(3), temp    )
+
+      write( *, '(a20,2f20.3)' ) station, salin, temp
+   enddo
+</pre></td></tr></table></p>
+
+The full program looks like this (see also the tests/examples
+directory of the Flibs project):
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+! csvtable.f90 --
+!    Program to read a simple CSV file and put it into a
+!    SQLite database, just to demonstrate how the Fortran
+!    interface works.
+!
+!    To keep it simple:
+!    - The first line contains the names of the four columns
+!    - All lines after that contain the name of the station
+!      the date and the two values.
+!
+!    $Id: fsqlite.html,v 1.1 2008/06/13 10:28:11 relaxmike Exp $
+!
+program csvtable
+   use sqlite
+
+   implicit none
+
+   type(SQLITE_DATABASE)                      :: db
+   type(SQLITE_STATEMENT)                     :: stmt
+   type(SQLITE_COLUMN), dimension(:), pointer :: column
+
+   integer                                    :: lun = 10
+   integer                                    :: i
+   integer                                    :: ierr
+   character(len=40), dimension(4)            :: name
+   real                                       :: salin
+   real                                       :: temp
+   character(len=40)                          :: station
+   character(len=40)                          :: date
+   logical                                    :: finished
+
+   !
+   ! Read the CSV file and feed the data into the database
+   !
+   open( lun, file = 'somedata.csv' )
+   read( lun, * ) name
+
+   call sqlite3_open( 'somedata.db', db )
+
+   allocate( column(4) )
+   call sqlite3_column_props( column(1), name(1), SQLITE_CHAR, 10 )
+   call sqlite3_column_props( column(2), name(2), SQLITE_CHAR, 10 )
+   call sqlite3_column_props( column(3), name(3), SQLITE_REAL )
+   call sqlite3_column_props( column(4), name(4), SQLITE_REAL )
+   call sqlite3_create_table( db, 'measurements', column )
+
+   !
+   ! Insert the values into the table. For better performance,
+   ! make sure (via begin/commit) that the changes are committed
+   ! only once.
+   !
+   call sqlite3_begin( db )
+   do
+      read( lun, *, iostat=ierr ) station, date, salin, temp
+
+      if ( ierr .ne. 0 ) exit
+
+      call sqlite3_set_column( column(1), station )
+      call sqlite3_set_column( column(2), date    )
+      call sqlite3_set_column( column(3), salin   )
+      call sqlite3_set_column( column(4), temp    )
+      call sqlite3_insert( db, 'measurements', column )
+
+   enddo
+
+   close( lun )
+
+   call sqlite3_commit( db )
+
+   !
+   ! We want a simple report, the mean of salinity and temperature
+   ! sorted by the station
+   !
+   deallocate( column )
+   allocate( column(3) )
+   call sqlite3_column_query( column(1), 'station', SQLITE_CHAR )
+   call sqlite3_column_query( column(2), name(3), SQLITE_REAL, function='avg' )
+   call sqlite3_column_query( column(3), name(4), SQLITE_REAL, function='avg' )
+   call sqlite3_prepare_select( db, 'measurements', column, stmt, &amp;
+      'group by station order by station' )
+
+   write( *, '(3a20)' ) 'Station', 'Mean salinity', 'Mean temperature'
+   do
+      call sqlite3_next_row( stmt, column, finished )
+
+      if ( finished ) exit
+
+      call sqlite3_get_column( column(1), station )
+      call sqlite3_get_column( column(2), salin   )
+      call sqlite3_get_column( column(3), temp    )
+
+      write( *, '(a20,2f20.3)' ) station, salin, temp
+   enddo
+
+   call sqlite3_close( db )
+end program
+</pre></td></tr></table></p>
+
+<h2><a name="limitations">LIMITATIONS</a></h2>
+<p>
+The module is not complete yet:
+<ul>
+<li>
+There is no support for blobs or for character strings of arbitrary
+length. In fact the maximum string length is limited to 80 characters.
+<br><br>
+<li>
+There is no support for NULL values or for DATE values.
+<br><br>
+<li>
+The SQLite API is not completely covered, though the subset should be
+useful for many applications.
+<br><br>
+<li>
+There are no makefiles that can help build the library yet. See the
+implementation notes below.
+</ul>
+
+<h2><a name="implementation_notes">IMPLEMENTATION NOTES</a></h2>
+<p>
+While the module is fairly straightforward Fortran 95 code, building a
+library out of it may not be straightforward due to the intricacies of
+C-Fortran interfacing.
+<p>
+
+This section aims to give a few guidelines:
+<ul>
+<li>
+The C code contains all the platform-dependent code, so that the Fortran
+code could remain clean.
+
+<br><br>
+<li>
+To support more than one platform, the C code contains several macros:
+
+<br><br>
+<ul>
+<li>
+FTNCALL - the calling convention for Fortran routines (important on
+Windows). It is automatically set to <em>__stdcall</em> when the macro
+&quot;WIN32&quot; has been defined (by the compiler or by specifying it on the
+command-line).
+<br><br>
+<li>
+INBETWEEN - this macro controls whether the hidden arguments for passing
+the string length are put inbetween the arguments (if it is defined) or
+appended to the end (if it is not defined). Under Windows the Compaq
+Visual Fortran compiler used to use the first method, so this is
+automatically set. For other platforms the second method is more usual.
+</ul>
+
+The naming convention (additional underscore, all capitals or all
+lowercase) has been handled in a simple-minded fashion. This should be
+improved too.
+<br><br>
+
+The library has been designed with 64-bits platforms in mind: it should
+run on these platforms without any difficulties.
+</ul>
+
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

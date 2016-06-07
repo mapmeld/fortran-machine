@@ -1,0 +1,247 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/m_vfile n 1.0]
+[copyright {2008 Michael Baudin michael.baudin@gmail.com}]
+[copyright {2008 Arjen Markus arjenmarkus@sourceforge.net}]
+[moddesc flibs]
+[titledesc {Manage log files}]
+
+[description]
+
+The module [strong m_logger] provides static methods to manage a log file,
+which is an execution report of the program.
+
+[section OVERVIEW]
+
+The goal of this component is to provide a way to write messages
+both on standard output and on a log file, so that a trace
+of the execution can be read by the user after the execution.
+The module m_logger therefore provides static methods to
+[list_begin bullet]
+[bullet] connect a file to the logger,
+[bullet] configure the logging process, for example disable the standard
+output messages,
+[bullet] log messages.
+[list_end]
+
+The logger must be started up with "log_startup()" and shut down
+with "log_shutdown()".
+The static method "log_startup" takes the log file name as first argument :
+it main purpose is to connect the logger to the file.
+The messages are sent to the logger with the static method "log_msg".
+
+In the following example, extracted from the unit tests of m_logger
+provided with the project, one connects the file "test_m_logger.log" to the
+logger, send several messages and shut down the logging system.
+
+[example {
+      call log_startup ( 'test_m_logger.log' )
+      call log_msg ( 'First message' )
+      call log_msg ( 'Second message' )
+      call log_shutdown ()
+}]
+
+By default, the logging is done both on file and on standard output.
+The user may want to configure the behaviour of the logger so that message
+are not written on standard output.
+The static method "log_configure(option,value)" is the central point to configure the
+logger. It takes a character "option" string and a "value" as arguments.
+In the following example, one selectively writes
+messages on standard output or on file, or both.
+
+[example {
+      call log_startup ( 'test_m_logger.log' )
+      call log_configure ( "writeonstdout" , .false. )
+      call log_msg( 'This message is written only on file' )
+      call log_configure ( "writeonlogfile" , .false. )
+      call log_msg( 'This message is written nowhere' )
+      call log_configure ( "writeonstdout" , .true. )
+      call log_msg( 'This message is written only on screen' )
+      call log_configure ( "writeonlogfile" , .true. )
+      call log_msg( 'This message is written both on screen and on file' )
+      call log_shutdown ()
+}]
+
+
+
+
+
+[section "STATIC METHODS"]
+
+
+[list_begin definitions]
+
+
+
+[call [method "log_startup"] ( [arg log_file] [opt ", append"] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] log_file]
+[arg_def [type "logical, intent(in), optional ::"] append]
+[list_end]
+Initialises the logging management and connect it to the 
+given [arg filename].
+If [arg append] is present and true, then the logger appends the messages
+to the end of the log file.
+If [arg append] is present and false, then the initialization of the
+logger overwrites the messages of the previous logging session.
+If [arg append] is not provided, the default value is append=.true.
+
+
+[call [method "log_shutdown"] ( )]
+Shutdown the logging management.
+
+
+
+[call [method "log_msg"] ( [arg msg] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] msg]
+[list_end]
+Log the given character string [arg msg] to the logging units.
+If the logging to standard output is enabled, writes the message 
+on standard output.
+If the logging to the log file is enabled, writes the message 
+into the log file.
+Before outputting directly the message string, the string is
+trimmed, that is to say that all trailing blanks are removed from
+the string.
+If the time stamp option is enabled, a time stamp with 
+format "year-month-day hh:mm:ss" is inserted before the message.
+
+
+[call [method "log_delimiter"] ( [opt level] )]
+[list_begin arg]
+[arg_def [type "integer , intent(in), optional ::"] level]
+[list_end]
+Log a delimiter of given level.
+Available values for level are : LOG_LEVEL_VOLUME,
+LOG_LEVEL_CHAPTER, LOG_LEVEL_SECTION, LOG_LEVEL_SUBSECTION
+If level is not provided, the default value for level is LOG_LEVEL_VOLUME.
+
+
+
+
+[call [method "log_isinitialized"] ( ) result ( isinitialized )]
+[list_begin arg]
+[arg_def [type "logical ::"] isinitialized]
+[list_end]
+Returns true if the logger is allready initialized.
+Note: that method may be useful in the case where several components
+use the logger and both contain a call to log_startup.
+
+
+[call [method "log_configure"] ( [arg "option"] [arg ", value"]) ]
+[list_begin arg]
+[arg_def [type "character ( len = * ) , intent(in) ::"] option]
+[arg_def [type "logical, intent(in) ::"] value]
+[list_end]
+Set the logical static [arg option] of the component to [arg value].
+The [arg option] may be one of the following.
+[list_begin bullet]
+[bullet] [arg option] = "timestamp" :
+Disable or enable the insertion of time stamps.
+If the time stamp option is enabled, a time stamp with
+format "year-month-day hh:mm:ss" is inserted before the message.
+[bullet] [arg option] = "writeonstdout" :
+Disable or enable the writing on standard output.
+[bullet] [arg option] = "writeonlogfile" :
+Disable or enable the writing on log file.
+[bullet] [arg option] = "stoponerror" :
+Configure the behaviour of the component whenever an
+error is met.
+If stoponerror is true, then the execution stops if an error is encountered.
+If stoponerror is false, then the execution continues if an error is encountered.
+In both cases, a message is displayed on standard output.
+[list_end]
+
+
+[call [method "log_configure"] ( [arg "option"] [arg ", value"]) ]
+[list_begin arg]
+[arg_def [type "character ( len = * ) , intent(in) ::"] option]
+[arg_def [type "integer, intent(in) ::"] value]
+[list_end]
+Configure the integer static option of the component.
+The [arg option] may be one of the following.
+[list_begin bullet]
+[bullet] [arg option] = "logfileunit" :
+Force the logical unit for logging to be [arg value].
+Use this feature with caution, since the original
+logical unit is lost.
+[list_end]
+
+
+[call [method "log_configure"] ( [arg "option"] [arg ", value"]) ]
+[list_begin arg]
+[arg_def [type "character ( len = * ) , intent(in) ::"] option]
+[arg_def [type "character ( len = * ) , intent(in) ::"] value]
+[list_end]
+Set the character static "option" of the component to "value".
+The "option" may be one of the following.
+[list_begin bullet]
+[bullet] [arg option] = "level_string_volume"
+Set the string used for volume delimiter.
+[bullet] [arg option] = "level_string_chapter"
+Set the string used for chapter delimiter.
+[bullet] [arg option] = "level_string_section"
+Set the string used for section delimiter.
+[bullet] [arg option] = "level_string_subsection"
+Set the string used for subsection delimiter.
+[list_end]
+
+
+
+[call [method "log_cget"] ( [arg "option"] [arg ", value"]) ]
+[list_begin arg]
+[arg_def [type "character ( len = * ) , intent(in) ::"] option]
+[arg_def [type "logical, intent(in) ::"] value]
+[list_end]
+Get the logical static "option" of the component.
+The [arg option] may be one of the following.
+[list_begin bullet]
+[bullet] [arg option] = "timestamp" :
+Current value of the option to enable / disable insertion of time stamps.
+[bullet] [arg option] = "writeonstdout" :
+Current value of the option to enable / disable writing on standard output.
+[bullet] [arg option] = "writeonlogfile" :
+Current value of the option to enable / disable writing on log file.
+[bullet] [arg option] = "stoponerror" :
+Current value of the option to enable / disable stopping when an error is met.
+[list_end]
+
+
+[call [method "log_cget"] ( [arg "option"] [arg ", value"]) ]
+[list_begin arg]
+[arg_def [type "character ( len = * ) , intent(in) ::"] option]
+[arg_def [type "integer, intent(in) ::"] value]
+[list_end]
+Get the integer static "option" of the component.
+[list_begin bullet]
+[bullet] [arg option] = "logfileunit" :
+Current logical unit connected to the logging system.
+[list_end]
+
+
+
+[call [method "log_cget"] ( [arg "option"] [arg ", value"]) ]
+[list_begin arg]
+[arg_def [type "character ( len = * ) , intent(in) ::"] option]
+[arg_def [type "character ( len = * ) , intent(out) ::"] value]
+[list_end]
+Get the character static "option" of the component.
+The "option" may be one of the following.
+[list_begin bullet]
+[bullet] [arg option] = "level_string_volume"
+Get the string used for volume delimiter.
+[bullet] [arg option] = "level_string_chapter"
+Get the string used for chapter delimiter.
+[bullet] [arg option] = "level_string_section"
+Get the string used for section delimiter.
+[bullet] [arg option] = "level_string_subsection"
+Get the string used for subsection delimiter.
+[list_end]
+
+
+[list_end]
+
+
+[section TODO]
+
+[manpage_end]

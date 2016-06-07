@@ -1,0 +1,123 @@
+! Example of generating test code via a table
+! -------------------------------------------
+! The routine to be tested determines the minimum oxygen concentration
+! in a river, based on the Streeter-Phelps model:
+!
+!    dBOD/dt = -k * BOD
+!
+!    dO2/dt = -k * BOD + ka * (O2sat-O2) / H
+!
+! where
+!    BOD   - biological oxygen demand (mg O2/l)
+!    O2    - oxygen concentration (mg O2/l)
+!    O2sat - saturation concentration of oxygen (mg O2/l)
+!    k     - decay rate of BOD (1/day)
+!    ka    - reareation rate of oxygen (m/day)
+!    H     - depth of the river
+!
+! We need boundary (initial) conditions for BOD and oxygen and
+! the equations describe the concentrations of BOD and oxygen in a
+! packet of water as it flows along the river.
+!
+! Note:
+! It is a very simple model, it is not meant as a realistic
+! representation.
+!
+! The routine simply continues the solution until a minimum is found.
+! The results are: oxymin and time
+!
+! The keyword PRELIMINARIES is used to set two parameters in the
+! test program:
+! - precision, which is the working precision for all
+!   real variables in the program (set to either single or double)
+! - trials, the numbers of iterations is you use the facility to
+!   run the code with random numbers (see the RANGES keyword). It
+!   defaults to 100, but you set it to any value you like.
+!
+PRELIMINARIES
+    precision = single
+    trials = 200
+!
+! The keyword DECLARATIONS introduces the declarations we need for the
+! complete generated code
+!
+DECLARATIONS
+    use streeter_phelps
+    real :: bod, oxy
+    real :: k, ka, h, oxysat, dt, oxymin, time
+!
+! The keyword CODE introduces the code fragment required to run the
+! routine or routines. The results and possible checking of error
+! conditions are separated.
+!
+CODE
+    call compute_min_oxygen( bod, oxy, k, ka, h, oxysat, dt, oxymin, time )
+!
+! The keyword RESULT indicates which arguments/variables hold the
+! interesting results. Specify one name per line (you can not currently
+! use array elements) and the allowed margin (taken as absolute, if
+! followed by "%" as a percentage)
+!
+RESULT
+    oxymin  0.001        ! Minimum oxygen concentration
+    time    0.1%         ! Time the minimum is reached
+
+!
+! The keyword ERROR is used for a code fragment that checks if the
+! routine has correctly found an error in the input (that is, some
+! parameter value is out of range). The code is invoked when any of
+! result variables in a table entry has the keyword ERROR instead of
+! a proper value.
+! Use the subroutine "recognised_error" to indicate the correctly
+! reported error condition. Use the subroutine "unexpected_error" to
+! indicate that some unexpected result occurred.
+!
+ERROR
+    if ( time == -999.0 ) then
+        call recognised_error
+    endif
+!
+! The keyword RANGES specifies that the variables are to be taken
+! from a uniform or a normal distribution. The generated program will
+! simply select values at random and run the code with them. The report
+! consists of the detailed output as well as a summary.
+!
+! Note: all parameters must be given! The result parameters are taken
+! from the RESULT section
+!
+RANGES
+    dt      0.1        Constant  ! Constant parameter
+    oxy    10.0   2.0  Uniform   ! Name of the variable, the mean and the margin (uniform)
+                                 ! Normal: mean and standard deviation followed by Normal
+    bod    10.0   5.0  Uniform
+    oxysat 10.0   5.0  Uniform
+    h      10.0        Constant
+    k       0.5   0.4  Uniform
+    ka      0.5   0.4  Uniform
+!
+! The keyword TABLE indicates the beginning of a table of input data and
+! expected values. The first (non-comment) line contains the names of
+! the variables as used in the code fragments and all others are the
+! values expected.
+!
+! There are two special values:
+! ? -     indicating an unknown value for result variables and a "do not
+!         care" value for input variables
+!         It is useful to generate a table that does contain the (computed)
+!         results (see the file table.out) or to indicate situations
+!         where one or more input variables are out of range and this
+!         should lead to an error
+! ERROR - indicating that the entry should cause the routine to be
+!         tested to flag an error condition.
+!
+TABLE
+dt   oxy       bod       oxysat    h         k         ka        oxymin    time
+0.1  10        1         10        10        0.1       1.0       10.0      2.0
+0.1  10        1         10        10        0.1       1.0       9.630     9.9   ! Should be okay!
+0.1  10        1         10        10        0.1       1.0       9.632     9.9   ! Should NOT be okay!
+0.1  10        1         10        10        0.1       1.0       9.630     9.8999 ! Should be okay!
+1.0  10        1         10        10        0.1       1.0       ?         ?
+!
+! This case is unacceptable: time step must be positive
+0.0  ?         ?         ?         ?         ?         ?         ?         ERROR
+1.0  0.        10        10        10        0.1       1.0       ?         ?

@@ -1,0 +1,283 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin libdate n 1.0]
+[copyright {2008 Arjan van Dijk <arjan dot van dijk at rivm dot nl>}]
+[copyright {2008 Arjen Markus <arjenmarkus at sourceforge dot net>}]
+[moddesc flibs]
+[titledesc {Manipulating date/time information}]
+
+[description]
+
+The [term libdate] module defines a derived type and several functions
+and subroutines to deal with date/time information:
+
+[list_begin bullet]
+[bullet]
+Store date and time in the form of year, month, day, hour, minute
+
+[bullet]
+Compare dates
+
+[bullet]
+Basic arithmetic
+
+[bullet]
+Formatting date and time as a string based on a pattern
+
+[list_end]
+
+[strong Note:] Timezones and seconds are [strong not] taken into account.
+Also, there are no provisions to take care of the various historical
+introductions of the Gregorian calendar.
+
+
+[section "DERIVED TYPES AND ROUTINES"]
+
+The module [term libdate] defines two separate derived types, DATETYPE
+and JULIANDATETYPE, though this second type is mainly meant for internal
+use:
+
+[list_begin definitions]
+
+[call [cmd "type(DATETYPE) date"]]
+This type has the following fields: year, month, day, hour, minute, in
+that order, so that [term "thisdate = datetype( 2007, 1, 29, 17, 0)"]
+defines a date 29 january 2007 and a time 17:00.
+[nl]
+A duration is expressed in days, hours and minutes:
+[term "period = datetype( 0, 0, 2, 1, 0)"] means a period of 2 days and
+and 1 hour. (When adding a duration to a date/time the month and year
+fields are ignored, as they are not additive).
+[nl]
+
+[call [cmd "type(JULIANDATETYPE) julian"]]
+Julian dates are used internally to make the computations easier. You
+should not need to use them explicitly, unless you want to implement
+new functionality.
+
+[list_end]
+
+The following functions, subroutines and operators are available:
+
+[list_begin definitions]
+
+[call [cmd "relational operators"]]
+You can compare two dates using the standard operators
+[term .EQ.], [term .NE.], [term .GE.], [term .GT.], [term .LE.],
+[term .LT.], with conventional meaning
+[nl]
+
+
+[call [cmd "newdate = basedate + timestep"]]
+Add a duration to a date. The second date/time is considered to be the
+duration.
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" basedate]
+The base date/time to which the duration is to be added.
+
+[arg_def "type(DATETYPE)" timestep]
+The duration that will be added. Only the day, hour and minute fields
+are considered.
+
+[list_end]
+[nl]
+
+
+[call [cmd "newdate = basedate - timestep"]]
+Subtract a duration from a date. The second date/time is considered to
+be the duration.
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" basedate]
+The base date/time from which the duration is to be subtracted.
+
+[arg_def "type(DATETYPE)" timestep]
+The duration that will be subtracted. Only the day, hour and minute
+fields are considered.
+
+[list_end]
+[nl]
+
+
+[call [cmd "newstep = factor * timestep"]]
+Multiply a timestep by a real or integer factor. For the timestep,
+only the day, hour and minute are considered.
+
+[list_begin arg]
+
+[arg_def "integer/real" factor]
+Factor to be applied
+
+[arg_def "type(DATETYPE)" timestep]
+The duration that will be scaled.
+
+[list_end]
+[nl]
+
+
+[call [cmd "newstep = timestep * factor"]]
+Multiply a timestep by a real or integer factor. For the timestep,
+only the day, hour and minute are considered. (The order of teh
+arguments is reversed).
+[nl]
+
+
+[call [cmd "timelag_in_days = timelag( date1, date2 )"]]
+Compute the time difference between two dates. Return the value in days.
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" date1]
+First date
+
+[arg_def "type(DATETYPE)" date2]
+Second date. If this date is earlier than the first date, the difference
+is positive.
+
+[list_end]
+[nl]
+
+
+[call [cmd "seconds = delayseconds( timestep )"]]
+Compute the number of seconds in a timestep
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" timestep]
+Timestep to be converted to seconds
+
+[list_end]
+[nl]
+
+
+[call [cmd "isleap = leapyear( date )"]]
+Determine if the year in the date structure is a leap year or not
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" date]
+Date/time to be considered (only the year is of interest of course).
+
+[list_end]
+[nl]
+
+
+[call [cmd "daynumber = doy( date )"]]
+Compute the day of the year
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" date]
+Date/time to be considered.
+
+[list_end]
+[nl]
+
+
+[call [cmd "earlier = mindate( date1, date2 )"]]
+Return the earlier of the two dates
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" date1]
+First date/time to be considered.
+
+[arg_def "type(DATETYPE)" date2]
+Second date/time to be considered.
+
+[list_end]
+[nl]
+
+
+[call [cmd "later = maxdate( date1, date2 )"]]
+Return the later of the two dates
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" date1]
+First date/time to be considered.
+
+[arg_def "type(DATETYPE)" date2]
+Second date/time to be considered.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call format_date( date, pattern, datestring )"]]
+Format a date according to a pattern.
+[nl]
+The pattern may contain any of the following format codes:
+[list_begin bullet]
+[bullet]
+[term dd] - Day of month ("01" for instance)
+[bullet]
+[term ds] - Day of month ("1" for instance, s for space)
+[bullet]
+[term DDD] - Day of the year
+[bullet]
+[term HH] - Hour (00-23)
+[bullet]
+[term HS] - Hour (0-23)
+[bullet]
+[term mm] - Month ("01" for january)
+[bullet]
+[term ms] - Month ("1" for january, s for space)
+[bullet]
+[term MM] - Minutes within the hour (00-59)
+[bullet]
+[term MS] - Minutes within the hour (0-59)
+[bullet]
+[term YY] - Year with the century
+[bullet]
+[term yyyy] - Year with the century
+[list_end]
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" date]
+Date to be converted
+
+[arg_def "character(len=*)" pattern]
+String containing the format pattern
+
+[arg_def "character(len=*)" datestring]
+String containing the result. The contents will not be longer
+than the pattern.
+
+[list_end]
+[nl]
+
+
+[call [cmd "julian = date2julian( date )"]]
+Convert a date/time structure to Julian date. Mainly for internal use.
+
+[list_begin arg]
+
+[arg_def "type(DATETYPE)" date]
+Date/time structure to be converted.
+
+[list_end]
+[nl]
+
+[call [cmd "date = julian2date( julian )"]]
+Convert a Julian date to a date/time structure. Mainly for internal use.
+
+[list_begin arg]
+
+[arg_def "type(JULIANDATETYPE)" julian]
+Julian date to be converted.
+
+[list_end]
+
+[list_end]
+
+
+[section "ACKNOWLEDGEMENTS"]
+This module was written and contributed by Arjan van Dijk. Small
+modifications and the addition of the [term format_date] routine by
+Arjen Markus.
+
+[manpage_end]

@@ -1,0 +1,24 @@
+routine1(1) = &
+'subroutine do_something( string )'
+routine1(2) = &
+'character(len=*) :: string'
+routine1(3) = &
+''
+routine1(4) = &
+'write(*,*) ''String is: >'', trim(string), "<"'
+routine1(5) = &
+''
+routine1(6) = &
+'end subroutine do_something'
+routine2(1) = &
+'subroutine do_something_else( string )'
+routine2(2) = &
+'character(len=*) :: string'
+routine2(3) = &
+''
+routine2(4) = &
+'write(*,*) ''Length is: '', len_trim(string)'
+routine2(5) = &
+''
+routine2(6) = &
+'end subroutine do_something_else'

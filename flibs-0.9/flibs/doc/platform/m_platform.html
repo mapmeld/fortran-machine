@@ -1,0 +1,458 @@
+
+<html><head>
+<title>flibs/m_platform - flibs </title>
+</head>
+<! -- Generated from file 'platform/m_platform.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;   -- Copyright &copy; 2008 Michael Baudin &lt;michael.baudin@gmail.com&gt;
+   -->
+<! -- CVS: $Id: m_platform.html,v 1.3 2008/06/13 13:01:17 relaxmike Exp $ flibs/m_platform.n
+   -->
+
+<body>
+<h1> flibs/m_platform(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/m_platform - Platform-dependent routines and features
+
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#overview">OVERVIEW</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#pre-processing_macros">Pre-processing macros</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#compile">Compile</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#operating_system_dependency">Operating System dependency</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#system_fortran_extension">System fortran extension</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#environment_variables_extension">Environment variables extension</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#change_directory_fortran_extension">Change directory fortran extension</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#file_stat_fortran_extension">File stat fortran extension</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#example_of_compiler_settings">Example of compiler settings</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use m_platform</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>platform_system</b> (<i class='arg'>command</i> ?, status?)</a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>platform_get_os()</b> result ( currentos )</a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>platform_osstring</b> (<i class='arg'>currentos</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>platform_get_platform()</b> result ( currentplatform )</a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>platform_platformstring</b> (<i class='arg'>currentplatform</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>platform_get_environment_variable</b> ( <i class='arg'>envvar</i> <i class='arg'>, value</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>platform_cd</b> ( <i class='arg'>dirname</i> ?, status?)</a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>platform_stat</b> ( <i class='arg'>filename</i> <i class='arg'>, statarray</i> ?, status?)</a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>m_platform</em> module contains parameters to identify the
+platform the program is running on and provides 
+several routines to interact with the operating system.
+
+<h2><a name="overview">OVERVIEW</a></h2>
+<p>
+
+The goal is to make the client source code as independent as possible
+from the particular environment, that is 
+<ul>
+<li> independent from the operating system, so that the 
+binaries can be used under Windows, Linux or any other
+specific OS without modifying the source code,
+<br><br>
+<li> independent from the fortran compiler, so that the 
+binaries can be generated with gfortran Intel Fortran, Absoft,
+or any other specific compiler without modifying the source code.
+</ul>
+
+For instance, the <em>m_platform</em> module provides the 
+following features :
+<ul>
+<li>
+The parameter PLATFORM_OS identifies the operating system and the
+parameter PLATFORM_PLATFORM identifies the general category.
+<br><br>
+<li>
+The subroutine platform_system() hides the platform-specific details of
+running an external command or program.
+</ul>
+
+The function platform_get_os() returns an integer which identifies
+the operating system and the function platform_get_platform() identifies
+the general category.
+For example, the file separator is different on windows (&quot;\&quot;),
+unix (&quot;/&quot;) and Mac (&quot;:&quot;). In the following example, extracted from the
+m_vfile module included with flibs, the platform_get_platform()
+function is used to configure the separator for the current platform.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+     use m_platform, only : &amp;
+       platform_get_platform , &amp;
+       PLATFORM_PLATFORM_WINDOWS ,&amp;
+       PLATFORM_PLATFORM_UNIX , &amp;
+       PLATFORM_PLATFORM_MAC
+     integer :: platform
+     character (len=1) :: VFILE_PLATFORM_SEPARATOR
+     platform = platform_get_platform ()
+     select case ( platform )
+     case ( PLATFORM_PLATFORM_WINDOWS )
+       VFILE_PLATFORM_SEPARATOR = VFILE_PLATFORM_SEPARATOR_WINDOWS
+     case ( PLATFORM_PLATFORM_UNIX )
+       VFILE_PLATFORM_SEPARATOR = VFILE_PLATFORM_SEPARATOR_UNIX
+     case ( PLATFORM_PLATFORM_MAC )
+       VFILE_PLATFORM_SEPARATOR = VFILE_PLATFORM_SEPARATOR_MAC
+     case default
+       print *, &quot;I come from Vega.&quot;
+       return
+     end select
+</pre></td></tr></table></p>
+
+   The subroutine platform_system() allows to execute an external program at the 
+   system level. This routine is generally provided by the fortran compiler as an
+   extension to standard fortran. But some compilers provide the feature
+   as a subroutine (for example gfortran), while other compilers provide the 
+   feature as a function (for example Intel Fortran). In the following example,
+   one execute a Monte-Carlo simulation with no dependency on the specific 
+   compiler.
+ 
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      use m_platform, only platform_system
+      call platform_system ( &quot;montecarlo.exe&quot; , status )
+</pre></td></tr></table></p>
+
+<p>
+This is a sketch of available routines :
+<ul>
+<li> platform_system                       Executes an external command on the system
+<br><br>
+<li> platform_get_os                       Returns the current operating system
+<br><br>
+<li> platform_get_platform                 Returns the current platform
+<br><br>
+<li> platform_get_environment_variable     Get to one environment variable
+<br><br>
+<li> platform_cd                           Change the system current directory
+<br><br>
+<li> platform_stat                         Get status of a file
+</ul>
+
+<h3><a name="pre-processing_macros">Pre-processing macros</a></h3>
+<p>
+
+The source code of m_platform is based on pre-processing macro,
+which must be configured for the specific couple (OS,compiler) at use.
+With most compilers, defining a pre-processing macro simply
+consists in enabling the pre-processing with a specific
+option and adding &quot;-D&lt;macro&gt;&quot; options on the command-line.
+
+<p>
+The only mandatory pre-processing macro which must be defined is
+the _PLATFORM_OS_&lt;your OS&gt; macro.
+Optionnaly, other pre-processing macros may be defined so that
+the client code may access to additionnal features.
+If a feature is used and the associated macros have not
+been defined, the &quot;status&quot; integer of the associated routine
+will have the value PLATFORM_ERROR_UNDEFINED_SERVICE.
+
+<h3><a name="compile">Compile</a></h3>
+<p>
+The &quot;make&quot; directory provided with flibs should help the 
+use to compile m_platform. The &quot;make/makefile&quot; contains all the 
+makefiles necessary for the project, include specific settings
+for several compilers. the &quot;make/visualstudio&quot; directory include 
+all projects .nfproj and solutions .sln files necessary to 
+compile the project with Intel Fortran 8 and Visual Studio 2003.
+
+<h3><a name="operating_system_dependency">Operating System dependency</a></h3>
+<p>
+
+The m_platform module <em>must</em> be informed of the specific OS for which
+it is compiled. One of the following pre-processing macros <em>must</em> be
+defined to set the spefic OS at use :
+<ul>
+<li> _PLATFORM_OS_WINDOWS_95
+<br><br>
+<li> _PLATFORM_OS_WINDOWS_NT 
+<br><br>
+<li> _PLATFORM_OS_MAC 
+<br><br>
+<li> _PLATFORM_OS_SUN 
+<br><br>
+<li> _PLATFORM_OS_LINUX 
+<br><br>
+<li> _PLATFORM_OS_UNIX
+</ul>
+
+<h3><a name="system_fortran_extension">System fortran extension</a></h3>
+<p>
+
+The SYSTEM fortran extension allows to execute an external program.
+Depending on the compiler, the SYSTEM fortran extension is provided
+as a subroutine or a function. The m_platform module <em>may</em> be informed
+of the particular version of the SYSTEM extension at use and one
+of the following pre-processing macro must be defined :
+<ul>
+<li> _PLATFORM_SYSTEM_SUBROUTINE
+<br><br>
+<li> _PLATFORM_SYSTEM_FUNCTION
+</ul>
+ See in your compiler manual for the specific settings.
+ For example, this is a short list of compilers and the
+ SYSTEM provided :
+<ul>
+<li> function : Intel Fortran, g95.
+<br><br>
+<li> subroutine : gfortran,
+</ul>
+
+ <h3><a name="environment_variables_extension">Environment variables extension</a></h3>
+<p>
+
+ The fortran 2003 standard introduces a standard way of accessing
+ to the environment variables. Older compilers does not match
+ that standard but provide extensions to access to environment variables.
+ To inform the m_platform module of the particular environment
+ variable extension, one of the following pre-processing macro <em>may</em>
+ be defined :
+ <ul>
+<li> _PLATFORM_INTEL_FORTRAN_PORTABILITY_ROUTINES
+<br><br>
+<li> _PLATFORM_FORTRAN_2003
+</ul>
+
+<h3><a name="change_directory_fortran_extension">Change directory fortran extension</a></h3>
+<p>
+Depending on the compiler, the &quot;CHDIR&quot; fortran extension is provided
+as a subroutine or a function.
+To inform the m_platform module of the particular CHDIR extension,
+one of the following pre-processing macro <em>may</em> be defined :
+<ul>
+<li> _PLATFORM_CHDIR_SUBROUTINE
+<br><br>
+<li> _PLATFORM_CHDIR_FUNCTION
+</ul>
+See in your manual for the specific settings.
+For example, this is a short list of compilers and their particular
+CHDIR provided :
+<ul>
+<li> function : Intel Fortran, g95, gfortran
+<br><br>
+<li> subroutine : gfortran
+</ul>
+
+<h3><a name="file_stat_fortran_extension">File stat fortran extension</a></h3>
+<p>
+Depending on the compiler, the &quot;STAT&quot; fortran extension is
+provided as a subroutine or a function.
+For example, this is a short list of compilers and their particular
+STAT provided :
+<ul>
+<li> function : Intel Fortran, g95
+<br><br>
+<li> subroutine : gfortran
+</ul>
+To inform the m_platform module of the particular STAT extension,
+one of the following pre-processing macro <em>may</em> be defined :
+<ul>
+<li> _PLATFORM_STAT_SUBROUTINE
+<br><br>
+<li> _PLATFORM_STAT_FUNCTION
+</ul>
+
+<h3><a name="example_of_compiler_settings">Example of compiler settings</a></h3>
+<p>
+ This is an abstract of all pre-processing macros for several compilers.
+
+<p>
+Compiler : <em>gfortran</em>
+<ul>
+<li> _PLATFORM_FORTRAN_2003
+<br><br>
+<li> _PLATFORM_CHDIR_SUBROUTINE
+<br><br>
+<li> _PLATFORM_STAT_SUBROUTINE
+<br><br>
+<li> _PLATFORM_SYSTEM_SUBROUTINE
+</ul>
+
+<p>
+Compiler : <em>Intel Fortran</em>
+<ul>
+<li> _PLATFORM_INTEL_FORTRAN_PORTABILITY_ROUTINES
+<br><br>
+<li> _PLATFORM_CHDIR_FUNCTION
+<br><br>
+<li> _PLATFORM_STAT_FUNCTION
+<br><br>
+<li> _PLATFORM_SYSTEM_FUNCTION
+</ul>
+
+<p>
+Compiler : <em>g95</em>
+<ul>
+<li> _PLATFORM_FORTRAN_2003
+<br><br>
+<li> _PLATFORM_CHDIR_FUNCTION
+<br><br>
+<li> _PLATFORM_STAT_FUNCTION
+<br><br>
+<li> _PLATFORM_SYSTEM_FUNCTION
+</ul>
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module contains the following routines.
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use m_platform</b> </a><dd>
+
+To import the subroutines, use this module.
+
+<br><br>
+<dt><a name="2"><b class='cmd'>platform_system</b> (<i class='arg'>command</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>character(len=*) ::</strong> <i class='arg'>command</i><dd>
+<dt><strong>integer, intent ( out ), optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+Run an external command or program, optionally retrieving the status of
+that command. Under Windows the &quot;call system&quot; may generate the display of a console.
+Optional argument <i class='arg'>status</i> contains the execution status. 
+Notice that the information contained
+in it is not very reliable - some systems do not give any information.
+The <i class='arg'>command</i> to run is quite likely platform-dependent.
+
+<br><br>
+<dt><a name="3"><b class='cmd'>platform_get_os()</b> result ( currentos )</a><dd>
+
+<dl>
+<dt><strong>integer ::</strong> <i class='arg'>currentos</i><dd>
+</dl>
+Return the type of operating system, one of:
+PLATFORM_OS_WINDOWS_95, PLATFORM_OS_WINDOWS_NT,
+PLATFORM_OS_MACOS, PLATFORM_OS_SUNOS, PLATFORM_OS_LINUX,
+PLATFORM_OS_UNIX.
+The actual integer value should not be used directly ; instead, it
+should be compared against the PLATFORM_OS_* public variables.
+
+
+<br><br>
+<dt><a name="4"><b class='cmd'>platform_osstring</b> (<i class='arg'>currentos</i>)</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(out) ::</strong> <i class='arg'>currentos</i><dd>
+</dl>
+Returns a string containing the current operating system running on the current machine,
+one of &quot;Windows 95&quot;, &quot;Windows NT&quot;, &quot;MacOS&quot;, &quot;SunOS&quot;, 
+&quot;Linux&quot; or &quot;Unix&quot;.
+
+
+
+<br><br>
+<dt><a name="5"><b class='cmd'>platform_get_platform()</b> result ( currentplatform )</a><dd>
+
+<dl>
+<dt><strong>integer ::</strong> <i class='arg'>currentplatform</i><dd>
+</dl>
+Return the category of platform, one of:
+PLATFORM_PLATFORM_WINDOWS, PLATFORM_PLATFORM_MAC, PLATFORM_PLATFORM_UNIX
+The actual integer value should not be used directly ; instead, it
+should be compared against the PLATFORM_PLATFORM_* public variables.
+
+<br><br>
+<dt><a name="6"><b class='cmd'>platform_platformstring</b> (<i class='arg'>currentplatform</i>)</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(out) ::</strong> <i class='arg'>currentplatform</i><dd>
+</dl>
+Returns a string containing the current platform running on the current machine,
+one of &quot;Windows&quot;, &quot;Mac&quot;, &quot;Unix&quot;.
+
+
+
+<br><br>
+<dt><a name="7"><b class='cmd'>platform_get_environment_variable</b> ( <i class='arg'>envvar</i> <i class='arg'>, value</i>)</a><dd>
+
+<dl>
+<dt><strong>character(len=*) ::</strong> <i class='arg'>envvar</i><dd>
+<dt><strong>character(len=*) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Retrieve the value of the environment variable <i class='arg'>envvar</i>. There is no indication of
+whether the variable indeed exists and it is up to the calling program
+to provide a string argument sufficiently long to hold the value.
+The environment variable <i class='arg'>envvar</i> is case-sensitive on
+some platforms, case-insensitive on others. This is entirely up to the
+platform.
+As the underlying routines give no indication of the existence 
+of the environment variable, it is probably best to
+fill the <i class='arg'>value</i> with a known value first (like: &quot;????&quot;) 
+to check it.
+
+
+<br><br>
+<dt><a name="8"><b class='cmd'>platform_cd</b> ( <i class='arg'>dirname</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(in) ::</strong> <i class='arg'>dirname</i><dd>
+<dt><strong>integer, intent(out) , optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+Change working directory to <i class='arg'>dirname</i>. 
+If <i class='arg'>status</i> is supplied, it contains 0 on success or nonzero error code
+upon return
+
+
+<br><br>
+<dt><a name="9"><b class='cmd'>platform_stat</b> ( <i class='arg'>filename</i> <i class='arg'>, statarray</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(in) ::</strong> <i class='arg'>filename</i><dd>
+<dt><strong>integer, dimension (1:13) , intent(out)  ::</strong> <i class='arg'>filename</i><dd>
+<dt><strong>integer, intent(out) , optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+Get status of the file <i class='arg'>filename</i> and fills the array <i class='arg'>statarray</i>
+with the following content.
+<br><br>
+<ul>
+<li> statarray(1) Device ID
+<br><br>
+<li> statarray(2) Inode number
+<br><br>
+<li> statarray(3) File mode
+<br><br>
+<li> statarray(4) Number of links
+<br><br>
+<li> statarray(5) Owner's uid
+<br><br>
+<li> statarray(6) Owner's gid
+<br><br>
+<li> statarray(7) ID of device containing directory entry for file (0 if not available)
+<br><br>
+<li> statarray(8) File size (bytes)
+<br><br>
+<li> statarray(9) Last access time
+<br><br>
+<li> statarray(10) Last modification time
+<br><br>
+<li> statarray(11) Last file status change time
+<br><br>
+<li> statarray(12) Preferred I/O block size (-1 if not available)
+<br><br>
+<li> statarray(13) Number of blocks allocated (-1 if not available)
+</ul>
+If <i class='arg'>status</i> is supplied, it contains 0 on success or nonzero error code
+upon return
+
+
+</dl>
+
+
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+Copyright &copy; 2008 Michael Baudin &lt;michael.baudin@gmail.com&gt;<br>
+</body></html>

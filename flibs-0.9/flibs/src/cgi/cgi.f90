@@ -1,0 +1,214 @@
+! cgi.f90 --
+!     Module for supporting CGI applications via the
+!     simple CGI server script
+!
+!     $Id: dictionary.f90,v 1.2 2006/03/26 19:03:53 arjenmarkus Exp $
+!
+module cgi_protocol
+    integer, parameter :: DICT_KEY_LENGTH   = 80
+    integer, parameter :: DICT_VALUE_LENGTH = 200
+
+    type DICT_DATA
+        character(len=DICT_VALUE_LENGTH) :: value
+    end type DICT_DATA
+
+    interface cgi_get
+        module procedure cgi_get_integer
+        module procedure cgi_get_real
+    end interface
+
+    type(DICT_DATA), parameter :: dict_null = dict_data('')
+
+!
+! Body of source code for storing and retrieving the data
+!
+    include 'dictionary.f90'
+
+!
+! Routines specific to CGI_PROTOCOL
+!
+
+! cgi_begin --
+!     Read the HTTP data from stdin - beginning of the processing
+! Arguments:
+!     dict          Variable that will hold all data
+! Note:
+!     Takes care of all details
+!
+subroutine cgi_begin( dict )
+    type(DICT_STRUCT), pointer :: dict
+
+    type(DICT_DATA)            :: data
+    character(len=DICT_KEY_LENGTH)                     :: key
+    character(len=DICT_KEY_LENGTH+DICT_VALUE_LENGTH+1) :: input
+    integer                    :: k
+    integer                    :: lu
+    integer                    :: ierr
+    logical                    :: opend
+
+    if ( associated(dict) ) then
+        call dict_destroy( dict )
+    endif
+
+    read( *, '(a)' ) input
+
+    do while ( input /= '%END%' )
+        k = index( input, "=" )
+        if ( k > 0 ) then
+            key        = input(1:k-1)
+            data%value = input(k+1:)
+            if ( .not. associated( dict ) ) then
+                call dict_create( dict, key, data )
+            else
+                call dict_add_key( dict, key, data )
+            endif
+        endif
+
+        read( *, '(a)', iostat=ierr ) input
+        if ( ierr /= 0 ) then
+            exit
+        endif
+    enddo
+
+end subroutine cgi_begin
+
+! cgi_end --
+!     Indicate to the server that we are done
+! Arguments:
+!     None
+! Note:
+!     This is simply done by removing the file cgiwait
+!
+subroutine cgi_end
+
+    integer :: lu
+    logical :: opend
+
+    do lu = 10,99
+        inquire( lu, opened=opend )
+        if ( .not. opend ) then
+            open( lu, file = "cgiready" )
+            close( lu )
+            exit
+        endif
+    enddo
+
+end subroutine cgi_end
+
+! cgi_get_* --
+!     Get the value of variables
+! Arguments:
+!     dict          Dictionary with values
+!     varname       Name of the variable to retrieve
+!     value         Value of the variable
+! Note:
+!     If the variable does not exist, then the value
+!     is not changed! (Use dict_has_key() to check the
+!     existence)
+!
+subroutine cgi_get_string( dict, varname, value )
+    type(DICT_STRUCT), pointer :: dict
+    character(len=*)           :: varname
+    character(len=*)           :: value
+
+    type(DICT_DATA)            :: data
+
+    if ( dict_has_key( dict, varname ) ) then
+        data = dict_get_key( dict, varname )
+        value = data%value
+    endif
+
+end subroutine cgi_get_string
+
+subroutine cgi_get_integer( dict, varname, value )
+    type(DICT_STRUCT), pointer :: dict
+    character(len=*)           :: varname
+    integer                    :: value
+
+    type(DICT_DATA)            :: data
+    integer                    :: ierr
+    integer                    :: new_value
+
+    if ( dict_has_key( dict, varname ) ) then
+        data = dict_get_key( dict, varname )
+        read( data%value, *, iostat=ierr ) new_value
+        if ( ierr == 0 ) then
+            value = new_value
+        endif
+    endif
+
+end subroutine cgi_get_integer
+
+subroutine cgi_get_real( dict, varname, value )
+    type(DICT_STRUCT), pointer :: dict
+    character(len=*)           :: varname
+    real                       :: value
+
+    type(DICT_DATA)            :: data
+    integer                    :: ierr
+    real                       :: new_value
+
+    if ( dict_has_key( dict, varname ) ) then
+        data = dict_get_key( dict, varname )
+        read( data%value, *, iostat=ierr ) new_value
+        if ( ierr == 0 ) then
+            value = new_value
+        endif
+    endif
+
+end subroutine cgi_get_real
+
+end module cgi_protocol
+
+program test_cgi
+    use cgi_protocol
+
+    type(DICT_STRUCT), pointer :: dict
+    integer                    :: v1
+    integer                    :: v2
+    integer                    :: r
+
+    !
+    ! Get the variables as filled in in the form
+    !
+    call cgi_begin( dict )
+    call cgi_get( dict, "number1", v1 )
+    call cgi_get( dict, "number2", v2 )
+
+    !
+    ! Perform the trivial computation
+    !
+
+    r = v1 + v2
+
+    !
+    ! Write the output in HTML format to the file "cgiout"
+    ! Note the Content-Type string - this is important for HTTP
+    ! This string must start in column 1, hence the format!
+    !
+    open( 10, file = 'cgiout' )
+    write( 10, '(a)' ) 'Content-Type: text/html;charset=iso8859-1'
+    write( 10, '(a)' ) ''
+
+    !
+    ! The actual HTML output - this is much less sensitive to
+    ! extra spaces
+    !
+    write( 10, * ) '<html>'
+    write( 10, * ) '<head><title>Result of calculation</title></head>'
+    write( 10, * ) '<body>'
+    write( 10, * ) 'Result of the sum: '
+    write( 10, * ) v1
+    write( 10, * ) '+'
+    write( 10, * ) v2
+    write( 10, * ) '='
+    write( 10, * ) r
+    write( 10, * ) '</body></html>'
+
+    close( 10 )
+
+    !
+    ! Inform the server that we are done
+    !
+    call cgi_end
+end program

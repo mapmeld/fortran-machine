@@ -1,0 +1,25 @@
+# CHKSYS: Which checks to perform
+# Possible keywords:
+# @GENERAL    - all general (well-behaved) tests
+# @OVERFLOW   - behaviour on overflow
+# @UNDERFLOW  - behaviour on underflow
+# @DIVISION   - behaviour on division by zero
+# @DOMAIN     - behaviour on negative argument for SQRT()
+# @ARRAYBOUND - behaviour if array bounds are exceeded
+# @SUBSTRING  - behaviour if certain substrings are taken
+#
+# To include the test, the keyword must begin in the first column
+# To exclude it, use the word SKIP in front.
+#
+# If you want concise information about the tests, put the keyword
+# SUMMARY in (VERBOSE is just to show the opposite: a full report
+# is default)
+#
+VERBOSE
+@GENERAL
+SKIP @OVERFLOW
+SKIP @UNDERFLOW
+SKIP @DIVISION
+SKIP @DOMAIN
+@SUBSTRING
+@ARRAYBOUND

@@ -1,0 +1,187 @@
+
+<html><head>
+<title>flibs/strings - flibs </title>
+</head>
+<! -- Generated from file 'filedir.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: filedir.html,v 1.1 2008/06/13 10:22:48 relaxmike Exp $ flibs/strings.n
+   -->
+
+<body>
+<h1> flibs/strings(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/strings - Manipulate file and directory names
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use filedir</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>rootname = filedir_rootname( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>extension = filedir_extension( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>basename = filedir_basename( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>dirname = filedir_dirname( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>dirname = filedir_concat( directory, filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>newname = filedir_add_extension( filename, extension )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>filedir</em> contains a number of routines to manipulate file
+and directory names:
+
+<ul>
+<li>
+Strip the extension from a file name and return the &quot;root name&quot;.
+
+<br><br>
+<li>
+Determine instead the extension from a file name and return that.
+
+<br><br>
+<li>
+Strip the directory name from the path to the file and return the &quot;base
+name&quot;.
+
+<br><br>
+<li>
+Strip the file name from the path to the file and return the
+directory.
+
+<br><br>
+<li>
+Concatenate file and directory names.
+
+<br><br>
+<li>
+Add an extension to a file name.
+
+</ul>
+
+These are all relatively simple routines, but they are fairly common,
+hence the module.
+
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module contains the following routines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use filedir</b> </a><dd>
+
+To import the subroutines, use this module.
+
+
+<br><br>
+<dt><a name="2"><b class='cmd'>rootname = filedir_rootname( filename )</b> </a><dd>
+
+Strips the extension if any off the file name and returns the result.
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the file
+
+</dl>
+<br><br>
+
+
+<dt><a name="3"><b class='cmd'>extension = filedir_extension( filename )</b> </a><dd>
+
+Returns the extension if any found in a file name
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the file
+
+</dl>
+<br><br>
+
+
+<dt><a name="4"><b class='cmd'>basename = filedir_basename( filename )</b> </a><dd>
+
+Returns the base name of a file (so, without the directory part)
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the file
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>dirname = filedir_dirname( filename )</b> </a><dd>
+
+Returns the directory part of a file name
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the file
+
+</dl>
+<br><br>
+
+
+<dt><a name="6"><b class='cmd'>dirname = filedir_concat( directory, filename )</b> </a><dd>
+
+Prepend the directory to the file name
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>directory</i><dd>
+Directory to prepend
+<br><br>
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the file
+
+</dl>
+<br><br>
+
+
+<dt><a name="7"><b class='cmd'>newname = filedir_add_extension( filename, extension )</b> </a><dd>
+
+Append an extension to the file name
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>directory</i><dd>
+Directory to prepend
+<br><br>
+<dt>character(len=*) <i class='arg'>filename</i><dd>
+Name of the file
+
+</dl>
+
+</dl>
+
+<em>Note:</em>
+The functions all return strings that are large enough to guarantee
+that the entire result can be hold. In many cases, the length is the
+same as that of the input argument, but for instance with
+<em>file_add_extension</em> it is the sum of the lengths of the
+two arguments plus 1 (for the dot).
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

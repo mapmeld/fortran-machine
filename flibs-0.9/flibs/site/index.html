@@ -1,0 +1,448 @@
+<html>
+<head>
+<title>FLIBS - A collection of Fortran modules</title>
+</head>
+<body>
+<h2>FLIBS - A collection of Fortran modules</h2>
+<p>
+The FLIBS project provides a collection of
+individual Fortran modules that perform particular tasks, such as:
+<ul>
+<li>Provide interfaces to Open Source C libraries</li>
+<li>Manipulate or examine strings in not too trivial ways</li>
+<li>Implementations of well-known abstract data types or data structures</li>
+</ul>
+<p>
+The source code and documentation can be found
+<a href="http://www.sf.net/projects/flibs">here</a>,
+a series of observations about Fortran can be found
+<a href="fortran_aspects.html">here</a>.
+
+<p>
+Some experimental programs that may be of interest appear in the
+directory <a href="#experiments">experiments</a>.
+
+<h3>Contents of the collection</h3>
+Currently, FLIBS consists of the following modules:
+<p>
+<table border>
+<tr>
+   <th>Directory</th><th>Module</th><th>Purpose</th>
+</tr>
+
+<tr>
+   <th>SQLite</th><td><a href="fsqlite.html">sqlite</a></td>
+   <td>Module to provide an easy-to-use interface to the
+<a href="http://www.sqlite.org">SQLite library</a>, a light-weight
+database management system.</td>
+</tr>
+
+<tr>
+   <th>Lemon</th><td>flemon</td>
+   <td><a href="http://www.hwaci.com/sw/lemon">Lemon</a> is a parser
+generator comparable to Yacc and Bison and flemon is an adaptation
+to generate Fortran code</td>
+</tr>
+
+<tr>
+   <th rowspan="9">Strings</th>
+      <td><a href="globmatch.html">glob_matching</a></td>
+      <td>Match strings to (simplified) glob patterns, such as
+"*.f90". The module does not support character classes yet.</td>
+</tr>
+   <tr>
+      <td><a href="csv_file.html">csv_file</a></td>
+      <td>Write comma-separated-values (CSV) files. The module
+takes care of quotation marks in strings and provides a simple
+interface to write individual data as well as one-dimensional
+arrays and matrices
+      </td>
+   </tr>
+   <tr>
+      <td><a href="filedir.html">filedir</a></td>
+      <td>Manipulate directory and file names. It contains routines
+to split a full path into directories and file names, to smoothly join
+directory and file names and so on.
+      </td>
+   </tr>
+   <tr>
+      <td><a href="textstr.html">edit_text, singleline_text, multiline_text</a></td>
+      <td>Modules that provide storage facilities for arbitrary-length
+strings. The emphasis is on storage, not on providing a full-featured
+varying-string-length module.
+      </td>
+   </tr>
+   <tr>
+      <td><a href="tokenize.html">tokenize</a></td>
+      <td>Module to split a string into pieces according to certain
+fairly basic, but common criteria.
+      </td>
+   </tr>
+   <tr>
+      <td>simple manipulations</a></td>
+      <td>Module with simple string manipulations like, reversing the
+characters, changing the case to upper or lower case, generating random
+words.
+      </td>
+   </tr>
+   <tr>
+      <td><a href="m_vstring.html">m_vstring</a></td>
+      <td>Module for handling strings with a dynamic length. It contains
+a set of high-level facilities to manipulate such strings.
+      </td>
+   </tr>
+   <tr>
+      <td><a href="m_vstringlist.html">m_vstringlist</a></td>
+      <td>Module for handling lists of strings with a dynamic length.
+Individual elements can easily be accessed or changed.
+      </td>
+   </tr>
+   <tr>
+      <td><a href="m_vstringformat.html">m_vstringformat</a></td>
+      <td>Module for formatting strings with a dynamic length.
+      </td>
+   </tr>
+
+<tr>
+
+   <th rowspan="9">Data structures</th>
+      <td><a href="linked_list.html">linked_lists</a></td>
+      <td><i>Generic source code</i> for implementing linked lists.
+The test program illustrates how the genericity is achieved.</td>
+</tr>
+
+   <tr>
+      <td><a href="binarytree.html">binary_trees</a></td>
+      <td><i>Generic source code</i> for implementing binary trees.
+Balancing is not taken care of.
+   </tr>
+   <tr>
+      <td>queues</td>
+      <td><i>Generic source code</i> for implementing queue of
+fixed size.
+   </tr>
+   <tr>
+      <td>dictionaries</td>
+      <td><i>Generic source code</i> for implementing a mapping of
+strings to data. New: Implemented via a simple hash table (the original
+used a linked list).
+   </tr>
+   <tr>
+      <td>vectors</td>
+      <td><i>Generic source code</i> for implementing an expandable
+array of data.
+   </tr>
+   <tr>
+      <td><a href="sets.html">sets</a></td>
+      <td><i>Generic source code</i> for implementing unordered sets -
+collections of data objects that support operations like union and
+intersection.
+   </tr>
+   <tr>
+      <td>sorting</td>
+      <td><i>Generic source code</i> that implements a combined
+QuickSort/InsertionSort algorithm for fast sorting arrays (contributed
+by Joe Krahn).
+   </tr>
+   <tr>
+      <td><a href="mem_pool.html">memory pool</a></td>
+      <td><i>Generic source code</i> that implements a straightforward
+memory pool. Use this to reduce the number of individual allocations and
+deallocations of data items of a fixed type.
+   </tr>
+   <tr>
+      <td>indexset</td>
+      <td>Implementation of a <i>bit array</i> using the bit manipulation
+functions of Fortran 90/95. Useful for handling sets that consist of
+integers or can be mapped to integers.
+   </tr>
+
+<tr>
+
+   <th rowspan="12">Computational facilities</th>
+      <td><a href="automdiff.html">automatic_differentiation</a></td>
+      <td>General technique for determining the first derivative
+of a function via mathematical, not numerical means.</td>
+</tr>
+
+    <tr>
+      <td><a href="select_precision.html">select_precision</a></td>
+      <td>Auxiliary module for selecting the precision of real variables.
+      </td>
+    </tr>
+
+    <tr>
+      <td>timing</td>
+      <td>Small module for timing parts of a program. This may be used
+to detect which part is taking most computing time or to compare
+different algorithms
+      </td>
+    </tr>
+
+    <tr>
+      <td>decimal_arithmetic</td>
+      <td>Module for implementing decimal arithmetic, as opposed
+to floating-point numbers.
+      </td>
+    </tr>
+
+    <tr>
+      <td>interval_simple</td>
+      <td>Module implementing interval arithmetic in a straightforward manner.
+      </td>
+    </tr>
+
+    <tr>
+      <td>m_coordinates</td>
+      <td>Basic coordinate transformations, such as spherical to cartesian.
+      </td>
+    </tr>
+
+    <tr>
+      <td>pointsets</td>
+      <td>Collection of routines to generate sets of points in
+one, two or three dimensions with certain properties.
+      </td>
+    </tr>
+
+    <tr>
+      <td>combinations</td>
+      <td>Routines for random permutations and other combinatorial functions.
+(Very limited at the moment)
+      </td>
+    </tr>
+
+    <tr>
+      <td><a href="backtrack.html">backtracking</a></td>
+      <td>Module to implement backtracking algorithms. It offers a
+single routine that controls the generation and checking of
+possible solutions. The user must supply a small number of routines and
+a single data type to implement the specific problem.
+      </td>
+    </tr>
+
+    <tr>
+      <td><a href="annealing.html">simulated_annealing</a></td>
+      <td>Use the technique of simulated annealing to minimize a function
+of several variables.
+      </td>
+    </tr>
+
+    <tr>
+      <td>genetic_algorithms</td>
+      <td>Straightforward implementation of a genetic algorithm to
+minimize a function of several variables.
+      </td>
+    </tr>
+
+    <tr>
+      <td><a href="libdate.html">libdate</a></td>
+      <td>Module for manipulating date and time information.
+      </td>
+    </tr>
+
+<tr>
+
+   <th rowspan="2">Streams</th>
+      <td><a href="binstreams.html">binary streams</a></td>
+      <td>Module to read and write files as a "stream" of bytes.
+Some caution: it relies on certain assumptions about the sizes
+of integers and reals and on the treatment of direct-access files.</td>
+</tr>
+<tr>
+      <td><a href="textstreams.html">text streams</a></td>
+      <td>Module to read ordinary text files as a "stream" of words and
+numbers. It is not without limitations, but it may be a practical
+approximation to the real thing.</td>
+</tr>
+
+<tr>
+
+   <th rowspan="3">Unit testing</th>
+      <td><a href="ftnunit.html">ftnunit</a></td>
+      <td>Module and auxiliary scripts that implement a unit testing
+framework akin to <i>JUnit</i></td>
+</tr>
+      <td>gentabletest.tcl</td>
+      <td>Tcl program to generate a test program based on a tabular description</td>
+</tr>
+<tr>
+      <td><a href="testmake.html">testmake</a></td>
+      <td>Program to create complete test programs based on specifications. See
+also: <a href="article_testmake.pdf">the article on this program</a></td>
+</tr>
+
+<tr>
+
+   <th rowspan="1">IPC</th>
+      <td>ipc_file</td>
+      <td>Module for exchanging information (inter-process
+communication) between two or more programs
+(processes) via files on disk. <i>Preliminary version!</i></td>
+</tr>
+
+<tr>
+
+   <th rowspan="2">Checking</th>
+      <td><a href="checking.html">checking</a></td>
+      <td>Module and auxiliary program that instrument source code to
+trace what subroutines are called and what files are opened. It helps
+understand a program written by others.</td>
+</tr>
+      <td><a href="chksys.html">chksys</a></td>
+      <td>Collection of test programs to detect all manner of properties
+of the Fortran compiler - like what unit is used for the record length
+of direct access files and many other portability aspects.</td>
+</tr>
+
+<tr>
+
+   <th rowspan="1">Wrapper</th>
+      <td><a href="cwrap.html">Wrapping C functions</a></td>
+      <td>Auxiliary program to scan a C header file and produce code so
+that you can easily use the C functions in a Fortran program.</td>
+</tr>
+
+<tr>
+   <th rowspan="3">Files and directories</th>
+      <td><a href="filedir.html">fieldir</a></td>
+      <td>Collection of portable routines to manipulate files and
+directories or retrieve detailed information</td>
+</tr>
+<tr>
+      <td><a href="m_vfile.html">m_vfile</a></td>
+      <td>Collection of portable routines to manipulate files and
+directories or retrieve detailed information in an object-oriented
+fashion</td>
+</tr>
+<tr>
+      <td><a href="m_fileunit.html">m_fileunit</a></td>
+      <td>Routines to manage logical unit numbers</td>
+</tr>
+
+<tr>
+   <th rowspan="2">Platform</th>
+      <td><a href="m_platform.html">platform</a></td>
+      <td>Portable routines (as far as possible) to run external
+programs and to find out details of the operating system</td>
+</tr>
+      <td><a href="m_vstrplatform.html">platform</a></td>
+      <td>Platform-dependent routines and features (uses
+variable-length strings)</td>
+</tr>
+
+<tr>
+   <th rowspan="3">Reporting</th>
+      <td>reporting</td>
+      <td>Set of routines with a common interface to write report files
+in HTML, Latex and RTF formats</td>
+</tr>
+<tr>
+      <td><a href="m_logger.html">m_logger</a></td>
+      <td>Module for writing log files</td>
+</tr>
+<tr>
+      <td><a href="m_exception">m_exception</a></td>
+      <td>Module for handling assertions and treating exceptions
+(to a certain extent) <i>Note: preliminary version - some changes
+to the interface will be made</i></td>
+</tr>
+
+<tr>
+   <th rowspan="2">Control structures</th>
+      <td><a href="finite_state.html">Finite state machines</a></td>
+      <td>Facilities to help set up a finite state machine</td>
+</tr>
+<tr>
+      <td>messages</td>
+      <td>Facilities for dealing with "messages", for instance in
+the context of discrete event simulations</td>
+</tr>
+
+<tr>
+   <th rowspan="1">Tools</th>
+      <td><a href="editcode.html">editcode</a></td>
+      <td>Preprocessor for Fortran code meant for such things as
+replacing types by other types, assertions and other preprocessing
+tasks. Not a C-style preprocessor though!</td>
+</tr>
+
+<tr>
+   <th rowspan="1">CGI</th>
+      <td><a href="cgi_protocol">cgi_protocol</a></td>
+      <td>Facilitate the interaction between Fortran programs and
+web servers using the CGI protocol</td>
+</tr>
+
+</table>
+<p>
+<b>Note:</b> Most modules come with test/example programs.
+The test/example programs should provide at least some indication on
+how to use the modules.
+<p>
+Though making the modules and test programs should be straightforward,
+there are no formal makefiles yet to actually make them - most
+development and testing so far has been done on Windows with Compaq
+Visual Fortran, which uses so-called project files.
+<p>
+<h3>Ideas still to be implemented</h3>
+<ul>
+<li>
+<b>Stacks and other well-known abstract data types</b> - to be
+implemented along the same lines.
+</li>
+<li>
+<b>General memory management via a pool of allocated memory</b> -
+The body for a module that takes care of the nasty details.
+</li>
+<li>
+<b>Interface to a library for regular expressions</b> - One suitable
+library is the one by Henry Spencer.
+</li>
+<li>
+<b>Functional composition</b> - manipulate mathematical and other
+functions in a very similar way as with <i>functional programming
+languages</i> such as Haskell. Ambitious? Impossible? No, not
+really, as long as you keep a few limitations inherent in Fortran
+in mind.
+</li>
+<li>
+<b>Event-driven programming</b> - using "events" or "messages" to drive
+the computation can lead to very flexible programs, because the
+flow of control is defined via <i>data</i> instead of <i>code</i>
+</li>
+<li>
+<b>Interval arithmetic</b> - interval arithmetic is one way to
+analyse the round-off and other errors made during a computation and
+their effects on the end result. A classic problem is that
+ignoring <i>data dependencies</i> leads to very broad intervals.
+There is a (somewhat limited) way around this ...
+</li>
+</ul>
+
+<hr>
+<a name="experiments""><h3>Experiments</h3></a>
+The directory "experiments" contains several programs that simply try
+out a few ideas:
+<ul>
+<li>
+<b>integer_set.f90</b> illustrates that it is possible to define a
+relation between variables and later evaluate it <i>without</i> having
+to create a Fortran function</i>. The technique can be used to define
+new mathematical functions and treat them as first-class data.
+</li>
+<li>
+<b>func_qsort.f90</b> is an attempt to show that functional programming
+with a few restrictions is definitely possible in Fortran.
+</li>
+<li>
+In <b>quantum.f90</b> you will find a classical implementation of a
+quantum search algorithm. An <a href="quantum_computing.pdf">article</a>
+about it appeared in the Fortran Forum.
+</li>
+</ul>
+
+<hr>
+-- <i>Arjen Markus, Michael Baudin, dd. october 2008</i>
+</body>
+</html>

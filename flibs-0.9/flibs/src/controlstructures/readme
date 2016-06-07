@@ -1,0 +1,3 @@
+Control structures:
+- Support for finite state machines (simple but effective)
+- Message passing (split the program into separate pieces)

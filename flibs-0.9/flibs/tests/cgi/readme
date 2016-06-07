@@ -1,0 +1,9 @@
+Test program for the CGI module:
+
+To test the program "test_cgi", you can use the Tcl program
+"mimick_server.tcl" like this:
+
+tclsh mimick_server.tcl >out
+
+The file "out" will then contain whatever the program would send to the
+Web server.

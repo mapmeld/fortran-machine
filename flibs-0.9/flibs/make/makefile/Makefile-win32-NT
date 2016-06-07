@@ -1,0 +1,14 @@
+#
+# Commands specific for the Windows system
+#
+SHELL=cmd.exe
+gnuwindir=C:/gnuwin32/bin
+MKDIR= $(gnuwindir)/mkdir.exe
+CD=$(gnuwindir)/cd.exe
+CP=$(gnuwindir)/cp.exe
+REMOVE=$(gnuwindir)/rm.exe
+ECHO=$(gnuwindir)/echo.exe
+AR=C:/g95/bin/ar.exe
+OS = win32
+OS_TAG = _PLATFORM_OS_WINDOWS_NT
+

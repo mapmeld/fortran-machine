@@ -1,0 +1,384 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>libdate - flibs </title>
+</head>
+<! -- Generated from file 'libdate.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Arjan van Dijk &lt;arjan dot van dijk at rivm dot nl&gt;   -- Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus at sourceforge dot net&gt;
+   -->
+<! -- CVS: $Id$ libdate.n
+   -->
+
+<body>
+<h1> libdate(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> libdate - Manipulating date/time information
+
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#derived_types_and_routines">DERIVED TYPES AND ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#acknowledgements">ACKNOWLEDGEMENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>type(DATETYPE) date</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>type(JULIANDATETYPE) julian</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>relational operators</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>newdate = basedate + timestep</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>newdate = basedate - timestep</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>newstep = factor * timestep</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>newstep = timestep * factor</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>timelag_in_days = timelag( date1, date2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>seconds = delayseconds( timestep )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#10"><b class='cmd'>isleap = leapyear( date )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#11"><b class='cmd'>daynumber = doy( date )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#12"><b class='cmd'>earlier = mindate( date1, date2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#13"><b class='cmd'>later = maxdate( date1, date2 )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#14"><b class='cmd'>call format_date( date, pattern, datestring )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#15"><b class='cmd'>julian = date2julian( date )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#16"><b class='cmd'>date = julian2date( julian )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>libdate</em> module defines a derived type and several functions
+and subroutines to deal with date/time information:
+
+<ul>
+<li>
+Store date and time in the form of year, month, day, hour, minute
+
+<br><br>
+<li>
+Compare dates
+
+<br><br>
+<li>
+Basic arithmetic
+
+<br><br>
+<li>
+Formatting date and time as a string based on a pattern
+
+</ul>
+
+<em>Note:</em> Timezones and seconds are <em>not</em> taken into account.
+Also, there are no provisions to take care of the various historical
+introductions of the Gregorian calendar.
+
+
+<h2><a name="derived_types_and_routines">DERIVED TYPES AND ROUTINES</a></h2>
+<p>
+
+The module <em>libdate</em> defines two separate derived types, DATETYPE
+and JULIANDATETYPE, though this second type is mainly meant for internal
+use:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>type(DATETYPE) date</b> </a><dd>
+
+This type has the following fields: year, month, day, hour, minute, in
+that order, so that <em>thisdate = datetype( 2007, 1, 29, 17, 0)</em>
+defines a date 29 january 2007 and a time 17:00.
+<br><br>
+A duration is expressed in days, hours and minutes:
+<em>period = datetype( 0, 0, 2, 1, 0)</em> means a period of 2 days and
+and 1 hour. (When adding a duration to a date/time the month and year
+fields are ignored, as they are not additive).
+<br><br>
+
+<br><br>
+<dt><a name="2"><b class='cmd'>type(JULIANDATETYPE) julian</b> </a><dd>
+
+Julian dates are used internally to make the computations easier. You
+should not need to use them explicitly, unless you want to implement
+new functionality.
+
+</dl>
+
+The following functions, subroutines and operators are available:
+
+<dl>
+
+<dt><a name="3"><b class='cmd'>relational operators</b> </a><dd>
+
+You can compare two dates using the standard operators
+<em>.EQ.</em>, <em>.NE.</em>, <em>.GE.</em>, <em>.GT.</em>, <em>.LE.</em>,
+<em>.LT.</em>, with conventional meaning
+<br><br>
+
+
+<br><br>
+<dt><a name="4"><b class='cmd'>newdate = basedate + timestep</b> </a><dd>
+
+Add a duration to a date. The second date/time is considered to be the
+duration.
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>basedate</i><dd>
+The base date/time to which the duration is to be added.
+
+<br><br>
+<dt>type(DATETYPE) <i class='arg'>timestep</i><dd>
+The duration that will be added. Only the day, hour and minute fields
+are considered.
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>newdate = basedate - timestep</b> </a><dd>
+
+Subtract a duration from a date. The second date/time is considered to
+be the duration.
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>basedate</i><dd>
+The base date/time from which the duration is to be subtracted.
+
+<br><br>
+<dt>type(DATETYPE) <i class='arg'>timestep</i><dd>
+The duration that will be subtracted. Only the day, hour and minute
+fields are considered.
+
+</dl>
+<br><br>
+
+
+<dt><a name="6"><b class='cmd'>newstep = factor * timestep</b> </a><dd>
+
+Multiply a timestep by a real or integer factor. For the timestep,
+only the day, hour and minute are considered.
+
+<br><br>
+<dl>
+
+<dt>integer/real <i class='arg'>factor</i><dd>
+Factor to be applied
+
+<br><br>
+<dt>type(DATETYPE) <i class='arg'>timestep</i><dd>
+The duration that will be scaled.
+
+</dl>
+<br><br>
+
+
+<dt><a name="7"><b class='cmd'>newstep = timestep * factor</b> </a><dd>
+
+Multiply a timestep by a real or integer factor. For the timestep,
+only the day, hour and minute are considered. (The order of teh
+arguments is reversed).
+<br><br>
+
+
+<br><br>
+<dt><a name="8"><b class='cmd'>timelag_in_days = timelag( date1, date2 )</b> </a><dd>
+
+Compute the time difference between two dates. Return the value in days.
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>date1</i><dd>
+First date
+
+<br><br>
+<dt>type(DATETYPE) <i class='arg'>date2</i><dd>
+Second date. If this date is earlier than the first date, the difference
+is positive.
+
+</dl>
+<br><br>
+
+
+<dt><a name="9"><b class='cmd'>seconds = delayseconds( timestep )</b> </a><dd>
+
+Compute the number of seconds in a timestep
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>timestep</i><dd>
+Timestep to be converted to seconds
+
+</dl>
+<br><br>
+
+
+<dt><a name="10"><b class='cmd'>isleap = leapyear( date )</b> </a><dd>
+
+Determine if the year in the date structure is a leap year or not
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>date</i><dd>
+Date/time to be considered (only the year is of interest of course).
+
+</dl>
+<br><br>
+
+
+<dt><a name="11"><b class='cmd'>daynumber = doy( date )</b> </a><dd>
+
+Compute the day of the year
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>date</i><dd>
+Date/time to be considered.
+
+</dl>
+<br><br>
+
+
+<dt><a name="12"><b class='cmd'>earlier = mindate( date1, date2 )</b> </a><dd>
+
+Return the earlier of the two dates
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>date1</i><dd>
+First date/time to be considered.
+
+<br><br>
+<dt>type(DATETYPE) <i class='arg'>date2</i><dd>
+Second date/time to be considered.
+
+</dl>
+<br><br>
+
+
+<dt><a name="13"><b class='cmd'>later = maxdate( date1, date2 )</b> </a><dd>
+
+Return the later of the two dates
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>date1</i><dd>
+First date/time to be considered.
+
+<br><br>
+<dt>type(DATETYPE) <i class='arg'>date2</i><dd>
+Second date/time to be considered.
+
+</dl>
+<br><br>
+
+
+<dt><a name="14"><b class='cmd'>call format_date( date, pattern, datestring )</b> </a><dd>
+
+Format a date according to a pattern.
+<br><br>
+The pattern may contain any of the following format codes:
+<br><br>
+<ul>
+<li>
+<em>dd</em> - Day of month (&quot;01&quot; for instance)
+<br><br>
+<li>
+<em>ds</em> - Day of month (&quot;1&quot; for instance, s for space)
+<br><br>
+<li>
+<em>DDD</em> - Day of the year
+<br><br>
+<li>
+<em>HH</em> - Hour (00-23)
+<br><br>
+<li>
+<em>HS</em> - Hour (0-23)
+<br><br>
+<li>
+<em>mm</em> - Month (&quot;01&quot; for january)
+<br><br>
+<li>
+<em>ms</em> - Month (&quot;1&quot; for january, s for space)
+<br><br>
+<li>
+<em>MM</em> - Minutes within the hour (00-59)
+<br><br>
+<li>
+<em>MS</em> - Minutes within the hour (0-59)
+<br><br>
+<li>
+<em>YY</em> - Year with the century
+<br><br>
+<li>
+<em>yyyy</em> - Year with the century
+</ul>
+
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>date</i><dd>
+Date to be converted
+
+<br><br>
+<dt>character(len=*) <i class='arg'>pattern</i><dd>
+String containing the format pattern
+
+<br><br>
+<dt>character(len=*) <i class='arg'>datestring</i><dd>
+String containing the result. The contents will not be longer
+than the pattern.
+
+</dl>
+<br><br>
+
+
+<dt><a name="15"><b class='cmd'>julian = date2julian( date )</b> </a><dd>
+
+Convert a date/time structure to Julian date. Mainly for internal use.
+
+<br><br>
+<dl>
+
+<dt>type(DATETYPE) <i class='arg'>date</i><dd>
+Date/time structure to be converted.
+
+</dl>
+<br><br>
+
+<dt><a name="16"><b class='cmd'>date = julian2date( julian )</b> </a><dd>
+
+Convert a Julian date to a date/time structure. Mainly for internal use.
+
+<br><br>
+<dl>
+
+<dt>type(JULIANDATETYPE) <i class='arg'>julian</i><dd>
+Julian date to be converted.
+
+</dl>
+
+</dl>
+
+
+<h2><a name="acknowledgements">ACKNOWLEDGEMENTS</a></h2>
+<p>
+This module was written and contributed by Arjan van Dijk. Small
+modifications and the addition of the <em>format_date</em> routine by
+Arjen Markus.
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Arjan van Dijk &lt;arjan dot van dijk at rivm dot nl&gt;<br>
+Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus at sourceforge dot net&gt;<br>
+</body></html>
+

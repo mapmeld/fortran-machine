@@ -1,0 +1,118 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin automatic_differentiation n 1.0]
+[copyright {2006 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Implement the "automatic differentation" technique}]
+
+[description]
+
+The [strong automatic_differentiation] module defines a derived
+type that enables you (via overloading common mathematical
+functions and operators) to:
+
+[list_begin bullet]
+[bullet]
+Define a mathematical function in the usual way
+
+[bullet]
+Evaluate that function [strong and] its first derivative at the same
+time
+
+[list_end]
+
+without having to program that first derivative.
+
+[para]
+
+The module uses real numbers of the kind "wp" as defined in the
+auxiliary module [strong select_precision].
+
+[para]
+
+(I was pointed to this technique by Simon Geard, a couple of years ago,
+in the context of one of the many language shootouts on the Internet.)
+
+
+[section "EXAMPLE"]
+
+In numerical methods like Newton-Raphson for finding a root of the
+equation "f(x) = 0", you need the first derivative:
+
+[example {
+    x(k+1)  =  x(k)  - f(x(k)) / f'(x(k))
+}]
+
+Rather than implementing the function and its first derivatives as
+separate functions, using this module you can dispense with manually
+determining the first derivative:
+
+[example {
+program root
+    use automatic_differentation
+
+    type(AUTODERIV) :: x
+    type(AUTODERIV) :: res
+    integer         :: i
+
+    !
+    ! First estimate
+    !
+    x = derivvar( 1.0_wp )
+
+    do i = 1,10
+        res = f(x)
+        x = x - res.v / res.dv
+    enddo
+
+    write(*,*) 'Root: ', x.v
+contains
+
+type(AUTODERIV) function f(x)
+    type(AUTODERIV) :: x
+
+    f = x + cos(x)
+
+end function f
+end program
+}]
+
+
+[section "DATA TYPES AND ROUTINES"]
+The module defines a single data type, AUTODERIV, and one specific
+function, derivvar().
+
+[list_begin definitions]
+
+[call [cmd "use automatic_differentiation"]]
+The name of the module
+
+[call [cmd "type(AUTODERIV)"]]
+The type has two fields:
+
+[list_begin arg]
+
+[arg_def "real(wp)" v]
+The value of the variable/function (or any intermediate result)
+
+[arg_def "real(wp)" dv]
+The first derivative
+
+[list_end]
+[nl]
+
+
+[call [cmd "x = derivvar( value )"]]
+Use this function to properly initialise the program
+variable x as a "mathematical" variable. (It sets the derivative
+of x to 1, because otherwise it would be regarded as a constant).
+
+[list_begin arg]
+
+[arg_def "real(wp)" value]
+The value of the "mathematical" variable.
+
+[list_end]
+
+[list_end]
+
+[manpage_end]

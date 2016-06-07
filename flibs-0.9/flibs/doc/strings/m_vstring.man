@@ -1,0 +1,883 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/m_vstrings n 1.0]
+[copyright {2008 Michael Baudin michael.baudin@gmail.com}]
+[copyright {2008 Arjen Markus arjenmarkus@sourceforge.net}]
+[moddesc flibs]
+[titledesc {Processing strings}]
+
+[description]
+
+The module [strong m_vstring] provides OO services to manage strings of dynamic length.
+The goal of the current component is to provide higher-level
+services that the standard fortran currently provides.
+The component provides methods which mimic the services 
+available in the Tcl language.
+It provides string comparison, string search and string
+matching methods.
+See in test_m_vstring to see a complete example of the
+services provided.
+
+[section OVERVIEW]
+  A vstring is an array of characters. 
+  The simplest way to create a vstring is with vstring_new 
+  from a "character(len=<something>)" string.
+  The length of the vstring is computed dynamically,
+  depending on the current number of characters, with vstring_length.
+  In the following example, the length is 9.
+ 
+[example {
+    use m_vstring, only : &
+      vstring_new, &
+      vstring_free, &
+      t_vstring, &
+      vstring_length
+    type ( t_vstring,) :: string1
+    integer :: length
+    call vstring_new ( string1 , "my string" )
+    length = vstring_length (string1)
+    call vstring_free( string1 )
+}]
+
+[subsection "Creating a string"]
+  With vstring_new, one can also create a new vstring as a copy 
+  of an existing vstring.
+  With vstring_new, one can also create a new vstring with an 
+  array of characters or with a repeated copy of an existing vstring.
+  Destroy the vstring with vstring_free.
+
+[subsection "Concatenate two strings"]
+  
+  Two vstrings can be concatenated in two ways.
+  The vstring_concat method returns a new vstring computed by the 
+  concatenation of the two strings.
+  The vstring_append allows to add the characters of the 2nd vstring
+  at the end of the current string.
+  In the following example, the string3 is "my string is very interesting".
+
+[example {
+    call vstring_new ( string1 , "my string" )
+    call vstring_new ( string2 , " is very interesting" )
+    string3 = vstring_concat ( string1 , string2 )
+}]
+
+[subsection "Modify the case"]
+  
+  The user can modify the case of a vstring.
+  The vstring_tolower creates a new vstring with lower case characters.
+  The vstring_toupper creates a new vstring with upper case characters.
+  The vstring_totitle creates a new vstring with the first letter in
+  upper case and all the other characters to lower case.
+
+  The user can know if two vstrings are equal with vstring_equals.
+  Two vstrings can be compared with vstring_compare, which 
+  is based on the lexicographic order.
+
+  One can transform one vstring into a new one using a map with
+  vstring_map.
+
+[subsection "Pattern matching"]
+  
+  The vstring_match method provides string-matching services in the glob-style.
+  It manages "*" pattern (which matches 0 or more characters), 
+  the "?" pattern (which matches exactly one character),
+  escape sequences and character ranges.
+  The following example show how to compare a file name against a pattern :
+
+[example {
+    call vstring_new ( string1 , "m_vstring.f90" )
+    call vstring_new ( pattern , 'm_*.f90' )
+    match = vstring_match ( string1 , pattern )
+}]
+
+[subsection "Validating a string"]
+  
+  The vstring_is method provides a way of validating data by 
+  computing whether the vstring is in a class of data, for example 
+  integer, real, digit, alphanumeric, etc...
+  In the following example, the user can check whether the 
+  string read on standard input is an integer :
+
+[example {
+    read ( 5 , * ) charstring
+    call vstring_new ( string1 , charstring )
+    isinteger = call vstring_is ( string1 , "integer" )
+    if ( .NOT. isinteger ) then
+      ! Generate an error
+    endif
+}]
+
+  If the character set under use is not in one the pre-defined classes 
+  of vstring_is, the user can directly call vstring_isincharset or 
+  vstring_isinasciirange, which are the basic blocks of vstring_is.
+
+  Second string argument may be character string
+  The design choice has been made to design the subroutines/functions
+  so that their dummy arguments are generally only of type t_vstring.
+  Another choice would have been to allways take as dummy arguments both
+  t_vstring and "character (len=*)" strings, with module procedure 
+  interfaces to make them generic.
+  The last choice ease the work of the client of the current component,
+  which can use directly standard fortran constant strings (for example,
+
+[example {
+    equals = vstring_equals ( string1 , "toto" )
+}]
+
+  instead of
+
+[example {
+    type ( t_vstring ) :: string2
+    call vstring_new ( string2 , "toto" )
+    equals = vstring_equals ( string1 , string2 )
+    call vstring_free ( string2 )
+}]
+
+  that is to say 5 lines instead of 1.
+
+  The main drawback is that the number of interfaces is at least 
+  multiplied by 2, if not 4 or 8 when the number of string arguments is more 
+  than 2. This makes the unit tests multiplied by the same number, if one 
+  want to exercise all the possible interfaces. That way was chosen
+  by the original iso_varying_string module and lead to a heavy component,
+  with a large number of lines and a small number of features, because 
+  all the time was lost in the management of such an heavy module.
+  The other drawback is that is breaks the object oriented design
+  so that the "type bound" procedure of F2003 cannot be used.
+  The current choice is to focus mainly on the services provided,
+  not the ease of use. That allows to provide much more features than
+  in the original component, but complicates a little more the 
+  use in the client code. 
+  The choice done here is that the first argument is allways of type 
+  vstring (and called "this"), while the second argument (if any), mays 
+  by either of type vstring or of type "character (len=*).
+  That solution allows to keep both consistency and ease of use at 
+  the maximum possible level.
+  Several methods are designed this way, for example, vstring_equals, 
+  vstring_compare, vstring_append, vstring_concat and others.
+
+[subsection "Allocatable or pointer"]
+  Two implementation of m_vstring are provided, depending on the compiler used :
+[list_begin bullet]
+[bullet] the allocatable array of characters with the pre-processing macro _VSTRING_ALLOCATABLE,
+[bullet]  the pointer array of characters with the pre-processing macro _VSTRING_POINTER
+[list_end]
+  If none of the macros are defined, the default implementation is _VSTRING_ALLOCATABLE.
+  The two implementations provide exactly the same services.
+  But the "allocatable" implementation allows to manage the vstring
+  which are going out of the current scope so that the use of vstring_free
+  is not necessary and memory leaks do not occur.
+  Instead, with the pointer implementation, the call to vstring_free is 
+  strictly necessary (if not, memory is lost each time a new vstring is
+  created).
+  The current version of m_vstring has been tested with the 
+  following compilers and versions:
+[list_begin bullet]
+[bullet] Intel Visual Fortran 8 : tested with _VSTRING_ALLOCATABLE and _VSTRING_POINTER
+      But the allocatable version allows to debug more easily.
+[bullet] gfortran 2007/04/16 : tested with _VSTRING_POINTER (works fine,
+      except for vstring_match)
+[bullet] g95 May  3 2007 : tested with _VSTRING_POINTER, OK
+[list_end]
+
+[subsection "Dynamic or static buffer"]
+  
+  The internal algorithms provided by m_vstrings are based on 
+  basic fortran character strings. In several situations, the 
+  dynamic vstring has to be converted into a basic fortran character
+  buffer string, which size has to be given explicitely in the source 
+  code, with the len = <something> statement (in the 
+  character ( len = <something>) ). Two solutions are provided, 
+  and the user can define the pre-processing macro 
+  _VSTRING_STATIC_BUFFER to configure that :
+[list_begin bullet]
+[bullet] the first solution is to set the size of the buffer statically,
+    to a constant integer value VSTRING_BUFFER_SIZE.
+  [bullet] the second solution is to compute the size 
+    of the buffer dynamicaly, with the fortran 90 len = vstring_length(this)
+    statement,
+[list_end]
+  If the _VSTRING_STATIC_BUFFER is defined, then character strings of 
+  constant size are used as buffers.
+  If the _VSTRING_STATIC_BUFFER is not defined (which is the default), 
+  then character strings of dynamic size are used as buffers.
+  The second solution is more efficient, because the strings are not 
+  oversized or undersized, depending on the real number of characters
+  in the dynamic string. But the feature may not be provided 
+  by the compiler at hand. For example, problems with the dynamic 
+  length character string have been experienced with Intel Fortran 8.
+
+[subsection Design]
+
+   This component has been designed with OO principles in mind.
+   This is why the first argument of every method is named "this",
+   which is the current object.
+   If another string is required as a second argument, it may be either 
+   of type dynamic or as a character(len=*) type, to improve
+   usability.
+   This component is meant to evolve following the fortran 2003 standard 
+   and OO type-bound procedures.
+
+[subsection Limitations]
+[list_begin bullet]
+[bullet] No regular expression algorithm is provided.
+But vstring_match allows to do string matching in glob-style.
+[bullet] The vstring_match does not work with gfortran 2007/04/16 because
+of a limitation in gfortran for zero-size arrays
+[bullet] the vstring_adjustl, vstring_adjustr, vstring_scan,
+vstring_adjustl, vstring_adjustr, vstring_is methods does not
+work with IVF8 because strings declared like this :
+character (len = vstring_length(this) :: character
+are not consistent strings, probably because of a bug
+in the implementation of len = pure function value in IVF8.
+[bullet] Fortran does not allow to manage character encodings such as UTF8.
+[list_end]
+
+[subsection Preprocessing]
+  The following preprocessing macro must be considered :
+[list_begin bullet]
+[bullet]  _VSTRING_STATIC_BUFFER : see  the section "Dynamic or static buffer"
+[bullet] _VSTRING_ALLOCATABLE or _VSTRING_POINTER : see the section "Allocatable or pointer"
+[list_end]
+
+[subsection History]
+   This module was originally based on the iso_varying_string.f90 module 
+   by Rich Townsend.
+
+[section METHODS]
+
+In the following definitions, the [arg this] argument has, 
+depending on the method, one of the the following definitions :
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(inout) ::"] this]
+[list_end]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] this]
+[list_end]
+The "intent(in)" or "intent(inout)" declaration depends on the 
+method and is what it is expected to be (if not, it is a bug).
+
+[list_begin definitions]
+
+[call [method "vstring_new"] [arg "(this ?args?)"]]
+
+Generic constructor. Creates the new vstring "this".
+
+[call [method "vstring_new"] ([arg "this"])]
+Creates a vstring with 0 characters and 0 length.
+
+[call [method "vstring_new"] [arg "(this,char_string)"]]
+[list_begin arg]
+[arg_def [type "character(LEN=*), intent(in) ::"] char_string]
+[list_end]
+The new vstring is filled with the 
+characters found in "char_string".
+
+[call [method "vstring_new"] [arg "(this,vstring)"]]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] vstring]
+[list_end]
+The new vstring is filled with the 
+characters found in the dynamic string "vstring".
+
+[call [method "vstring_new"] [arg "(this,chararray)"]]
+[list_begin arg]
+[arg_def [type "character(len=1), dimension(:), intent(in) ::"] chararray]
+[list_end]
+The new vstring is filled with the 
+characters found in the array of characters "chararray".
+
+[call [method "vstring_new"] [arg "(this, ncount ?, vstring?)"]]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] ncount]
+[arg_def [type "type ( t_vstring ) , intent(in), optional ::"] vstring]
+[list_end]
+Repeat the string ncount times and concatenate the result to create the new string.
+If not provided, the default string is the blank space.
+This can be considered as an implementation of "vstring_repeat".
+
+[call [method "vstring_free"] ([arg "this"])]
+Destructor.
+[nl]
+     The use of the destructor is OPTIONAL.
+     See the thread " New ISO_VARYING_STRING implementation 
+     (without memory leaks)" on comp.lang.fortran :
+     "On most systems, memory is memory :-).  However, there is a
+     difference between how ALLOCATABLE variables and POINTER
+     variables are handled.  ALLOCATABLE variables are always
+     deallocated automatically when thay go out of scope (unless
+     they have the SAVE attribute).  POINTER variables usually
+     are not.  The reason is that the program may have associated
+     additional pointers, that aren't going out of scope, with the
+     same target as the one that is."
+
+[call [method "vstring_exists"] ([arg "this"]) result ( exists )]
+[list_begin arg]
+[arg_def [type "logical ::"] exists]
+[list_end]
+Returns .true. if the string is allocated.
+
+[call [method "vstring_equals "] [arg "(this, stringb ?, nocase,length?)"]  result (equals)]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] stringb]
+[arg_def [type "logical , intent (in), optional ::"] nocase]
+[arg_def [type "integer , intent (in), optional ::"] length]
+[arg_def [type "logical ::"] equals]
+[list_end]
+     Perform a character-by-character comparison of strings this and string2.
+     Returns true if this and stringb are identical, or .false when not.
+     If nocase is set to true, the case of the characters is not taken into account.
+     The default behaviour is to take into account for case of characters.
+     If length is specified, then only the first length characters are used in the comparison.
+
+[call [method "vstring_equals "] [arg "(this, string2 ?, nocase,length?)"] result (equals)]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] string2]
+[arg_def [type "logical , intent (in), optional ::"] nocase]
+[arg_def [type "integer , intent (in), optional ::"] length]
+[arg_def [type "logical ::"] equals]
+[list_end]
+     Same as previous but with string2 as a character string.
+
+[call [method "vstring_cast"] ([arg "this"] [opt ", args"])]
+Convert a dynamic string into another fortran data type.
+
+[call [method "vstring_cast"] ([arg this] [arg ", length"] [arg ", charstring"])]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] length]
+[arg_def [type "character ( LEN = length ) , intent(out) ::"] charstring]
+[list_end]
+Convert a dynamic string into a character string
+with fixed length.
+If the number of characters in the target charstring
+is not large enough, the target charstring is truncated, that is,
+contains only the first characters of the current dynamic string.
+
+[call [method "vstring_cast"] ([arg "this"] [arg ", charstring"])]
+[list_begin arg]
+[arg_def [type "character ( LEN = * ) , intent(out) ::"] charstring]
+[list_end]
+Convert a dynamic string into a character string
+with automatic length.
+If the number of characters in the target charstring
+is not large enough, the target charstring is truncated, that is,
+contains only the first characters of the current dynamic string.
+
+
+[call [method "vstring_cast"] ([arg "this"] [arg ", value"])]
+[list_begin arg]
+[arg_def [type "integer, intent(out) ::"] value]
+[list_end]
+Returns the integer stored in the current string.
+
+
+[call [method "vstring_cast"] ([arg "this"] [arg ", value"])]
+[list_begin arg]
+[arg_def [type "real, intent(out) ::"] value]
+[list_end]
+Returns the real stored in the current string.
+
+
+[call [method "vstring_cast"] ([arg "this"] [arg ", value"])]
+[list_begin arg]
+[arg_def [type "double precision, intent(out) ::"] value]
+[list_end]
+Returns the double precision stored in the current string.
+
+
+[call [method "vstring_length"] ([arg "this"])  result ( length )]
+[list_begin arg]
+[arg_def [type "integer ::"] length]
+[list_end]
+Returns the length of the current dynamic string.
+
+[call [method "vstring_concat"] [arg "(this,string2)"] result ( concat_string )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] string2]
+[arg_def [type "type ( t_vstring ) ::"] concat_string]
+[list_end]
+Returns a new dynamic string made by the concatenation of two dynamic strings.
+
+[call [method "vstring_concat"] [arg "(this,string2)"] result ( concat_string )]
+[list_begin arg]
+[arg_def [type "character(len=*) , intent(in) ::"] string2]
+[arg_def [type "type ( t_vstring ) ::"] concat_string]
+[list_end]
+Returns a new string made by the concatenation of the current dynamic string
+and the given character(len=*) string.
+
+[call [method "vstring_append"] [arg "(this,string2)"]]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] string2]
+[list_end]
+Append the given string at the end of the current string.
+If the given string string2 is of length greater than zero,
+that means that the length of the current string will be greater
+after the call to vstring_append.
+Note : that method can be called as a convenient alternative to vstring_concat,
+when the concat is to be done "in place".
+
+[call [method "vstring_append"] [arg "(this,string2)"]]
+[list_begin arg]
+[arg_def [type "character(len=*) , intent(in) ::"] string2]
+[list_end]
+Same as previous, but with a character(len=*) string2.
+
+
+[call [method "vstring_map"] [arg "(this , map_old , map_new ?, nocase?)"] result ( stringmap )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , dimension( : ), intent(in) ::"] map_old]
+[arg_def [type "type ( t_vstring ) , dimension( : ), intent(in) ::"] map_new]
+[arg_def [type "logical, intent(in), optional ::"] nocase]
+[arg_def [type "type(t_vstring) ::"] stringmap]
+[list_end]
+Replaces substrings in string based on the mapping defined by the couple (map_old , map_new).
+map_old and map_new are arrays of vstrings and are of the same size so that
+if imap is an index no greater than the size of map_old,
+map_old ( imap ) is the old string and map_new ( imap ) is the new string.
+Each instance of a key in the string will be replaced with its corresponding value.
+Both old and new strings may be multiple characters.
+If nocase is set to .true., then matching is done without regard to case differences.
+Replacement is done in an ordered manner, so the old string appearing first
+in the list will be checked first, and so on. The current string is only iterated over once,
+so earlier replacements will have no affect for later matches.
+For example,
+[example {
+  vstring_map 1abcaababcabababc [abc,ab,a,1] [1,2,3,0]
+}]
+will return the string 01321221.
+Note that if an earlier key is a prefix of a later one, it will completely
+mask the later one. So if the previous example is reordered like this,
+[example {
+  vstring_map 1abcaababcabababc [1,ab,a,abc] [0,2,3,1]
+}]
+it will return the string 02c322c222c.
+
+[call [method "vstring_replace"] [arg "(this , first , last ?, newstring?)"] result ( stringreplace )]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] first]
+[arg_def [type "integer, intent(in) ::"] last]
+[arg_def [type "type ( t_vstring ) , intent(in), optional ::"] newstring]
+[arg_def [type "type ( t_vstring ) ::"] stringreplace]
+[list_end]
+Removes a range of consecutive characters from string, starting with the character whose
+index is first and ending with the character whose index is last. An index of 1 refers to
+the first character of the string.
+If newstring is specified, then it is placed in the removed character range.
+
+
+[call [method "vstring_compare"] [arg "(this,string2?, nocase , length?)"] result ( compare )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] string2]
+[arg_def [type "logical , intent (in), optional ::"] nocase]
+[arg_def [type "integer , intent (in), optional ::"] length]
+[arg_def [type "integer ::"] compare]
+[list_end]
+Perform a character-by-character comparison of strings this and string2.
+Returns -1, 0, or 1, depending on whether this is lexicographically less
+than, equal to, or greater than string2.
+If nocase is set to true, the case of the characters is not taken into account.
+The default behaviour is to take into account for case of characters.
+If length is specified, then only the first length characters are used in the comparison.
+
+[call [method "vstring_compare"] [arg "(this,string2?, nocase , length?)"] result ( compare )]
+[list_begin arg]
+[arg_def [type "character (len=*) , intent(in) ::"] string2]
+[arg_def [type "logical , intent (in), optional ::"] nocase]
+[arg_def [type "integer , intent (in), optional ::"] length]
+[arg_def [type "integer ::"] compare]
+[list_end]
+Same as previous, but with a character(len=*) string2.
+
+[call [method "vstring_trim"] [arg "(this ?, chars?)"] result ( trim_string )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in), optional ::"] chars]
+[arg_def [type "type ( t_vstring ) ::"] trim_string]
+[list_end]
+Returns a new string except that any leading or trailing characters
+from the set given by chars are removed.
+If chars is not specified then white space is removed (spaces, tabs,
+newlines, and carriage returns).
+
+[call [method "vstring_trim"] [arg "(this ?, chars?)"] result ( trim_string )]
+[list_begin arg]
+[arg_def [type "character (len=*) , intent(in), optional ::"] chars]
+[arg_def [type "type ( t_vstring ) ::"] trim_string]
+[list_end]
+Same as previous, but with a character(len=*) string "chars".
+
+[call [method "vstring_trimleft"] [arg "(this ?, chars?)"] result ( trim_string )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in), optional ::"] chars]
+[arg_def [type "type ( t_vstring ) ::"] trim_string]
+[list_end]
+Returns a new string except that any leading characters
+from the set given by chars are removed.
+If chars is not specified then white space is removed
+(spaces, tabs, newlines, and carriage returns).
+
+[call [method "vstring_trimleft"] [arg "(this ?, chars?)"] result ( trim_string )]
+[list_begin arg]
+[arg_def [type "character (len=*) , intent(in), optional ::"] chars]
+[arg_def [type "type ( t_vstring ) ::"] trim_string]
+[list_end]
+Same as previous, but with a character(len=*) string "chars".
+
+[call [method "vstring_trimright"] [arg "(this ?, chars?)"] result ( trim_string )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in), optional ::"] chars]
+[arg_def [type "type ( t_vstring ) ::"] trim_string]
+[list_end]
+Returns a value equal to string except that any trailing characters from the set given by chars are removed.
+If chars is not specified then white space is removed (spaces, tabs, newlines, and carriage returns).
+
+[call [method "vstring_trimright"] [arg "(this ?, chars?)"] result ( trim_string )]
+[list_begin arg]
+[arg_def [type "character (len=*) , intent(in), optional ::"] chars]
+[arg_def [type "type ( t_vstring ) ::"] trim_string]
+[list_end]
+Same as previous, but with a character(len=*) string "chars".
+
+[call [method "vstring_first"] [arg "(this ?, string2 , first?)"] result ( firstIndex )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in)   ::"] string2]
+[arg_def [type "integer, intent(in), optional ::"] first]
+[arg_def [type "integer ::"] firstIndex]
+[list_end]
+Search in the current string for a sequence of characters that exactly match the characters in string2.
+If found, return the index of the first character in the first such match within the current string.
+If not found, return 0.
+If first is specified, then the search is constrained to start with the character
+in the current string specified by the index.
+
+[call [method "vstring_first"] [arg "(this ?, string2 , first?)"] result ( firstIndex )]
+[list_begin arg]
+[arg_def [type "character(len=*) , intent(in)   ::"] string2]
+[arg_def [type "integer, intent(in), optional ::"] first]
+[arg_def [type "integer ::"] firstIndex]
+[list_end]
+Same as previous, but with a character(len=*) string "string2".
+
+
+[call [method "vstring_last"] [arg "(this ?, string2 , last?)"] result ( lastIndex )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in)   ::"] string2]
+[arg_def [type "integer, intent(in), optional ::"] last]
+[arg_def [type "integer ::"] lastIndex]
+[list_end]
+Search in the current string for a sequence of characters that exactly match the characters in string2.
+If found, return the index of the last character in the first such match within the current string.
+If not found, return 0.
+If last is specified, then the search is constrained to start with the character in the current
+string specified by the index.
+
+[call [method "vstring_last"] [arg "(this ?, string2 , last?)"] result ( lastIndex )]
+[list_begin arg]
+[arg_def [type "character(len=*) , intent(in) ::"] string2]
+[arg_def [type "integer, intent(in), optional ::"] last]
+[arg_def [type "integer ::"] lastIndex]
+[list_end]
+Same as previous, but with a character(len=*) string "string2".
+
+
+[call [method "vstring_range"] ([arg "this"][arg ", first"][arg ", last"]) result ( string_range )]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] first]
+[arg_def [type "integer, intent(in) ::"] last]
+[arg_def [type "type ( t_vstring ) ::"] string_range]
+[list_end]
+Returns a range of consecutive characters from string,
+starting with the character whose index is first and ending with the character whose
+index is last. An index of 1 refers to the first character of the string.
+If first is less than 1 then an error is generated.
+If last is greater than or equal to the length of the string then an error is generated.
+If first is greater than last then an error is generated.
+
+
+
+[call [method "vstring_index"] [arg "(this , charIndex )"] result ( string_index )]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] charIndex]
+[arg_def [type "type ( t_vstring ) ::"] string_index]
+[list_end]
+Returns the charIndex'th character of the string argument.
+A charIndex of 1 corresponds to the first character of the string.
+If charIndex is less than 1 or greater than or equal to the length of the string
+then an error is generated.
+
+[call [method "vstring_toupper"] ([arg "this"][opt ", first"][opt ", last"]) result ( new_upper )]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] first]
+[arg_def [type "integer, intent(in) ::"] last]
+[arg_def [type "type ( t_vstring ) ::"] new_upper]
+[list_end]
+Returns a vstring except that all lower (or title) case letters have been
+converted to upper case. If first is specified, it refers to the first char index in the string
+to start modifying. If last is specified, it refers to the char index in the string to stop
+at (inclusive).
+
+[call [method "vstring_tolower"] ([arg "this"][opt ", first"][opt ", last"]) result ( new_lower )]
+[list_begin arg]
+[arg_def [type "integer, intent(in)         ::"] first]
+[arg_def [type "integer, intent(in)         ::"] last]
+[arg_def [type "type ( t_vstring ) ::"] new_lower]
+[list_end]
+Returns a vstring except that all upper (or title) case letters have been
+converted to lower case. If first is specified, it refers to the first char index in the string
+to start modifying. If last is specified, it refers to the char index in the string to stop
+at (inclusive).
+
+
+[call [method "vstring_totitle"] ([arg "this"][opt ", first"][opt ", last"]) result ( new_title )]
+[list_begin arg]
+[arg_def [type "integer, intent(in)         ::"] first]
+[arg_def [type "integer, intent(in)         ::"] last]
+[arg_def [type "type ( t_vstring ) ::"] new_title]
+[list_end]
+Returns a vstring except that the first character in string is converted
+to upper case, and the rest of the string is converted to lower case. If first is specified, it refers
+to the first char index in the string to start modifying. If last is specified, it refers
+to the char index in the string to stop at (inclusive).
+
+
+[call [method "vstring_reverse"] ([arg "this"]) result ( new_reverse )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) ::"] new_reverse]
+[list_end]
+Return a string that has all characters in reverse order.
+
+
+[call [method "vstring_random"] ([arg "this"]) result ( new_random )]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] length]
+[arg_def [type "type ( t_vstring ) ::"] new_random]
+[list_end]
+Fill a string with required length and randomized characters.
+
+
+[call [method "vstring_match"] ([arg "this"] [arg ", pattern"] [opt ", nocase"]) result ( match )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] pattern]
+[arg_def [type "logical , intent(in) , optional ::"] nocase]
+[arg_def [type "logical ::"] match]
+[list_end]
+See if [arg pattern] matches string; return 1 if it does, 0 if it doesn't.
+If [arg nocase] is specified and true, then the pattern attempts to match against the
+string in a case insensitive manner.
+For the two strings to match, their contents must be identical except
+that the following special sequences may appear in pattern:
+[list_begin bullet]
+[bullet] *
+Matches any sequence of characters in string, including a null string.
+[bullet] ?
+Matches any single character in string.
+[bullet] [lb]chars[rb]
+Matches any character in the set given by chars.
+If a sequence of the form x-y appears in chars, then any character
+between x and y, inclusive, will match.
+When used with -nocase, the characters of the range are converted to lower case first.
+Whereas {[lb]A-z[rb]} matches '_' when matching case-sensitively ('_' falls between the 'Z'
+and 'a'), with -nocase this is considered like {[lb]A-Za-z[rb]} (and probably what was
+meant in the first place).
+[bullet] \x
+Matches the single character x.
+This provides a way of avoiding the special interpretation of the characters *?[lb][rb]\ in pattern.
+[list_end]
+
+The following example is extracted from the unit tests
+provided with flibs. In the following example, "match" is true.
+[example {
+    type ( t_vstring ) :: string1
+    logical :: match
+    call vstring_new ( string1 , "m_vstring.f90" )
+    match = vstring_match ( string1 , "m_*.f90" )
+    call vstring_free ( string1 )
+}]
+
+[call [method "vstring_match"] ([arg "this"] [arg ", pattern"] [opt ", nocase"]) result ( match )]
+[list_begin arg]
+[arg_def [type "character(len=*) , intent(in) ::"] pattern]
+[arg_def [type "logical , intent(in) , optional ::"] nocase]
+[arg_def [type "logical ::"] match]
+[list_end]
+Same as previous, with character(len=*) as [arg pattern].
+
+
+[call [method "vstring_is"] ([arg "this"] [arg ", class"] [opt ", strict"] [opt ", failindex"]) result ( isinclass )]
+[list_begin arg]
+[arg_def [type "character(len=*) , intent(in) ::"] class]
+[arg_def [type "logical, intent(in) , optional ::"] strict]
+[arg_def [type "integer, intent(out) , optional ::"] failindex]
+[arg_def [type "logical ::"] isinclass]
+[list_end]
+     Returns .true. if string is a valid member of the specified character class, 
+     otherwise returns .false.. 
+     If strict is provided and .true., then an empty string returns .false..
+     If strict is provided and .false., or not provided, an empty string returns .true..
+     If failindex is provided, then if the function returns .false., the index in the 
+     string where the class was no longer valid will be stored in the variable failindex. 
+     The following character classes are recognized (the class name can be abbreviated):
+[list_begin bullet]
+[bullet]        alpha           Any alphabet character, that is [lb]a-zA-Z[rb].
+[bullet]       alnum           Any alphabet or digit character, that is [lb]a-zA-Z0-9[rb].
+[bullet]       ascii
+           Any character with a value less than 128 (those that are in the 7-bit ascii range).
+[bullet]       control
+           Any control character. Control chars are in the 
+           ranges 00..1F and 7F..9F, that is from ascii #0 to #31 and from #127 to #159
+[bullet]       digit
+           Any digit character. Note that this includes characters outside of the [lb]0-9[rb] range.
+[bullet]       false
+           Any of the forms allowed where the logical is false.
+[bullet]       graph
+           Any printing character, except space that is from ascii #33 to #126.
+[bullet]       integer
+           Any of the valid forms for an ordinary integer in Fortran, with optional surrounding whitespace. 
+[bullet]       logical
+           Any valid Fortran logical
+[bullet]       lower
+           Any lower case alphabet character, that is [lb]a-z[rb].
+[bullet]       punct
+           Any punctuation character, that is _,;:.?[lb][rb](){}@"'
+[bullet]       print
+           Any printing character, including space that is from ascii #32 to #126.
+[bullet]       real
+           Any of the valid forms for a real in Fortran, with optional surrounding whitespace. 
+[bullet]       space
+           Any space character, that is white space, tab, newline or carriage return.
+[bullet]       true
+           Any of the forms allowed where the logical is true.
+[bullet]       upper
+           Any upper case alphabet character, that is [lb]A-Z[rb].
+[bullet]       xdigit
+           Any hexadecimal digit character ([lb]0-9A-Fa-f[rb]). 
+[bullet]       wordchar
+           Any word character. That is any alphanumeric character (upper case,
+           lower case, or digit), or any connector punctuation characters (e.g. underscore).
+[list_end]
+
+
+
+[list_end]
+
+[section "INTERFACE TO STANDARD FORTRAN"]
+
+These methods or routines are simply an interface of standard fortran
+string processing routines.
+
+[list_begin definitions]
+
+[call [method "vstring_iachar"] ([arg "this"]) result ( new_iachar )]
+[list_begin arg]
+[arg_def [type "integer ::"] new_iachar]
+[list_end]
+Returns the code for the ASCII character in the character position of C.
+Example : If this is "@", then iachar is 64.
+
+
+[call [method "vstring_ichar"] ([arg "this"]) result ( new_ichar )]
+[list_begin arg]
+[arg_def [type "integer ::"] new_ichar]
+[list_end]
+Returns the code for the character in the first character position of
+in the system’s native character set.
+This is an interface to the standard fortran.
+
+
+[call [method "vstring_charindex"] ([arg "this"] [arg ", substring"] [opt ", back"]) result ( charindex )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] substring]
+[arg_def [type "logical, intent(in), optional ::"] back]
+[arg_def [type "integer ::"] charindex]
+[list_end]
+Returns the position of the start of the first occurrence of string substring
+as a sub-string in the current string, counting from one. If substring is not present
+in the current string, zero is returned. If the back argument is present and true, the
+return value is the start of the last occurrence rather than the first.
+Note: this is a simple interface to the standard fortran intrinsic "index".
+
+
+[call [method "vstring_scan"] ([arg "this"][arg ", substring"][opt ", back"]) result ( charindex )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] substring]
+[arg_def [type "logical, intent(in), optional ::"] back]
+[arg_def [type "integer ::"] charindex]
+[list_end]
+Returns the position of a character of the current string that is in set, or zero
+if there is no such character. If the logical back is absent or present with value
+false, the position of the leftmost such character is returned. If back is present
+with value true, the position of the rightmost such character is returned.
+Note: this is a simple interface to the standard fortran intrinsic "index".
+
+
+
+[call [method "vstring_verify"] ([arg "this"][arg ", substring"][opt ", back"]) result ( charindex )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) , intent(in) ::"] substring]
+[arg_def [type "logical, intent(in), optional ::"] back]
+[arg_def [type "integer ::"] charindex]
+[list_end]
+Returns the default integer value 0 if each character in the current
+string appears in set, or the position of a character of the current string
+that is not in set. If the logical back is absent or present with value false,
+the position of the left-most such character is returned. If back is
+present with value true, the position of the rightmost such character is returned.
+Note: this is a simple interface to the standard fortran intrinsic "verify".
+
+
+
+[call [method "vstring_adjustl"] ([arg "this"]) result ( newstring )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) ::"] newstring]
+[list_end]
+Adjusts left to return a string of the same length by removing
+all leading blanks and inserting the same number of trailing blanks.
+Note : this is a simple interface to the standard fortran intrinsic "adjustl".
+
+[call [method "vstring_adjustr"] ([arg "this"]) result ( newstring )]
+[list_begin arg]
+[arg_def [type "type ( t_vstring ) ::"] newstring]
+[list_end]
+Adjusts right to return a string of the same length by removing
+all trailing blanks and inserting the same number of leading blanks.
+Note: this is a simple interface to the standard fortran intrinsic "adjustr".
+
+
+[list_end]
+
+[section "STATIC METHODS"]
+
+[list_begin definitions]
+
+[call [method "vstring_achar"] [arg "(i)"] result ( new_achar )]
+[list_begin arg]
+[arg_def [type "integer, intent (in) ::"] i]
+[arg_def [type "type ( t_vstring ) ::"] new_achar]
+[list_end]
+Returns the character located at position I in the ASCII collating sequence.
+This is an interface to the standard fortran.
+
+
+[call [method "vstring_char"] [arg "(i)"] result ( new_achar )]
+[list_begin arg]
+[arg_def [type "integer, intent (in) ::"] i]
+[arg_def [type "type ( t_vstring ) ::"] new_achar]
+[list_end]
+Returns the character represented by the integer I.
+This is an interface to the standard fortran.
+Example : If i is 64, then char is "@".
+
+
+
+
+[list_end]
+
+[section TODO]
+[list_begin bullet]
+[bullet] Refactor the component and use datastructures/vectors.f90
+[bullet] vstring_read Returns the vstring which is read on the given unit number, or on the standard input if no unit is given.
+[bullet] vstring_write Writes the current vstring on the given unit number, or on the standard output if no unit is given.
+[bullet] vstring_wordend Returns the index of the character just after the last one in the word containing character charIndex of string.
+[bullet] vstring_wordstart Returns the index of the first character in the word containing character charIndex of string.
+[list_end]
+  
+[manpage_end]

@@ -1,0 +1,131 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/strings n 1.0]
+[copyright {2005 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Manipulate file and directory names}]
+
+[description]
+
+The [strong filedir] contains a number of routines to manipulate file
+and directory names:
+
+[list_begin bullet]
+[bullet]
+Strip the extension from a file name and return the "root name".
+
+[bullet]
+Determine instead the extension from a file name and return that.
+
+[bullet]
+Strip the directory name from the path to the file and return the "base
+name".
+
+[bullet]
+Strip the file name from the path to the file and return the
+directory.
+
+[bullet]
+Concatenate file and directory names.
+
+[bullet]
+Add an extension to a file name.
+
+[list_end]
+
+These are all relatively simple routines, but they are fairly common,
+hence the module.
+
+
+[section ROUTINES]
+The module contains the following routines:
+
+[list_begin definitions]
+
+[call [cmd "use filedir"]]
+To import the subroutines, use this module.
+
+
+[call [cmd "rootname = filedir_rootname( filename )"]]
+Strips the extension if any off the file name and returns the result.
+
+[list_begin arg]
+
+[arg_def "character(len=*)" filename]
+Name of the file
+
+[list_end]
+[nl]
+
+
+[call [cmd "extension = filedir_extension( filename )"]]
+Returns the extension if any found in a file name
+
+[list_begin arg]
+
+[arg_def "character(len=*)" filename]
+Name of the file
+
+[list_end]
+[nl]
+
+
+[call [cmd "basename = filedir_basename( filename )"]]
+Returns the base name of a file (so, without the directory part)
+
+[list_begin arg]
+
+[arg_def "character(len=*)" filename]
+Name of the file
+
+[list_end]
+[nl]
+
+
+[call [cmd "dirname = filedir_dirname( filename )"]]
+Returns the directory part of a file name
+
+[list_begin arg]
+
+[arg_def "character(len=*)" filename]
+Name of the file
+
+[list_end]
+[nl]
+
+
+[call [cmd "dirname = filedir_concat( directory, filename )"]]
+Prepend the directory to the file name
+
+[list_begin arg]
+
+[arg_def "character(len=*)" directory]
+Directory to prepend
+[arg_def "character(len=*)" filename]
+Name of the file
+
+[list_end]
+[nl]
+
+
+[call [cmd "newname = filedir_add_extension( filename, extension )"]]
+Append an extension to the file name
+
+[list_begin arg]
+
+[arg_def "character(len=*)" directory]
+Directory to prepend
+[arg_def "character(len=*)" filename]
+Name of the file
+
+[list_end]
+
+[list_end]
+
+[strong Note:]
+The functions all return strings that are large enough to guarantee
+that the entire result can be hold. In many cases, the length is the
+same as that of the input argument, but for instance with
+[strong file_add_extension] it is the sum of the lengths of the
+two arguments plus 1 (for the dot).
+
+[manpage_end]

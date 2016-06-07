@@ -1,0 +1,60 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>select_precision - flibs </title>
+</head>
+<! -- Generated from file 'select_precision.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: select_precision.html,v 1.1 2008/09/26 04:19:41 arjenmarkus Exp $ select_precision.n
+   -->
+
+<body>
+<h1> select_precision(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> select_precision - Select the precision for real variables
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The auxiliary <em>select_precision</em> module defines three parameters
+by which you can select the precision for real variables and constants:
+
+<ul>
+<li>
+<em>sp</em> - Single precision
+
+<br><br>
+<li>
+<em>dp</em> - Double precision (the real kind whose precision is larger
+than that of single precision)
+
+<br><br>
+<li>
+<em>wp</em> - Working precision. If you consistently use <em>wp</em> as the
+kind for your real variables and constants, then switching between
+single and double precision is merely a matter of setting <em>wp</em> to
+either <em>sp</em> or <em>dp</em> in this module and recompiling.
+
+</ul>
+
+<em>Note:</em> One of the pitfalls in using double precision is that
+literal constants, such as <em>1.2345678901234567890</em> are not
+automatically interpreted as double precision. You need to specify the
+kind explicitly: <em>1.2345678901234567890_wp</em> will define the
+constant in the working precision.
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

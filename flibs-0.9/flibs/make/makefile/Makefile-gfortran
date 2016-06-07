@@ -1,0 +1,35 @@
+#
+# Options specific to the fortran compiler
+#
+FC = gfortran
+FOPTS_BASE += -fno-backslash
+F90OPTS = $(FOPTS_BASE) 
+F90OPTS += -x f95-cpp-input 
+F90OPTS += -fcray-pointer 
+F90OPTS += -fbounds-check 
+F90OPTS += -Wall 
+F90OPTS += -I$(srcdir) 
+F90OPTS += -J$(libdir) 
+F90OPTS += -I$(libdir)
+F90OPTS += -I../../src/datastructures
+F90OPTS += -I../../tests/support
+F90OPTS += -D_PLATFORM_FORTRAN_2003
+F90OPTS += -D_PLATFORM_SYSTEM_SUBROUTINE
+F90OPTS += -D_PLATFORM_STAT_SUBROUTINE
+F90OPTS += -D_PLATFORM_CHDIR_SUBROUTINE
+F90OPTS += -D_VSTRING_POINTER
+F90OPTS += -D_VSTRINGLIST_ALLOCATABLE
+F90OPTS += -D_FS_RENAME_SUBROUTINE
+F90OPTS += -D_VFILE_RENAME_SUBROUTINE
+F90OPTS += -D_VFILE_GETCWD_SUBROUTINE
+F77OPTS = $(FOPTS_BASE) -x f77-cpp-input -fbounds-check -Wall -I$(srcdir) -J$(libdir) -I$(libdir)
+LINK = gfortran
+LOPTS = $(LOPTS_BASE)
+
+ifeq ($(OPERATING_SYSTEM),windows32)
+F90OPTS += -D_PLATFORM_OS_WINDOWS_NT
+endif
+ifeq ($(OPERATING_SYSTEM),Linux)
+F90OPTS += -D_PLATFORM_OS_LINUX
+endif
+

@@ -1,0 +1,55 @@
+2008-08-10 arjenmarkus@sourceforge.net
+   * chksys/chksysff.f90: added a test for the type of hexdecimal and binary constants/literals
+
+2008-07-09 arjenmarkus@sourceforge.net
+   * tests/tools/check_reals.f90: drop the elemental keyword
+
+2008-07-04 arjenmarkus@sourceforge.net
+   * src/tools: added a new program (editcode): specific preprocessing tasks
+   * tests/tools: small test for the preprocessing program
+
+2008-05-04 arjenmarkus@sourceforge.net
+   * index.html: added the vstring and vstringlist modules, as well as finite_state and messages
+   * finite_state: updated the test program, wrote the documentation
+   * messages: updated the module and the test program
+
+2008-03-16 arjenmarkus@sourceforge.net
+   * testmake: a complete application to create test programs
+   * chksys: a set of programs to check properties of the compiler
+
+2008-03-13 arjenmarkus@sourceforge.net
+
+   * filedir: module for manipulating files and directories added (written by Michael Baudin)
+   * platform: module for basic identification of platform properties (written by Michael Baudin)
+
+2008-01-27 arjenmarkus@sourceforge.net
+
+   * ftnunit.f90: added init and final routines, added assertions
+   * test_ftnunit.f90: added init and final routines
+
+2008-01-26 arjenmarkus@sourceforge.net
+
+   * ftnunit.f90: moved the test subroutine
+   * ftnunit.man: updated documentation
+   * gentabletest.tcl: added facility
+
+   (ChangeLog was not kept up-to-date)
+
+2006-06-25 arjenmarkus@sourceforge.net
+
+   * added pointsets.f90
+   * started with simple interval arithmetic
+   * added an implementation of text streams
+   * simple string manipulations
+   * experiment with integer programming
+
+2006-04-11 arjenmarkus@sourceforge.net
+
+   * integer_set.f90: correction of one inconsistency (intent)
+   * func_qsort.f90: added to repository
+   * quantum.f90: added to repository
+   * quantum_computing.pdf: added to site docs
+   * index.html: description of experiments directory
+   * backtracking facilities
+
+   Note: no detailed record maintained before 11 april 2006

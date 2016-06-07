@@ -1,0 +1,365 @@
+<html>
+<head>
+<title>CHKSYS: Check compiler and run-time environment</title>
+</head>
+<body>
+<h1>
+Checking properties of the compiler and the run-time
+environment
+</h1>
+<table>
+<tr>
+<td>chksys.f</td>
+      <td>A program to determine the properties of the
+run-time environment for FORTRAN 77 programs</td>
+</tr><tr>
+<td>chkcomp.f</td>
+      <td>A FORTRAN 77 source file containing deliberate deviations
+from the standard and deliberate bad statements for testing the
+compiler's accuracy</td>
+</tr><tr>
+<td>chksysff.f90</td>
+      <td>A program to determine the properties of the
+run-time environment for Fortran 90 programs</td>
+</tr><tr>
+<td>chkcomff.f90</td>
+      <td>A Fortran 90 source file containing deliberate deviations
+from the standard and deliberate bad statements for testing the
+compiler's accuracy</td>
+</tr><tr>
+<td>chksysc.c</td>
+      <td>A program to determine the properties of the run-time
+environment for C programs</td>
+</tr><tr>
+<td>chkcompc.c</td>
+      <td>A C source file containing deliberate deviations from
+          the standard and deliberate bad statements for testing the
+          compiler's accuracy</td>
+</tr>
+</tr><tr>
+<td>fp_special.f90</td>
+      <td>A Fortran 90 program to test the behaviour of a program in the
+          presence of floating-point exceptions and special IEEE numbers
+          (notably negative zeros)</td>
+</tr>
+</table>
+<h3>Introduction</h3>
+<p>
+The programs CHKSYS and CHKSYSFF are meant to help understand the
+run-time environment of a FORTRAN program. For C there is a similar
+program, CHKSYSC.
+<p>
+In many cases the actual behaviour of a program depends on the compiler
+you use and the options you included during the compile and link steps.
+This is especially true if errors occur or if you are using certain
+open-ended language features.
+<p>
+Many programmers are not aware that such features exist and it is
+sometimes difficult or impossible to find them in the documentation.
+<p>
+That is where the CHKSYS offer some assistence:
+<ul>
+<li>It checks areas that are open-ended, such as whether local variables
+are automatically saved between subroutine calls and various odd
+errors that can occur when using external files.
+<li>It checks how (deliberate) run-time errors are handled, such as an
+overflow or an exceedance of array bounds.
+</ul>
+<p>
+The program source CHKCOMP (in chkcomp.f(or) and its Fortran 90
+equivalent chkcomff.f90) is meant to test the accuracy of the compiler.
+It is not meant to validate the compiler. It simply contains a fair
+number of very common extensions to the standard
+and some deliberate program errors (like jumping into a DO-loop and
+inaccessible statements). The errors are documented in the source code
+via comments.
+<p>
+The rest of this document describes:
+<br><a href="#usage">How to use the programs</a>
+<br><a href="#tests">Description of the tests</a>
+<br><a href="#results">Presentation of some results</a>
+<p>
+<p>
+<a name="usage"><h3>Usage of the programs</h3></a>
+<b>CHKCOMP:</b>
+<ul>
+<li>First run the compiler of choice with standard options
+<li>Then try to find out what extra options are needed to get the
+maximum set of messages. Such options include:
+<ul>
+<li>Highest warning level
+<li>Check strict conformance to standard
+<li>Check interfaces
+<li>etc.
+</ul>
+<li>In general, it is a good idea to ALWAYS ask for the maximum number of
+checks, as this can prevent programming errors at an early stage.
+<li>Some (or many) compilers are lazy: they will offer very little checks
+beyond basic syntax. Shun such compilers - or at least use appropriate
+program checkers beside them.
+</ul>
+<p>
+<b>CHKSYS:</b>
+<ul>
+<li>Compile the program with the same options as the CHKCOMP source. If
+this would result in errors, remove the strict conformance to the
+standard, as it uses one, common, extension: IMPLICIT NONE.
+<li>Run the program once to get the general features of the run-time
+environment
+<li>Edit the file "chksys.set" to select the more disruptive tests.
+<li>Study the source code and the file "chksys.msg" to see how things
+are done. You might learn something from it or you might have
+suggestions.
+<li>Use various compiler options:
+<ul>
+<li>With and without optimisations
+<li>Array bounds checking
+<li>Strict conformance to the standard
+<li>Numerical options (like treatment of overflows and underflows)
+</ul>
+</ul>
+<p>
+<p>
+<a name="tests"><h3>Tests that are performed</h3></a>
+<b>CHKSYS</b> performs the following tests:
+<ul>
+<li>Operating system:
+<ul>
+<li>What type of system (UNIX, MS-DOS/Windows 3.x or Windows 95/NT)?
+<li>Support for long file names?
+<li>Distinction between upper and lower case in file names?
+</ul>
+<li>Memory model:
+<ul>
+<li>Static (local variables are automatically saved) or
+dynamic (you must use SAVE to save the values)
+<li>Length of an integer:
+<ul>
+<li>2 or 4 bytes? Often selectable via compiler switch. Determines
+range
+</ul>
+<li>Precision of real variables and numerical operations:
+<ul>
+<li>How many decimals are significant?
+<li>Any obvious problems with multiplications
+</ul>
+<li>What is the unit for the length of a direct-access record?
+<ul>
+<li>Often a byte, sometimes a word (e.g. 4 bytes!)
+</ul>
+<li>Are binary files allowed? And what keywords do you use?
+<li>How many files can be opened at the same time?
+<li>File handling:
+<ul>
+<li>Are the parameters to the OPEN statement checked immediately?
+<li>Using unformatted READs on a formatted file
+<li>Writing to an unopened file
+<li>Reading too many data from a record of an unformatted file
+<li>Writing too many data to a record of a direct-access file
+<li>Opening the same file twice
+<li>Closing an unopened file
+<li>Opening a second file to the same unit
+<li>Reading files of which the last line is incomplete
+</ul>
+<li>Check the behaviour of DO-loops:
+<ul>
+<li>Can you change the value of a DO-variable?
+<li>What happens if you change the upper limit?
+<li>Are DO-loops performed at least once? (They should not!)
+</ul>
+<li>Check the behaviour of overlapping substrings:
+<ul>
+<li>Shifting characters to the left and right
+</ul>
+<li>Miscellaneous stuff:
+<ul>
+<li>Treatment of a backslash (C-like espace character?)
+<li>Formatting in list-directed output
+<li>The first character when writing to the screen
+</ul>
+</ul>
+<p>
+<p>
+<a name="results"><h3>Some results</h3></a>
+<i>Compiling CHKCOMP:</i>
+<p>
+The first listing is the result when using MicroSoft FORTRAN version 5.1,
+with the maximum level of warnings (which turns out to be the default)
+but not the switch to force checking against the standard:
+<pre>
+chkcomp.for(79) : error F2566: INTEGER : REAL : type conversion error
+chkcomp.for(80) : error F2566: INTEGER : REAL : type conversion error
+chkcomp.for(81) : error F2005: illegal REAL constant
+chkcomp.for(82) : error F2566: REAL : REAL : type conversion error
+chkcomp.for(128) : error F2516: I : assignment using active DO variable illegal
+chkcomp.for(136) : warning F4801: label 120 : used across blocks
+chkcomp.for(141) : warning F4801: label 130 : used across blocks
+chkcomp.for(171) : warning F4999: LOWCAS : variable declared but not used
+chkcomp.for(171) : warning F4999: LONGVARIABLENAME : variable declared but not used
+chkcomp.for(171) : warning F4999: UND_SC : variable declared but not used
+chkcomp.for(171) : warning F4999: INT2 : variable declared but not used
+chkcomp.for(171) : warning F4999: INT4 : variable declared but not used
+chkcomp.for(171) : warning F4999: INTV2 : variable declared but not used
+chkcomp.for(171) : warning F4999: DBLVAL : variable declared but not used
+chkcomp.for(171) : warning F4999: REAVAL : variable declared but not used
+chkcomp.for(178) : error F3606: SUBR1 : formal argument REAVAL : type mismatch
+chkcomp.for(187) : error F2202: SUBR2 : defined with different number of arguments
+</pre>
+<p>
+Below is a listing from the Lahey FORTRAN 77 compiler, version 5.20,
+using no particular switches:
+<pre>
+Compiling chkcomp.for, a Standard Format Source File
+
+OPTION  DESCRIPTION                    OPTION  DESCRIPTION
+/n0  - Standard FORTRAN 77 IMPLICIT    /nL  - No Line-number table
+/n2  - Generate 387 constants and code / P  - Protect constant arguments
+/n4  - No 80486 optimizations          /nQ1 - "Unlimited" NDP stack
+/n7  - Optimize inter-statement        /nQ2 - No protected-mode RPC
+/nA2 - No allocatable array checking   /nQ3 - No real-mode RPC
+/nB  - No Bounds checking              / R  - Remember local variables
+/nC  - Ignore nonstandard usage        / S  - Create filename.SLD for SOLD
+/nC1 - INTEGER constants 4 bytes       /nT  - INTEGER*4, LOGICAL*4 default
+/nD  - DIRECT files with headers       /nV  - Not VAX interpretation
+/nH  - No Hardcopy source listing      / W  - Display Warning messages
+/nI  - No Interface checking           /nX  - No Xref listing
+/nK  - Generate 80x87 code             /nZ1 - Better SOLD debugging
+
+Compiling line 35:       PROGRAM CHKCMP
+File chkcomp.for, line 80:
+      INTVAL = 1.0E20
+                    ^
+Warning - INTEGER variable (INTVAL) possibly assigned new value before
+former value used.
+
+File chkcomp.for, line 81:
+      REAVAL = 1.0E100
+                     ^
+Fatal - Expression is not within numeric limits of REAL data type
+(1.18E-38 : 3.40E+38) (See Section 6.3 in Lahey Programmer's Reference).
+
+File chkcomp.for, line 82:
+      REAVAL = 1.0D100
+                     ^
+Warning - REAL variable (REAVAL) possibly assigned new value before former
+value used.
+
+File chkcomp.for, line 84:
+      REAVAL = DBLVAL
+                    ^
+Warning - REAL variable (REAVAL) possibly assigned new value before former
+value used.
+
+File chkcomp.for, line 90:
+      INTVAL = LEN(STRING) + 1
+                             ^
+Warning - INTEGER variable (INTVAL) possibly assigned new value before
+former value used.
+
+File chkcomp.for, line 121:
+      INTVAL = INTV2
+                   ^
+Warning - INTEGER variable (INTV2) is used before being assigned a value.
+
+File chkcomp.for, line 128:
+         IF ( I      .EQ. 5 ) I      = 6
+                                       ^^
+Fatal - INTEGER variable (I) is a DO index, cannot assign a value (See
+Section 8.4.1 in Lahey Language Reference).
+Fatal - Statement illegal as IF suffix (See Section 8.5.2.2 in Lahey
+Language Reference).
+
+File chkcomp.for, line 148:
+      WRITE(*,*) 'This statement is not reachable'
+                                                  ^
+Warning - No execution path reaches this statement.
+
+File chkcomp.for, line 156:
+      WRITE(*,*) 'Neither is this'
+                                  ^
+Warning - No execution path reaches this statement.
+
+Warning - INTEGER variable (LOWCAS) is declared but never used,
+File chkcomp.for, line 58.
+Warning - INTEGER variable (UND_SC) is declared but never used,
+File chkcomp.for, line 59.
+Warning - INTEGER variable (LONGVARIABLENAME) is declared but never used,
+File chkcomp.for, line 60.
+Warning - INTEGER variable (INT4) is declared but never used,
+File chkcomp.for, line 61.
+Warning - INTEGER*2 variable (INT2) is declared but never used,
+File chkcomp.for, line 62.
+
+Fatal - Expression is not within numeric limits of INTEGER data type
+(-2,147,483,648 : 2,147,483,647) (See Section 6.3 in Lahey Programmer's
+Reference), File chkcomp.for, line 79.
+Fatal - Expression is not within numeric limits of INTEGER data type
+(-2,147,483,648 : 2,147,483,647) (See Section 6.3 in Lahey Programmer's
+Reference), File chkcomp.for, line 80.
+Warning - REAL variable (REAVAL) assigned a value, never used,
+File chkcomp.for, lines 81, 82, 84.
+Fatal - Expression is not within numeric limits of REAL data type
+(1.18E-38 : 3.40E+38) (See Section 6.3 in Lahey Programmer's Reference),
+File chkcomp.for, line 82.
+Fatal - Substring specifier must be > 0 and <= string length (See Section
+4.4.4.1 in Lahey Language Reference), File chkcomp.for, line 89.
+Fatal - Statement label (120) appears in transfer context outside DO range
+or block IF (See Chapter 8 in Lahey Language Reference), File chkcomp.for,
+ line 132.
+Fatal - Statement label (130) appears in transfer context outside DO range
+or block IF (See Chapter 8 in Lahey Language Reference), File chkcomp.for,
+ line 133.
+
+Compiling line 173:       SUBROUTINE SUBR1(  REAVAL )
+Compiling line 182:       SUBROUTINE SUBR2(  INTVAL )
+File chkcomp.for, line 182:
+      SUBROUTINE SUBR2(  INTVAL )
+                                ^
+Warning - Argument count conflicts with previous usage (See Section 10.3.1
+in Lahey Language Reference).
+
+Compiling line 191:       SUBROUTINE PDEBUG
+File chkcomp.for, line 201:
+D     WRITE(*,*) 'In DEBUG mode'
+
+Abort - Standard source file, columns 1-5: blanks and/or digits (See
+Section 1.6 in Lahey Language Reference).
+
+</pre>
+Both compilers are fairly old (copyrights indicate 1992), but they
+do show the capabilities of a good compiler:
+<ul>
+<li>Interface checks:
+<ul>
+<li><i>These are a major source of errors</i> and
+unfortunately FORTRAN 77 provides no prototyping mechanisms.
+The compilers check the consistency <i>within the file</i> only.
+</ul>
+<li>Use and misuse of variables:
+<ul>
+<li>Both warn about variables that have been declared, but not been used.
+<li>The Lahey compiler does a more thorough job, because it also warns
+about <i>new assignments before the previous value was used</i>.
+<li>Illegal use of DO-loop variables.
+</ul>
+<li>Unreachable statements:
+<ul>
+<li>The MicroSoft compiler does not warn us about them
+<li>The Lahey compiler does a pretty thorough job! It even detects the
+problem with this construct:
+<pre>
+151      IF ( INTVAL .GT. 10 ) THEN
+152         GOTO 220
+153      ELSE
+154         GOTO 230
+155      ENDIF
+156      WRITE(*,*) 'Neither is this'
+</pre>
+<li>Illegal substrings:
+<ul>
+<li>Note the <i>fatal</i> error for line 89: we are using a zero-length
+substring.
+</ul>
+</ul>
+</body>
+</html>

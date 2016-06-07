@@ -1,0 +1,153 @@
+One possible use of the editcode program
+----------------------------------------
+
+The editcode program transforms the given source code into a
+slightly different program based on the commands you give it. One
+possible use is an automated way to detect if variables have been
+initialised or not.
+
+Consider:
+
+subroutine compute_sum( x, y )
+    real :: x, y
+
+    x = x + y
+end subroutine compute_sum
+
+In this routine it is assumed that x is properly initialised (and y too
+of course).
+
+Using the editcode program and a specially devised module, we can check
+if this is the case in a real program:
+
+- Replace the "real" type by "type(checked_real)"
+- Add a USE statement for the module check_reals
+- Add a call to the routine check_assignment after each statement
+
+This can be achieved with the following input for the editcode program:
+
+    REPLACE_TYPE real type(checked_real)
+    ADD-USE "use check_reals"
+    ADD-CODE-STATEMENT "call check_assignment( __LINE__, '__FILE__' )"
+    !
+    ! List of files to treat
+    !
+    FILE "compute_sum.f90"
+
+Together they transform the above routine into (assuming it is not part
+of a module):
+
+subroutine compute_sum( x, y )
+use check_reals
+    type(checked_real) :: x, y
+
+    x = x + y
+call check_assignment( 4, 'compute_sum.f90' )
+end subroutine compute_sum
+
+The module check_reals can look like this (stripped down to this
+example):
+
+module check_reals
+    type checked_real
+        integer, pointer :: check => null()
+        real             :: value
+    endtype
+
+    integer, target, private :: check
+
+    interface assignment(=)
+        module procedure set_value_checked
+        module procedure set_value_real
+        module procedure set_real_checked
+    end interface
+
+    interface operator(+)
+        module procedure add_checked
+    end interface
+contains
+
+elemental subroutine set_real_checked( x, y )
+    real, intent(out)               :: x
+    type(checked_real), intent(in)  :: y
+
+    ! Note: because of "elemental" we can not check the state of y
+
+    x = y%value
+end subroutine set_real_checked
+
+elemental subroutine set_value_checked( x, y )
+    type(checked_real), intent(out) :: x
+    type(checked_real), intent(in)  :: y
+
+    if ( .not. associated(x%check) ) then
+        x%check => check
+    endif
+    if ( .not. associated(y%check) ) then
+        x%check = x%check + 1
+    endif
+
+    x%value = y%value
+end subroutine set_value_checked
+
+elemental subroutine set_value_real( x, y )
+    type(checked_real), intent(out) :: x
+    real, intent(in)                :: y
+
+    if ( .not. associated(x%check) ) then
+        x%check => check
+    endif
+
+    x%value = y ! No check possible
+end subroutine set_value_real
+
+elemental type(checked_real) function add_checked( x, y )
+    type(checked_real), intent(in) :: x, y
+
+    add_checked%check => check
+    add_checked%value =  x%value + y%value
+
+    if ( .not. associated(x%check) ) then
+        add_checked%check = add_checked%check + 1
+    endif
+
+    if ( .not. associated(y%check) ) then
+        add_checked%check = add_checked%check + 1
+    endif
+
+end function add_checked
+
+subroutine check_assignment( lineno, filename )
+    integer :: lineno
+    character(len=*) :: filename
+
+    if ( check /= 0 ) then
+        write(*,*) 'One or more uninitialised variables used at line ', &
+            lineno, ' in file ', trim(filename)
+    endif
+    check = 0
+end subroutine check_assignment
+
+end module check_reals
+
+This is used in the program in check_init.f90 and check_reals.f90.
+
+Note, that in that program we need to use a trick to make sure that
+the result can be printed:
+
+program check_init
+    real :: x, y
+    real(kind=kind(1.0)) :: sum
+
+    ...
+    sum = x
+    write(*,*) 'Sum: ', sum
+
+So, it is not altogether as automatic as one would like, but it gets the
+job done:
+
+$ ./check_init
+ One or more uninitialised variables used at line  22  in file check_init.f90
+ Sum:  9.
+
+(Using MinGW and g95)

@@ -1,0 +1,259 @@
+
+<html><head>
+<title>flibs/m_vstrplatform - flibs </title>
+</head>
+<! -- Generated from file 'platform/m_vstrplatform.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;   -- Copyright &copy; 2008 Michael Baudin &lt;michael.baudin@gmail.com&gt;
+   -->
+<! -- CVS: $Id: m_vstrplatform.html,v 1.2 2008/06/13 13:01:18 relaxmike Exp $ flibs/m_vstrplatform.n
+   -->
+
+<body>
+<h1> flibs/m_vstrplatform(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/m_vstrplatform - Platform-dependent routines and features
+
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#overview">OVERVIEW</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#dynamic_or_static_buffer">Dynamic or static buffer</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#pre-processing">Pre-processing</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>vstrplatform_system</b> (<i class='arg'>command</i> ?, status?)</a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>vstrplatform_osstring</b>() result ( <i class='arg'>currentos</i> )</a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>vstrplatform_platformstring</b>() result ( <i class='arg'>currentplatform</i> )</a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>vstrplatform_getenvvar</b>(<i class='arg'>envvar</i>) result ( <i class='arg'>value</i> )</a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>vstrplatform_getenvvar</b>(<i class='arg'>envvar</i>) result ( <i class='arg'>value</i> )</a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>vstrplatform_cd</b> ( <i class='arg'>dirname</i> ?, status?)</a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>vstrplatform_cd</b> ( <i class='arg'>dirname</i> ?, status?)</a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>platform_stat</b> ( <i class='arg'>filename</i> <i class='arg'>, statarray</i> ?, status?)</a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>platform_stat</b> ( <i class='arg'>filename</i> <i class='arg'>, statarray</i> ?, status?)</a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>m_vstrplatform</em> module provides several routines,
+which take dynamic strings arguments, to interact
+with the operating system.
+
+<h2><a name="overview">OVERVIEW</a></h2>
+<p>
+
+The goal of this module is to provide system access with
+commands which take dynamic strings as arguments.
+It is based on m_platform, which takes character-based arguments.
+
+In the following example, extracted from the m_vfile module included 
+in flibs, one sets the current working directory
+by using vstrplatform_cd on a dynamic string variable.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    type ( t_vstring ) :: dirname
+    integer :: status
+    call vstrplatform_cd ( dirname , status )
+</pre></td></tr></table></p>
+
+
+<p>
+This is a sketch of available routines :
+<ul>
+<li> vstrplatform_system                       Executes an external command on the system
+<br><br>
+<li> vstrplatform_get_environment_variable     Get to one environment variable
+<br><br>
+<li> vstrplatform_cd                           Change the system current directory
+<br><br>
+<li> vstrplatform_stat                         Get status of a file
+</ul>
+
+<h3><a name="dynamic_or_static_buffer">Dynamic or static buffer</a></h3>
+<p>
+
+The internal algorithms provided by m_vstrplatform are based on
+basic fortran character strings. In several situations, the
+dynamic vstring has to be converted into a basic fortran character
+buffer string, which size has to be given explicitely in the source
+code, with the <em>len = &lt;something&gt;</em> statement (in the
+<em>character ( len = &lt;something&gt;)</em>).
+<ul>
+<li> If the _VSTRPLATFORM_STATIC_BUFFER macro is defined, then character strings of
+constant size VSTRPLATFORM_MAXIMUM_ENVVAR_LENGTH are used as buffers.
+<br><br>
+<li> If the _VSTRPLATFORM_STATIC_BUFFER macro is not defined (which is the default),
+then character strings of dynamic size are used as buffers
+with the fortran 90 &quot;len = vstring_length(this)&quot; statement.
+</ul>
+
+The second solution is more efficient, because the strings are not
+oversized or undersized, depending on the real number of characters
+in the dynamic string. But the feature may not be provided
+by the compiler at hand. For example, problems with the dynamic
+length character string have been experienced with Intel Fortran 8.
+
+<h3><a name="pre-processing">Pre-processing</a></h3>
+<p>
+
+The following preprocessing macro may be defined :
+<ul>
+<li> _VSTRPLATFORM_STATIC_BUFFER : see  the section &quot;Dynamic or static buffer&quot;
+</ul>
+
+
+
+
+
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module contains the following routines.
+
+<dl>
+
+
+<dt><a name="1"><b class='cmd'>vstrplatform_system</b> (<i class='arg'>command</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>type ( t_vstring ) ::</strong> <i class='arg'>command</i><dd>
+<dt><strong>integer, intent (out), optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+
+Run an external <i class='arg'>command</i>, optionally retrieving the status of
+that command. Under Windows the &quot;call system&quot; may generate the display of a console.
+If <i class='arg'>status</i> is supplied, it contains 0 on success or nonzero error code
+upon return.
+
+<br><br>
+<dt><a name="2"><b class='cmd'>vstrplatform_osstring</b>() result ( <i class='arg'>currentos</i> )</a><dd>
+
+<dl>
+<dt><strong>type ( t_vstring ) ::</strong> <i class='arg'>currentos</i><dd>
+</dl>
+Returns a string containing the current operating system running on the current machine,
+one of &quot;Windows 95&quot;, &quot;Windows NT&quot;, &quot;MacOS&quot;, &quot;SunOS&quot;, 
+&quot;Linux&quot; or &quot;Unix&quot;.
+
+<br><br>
+<dt><a name="3"><b class='cmd'>vstrplatform_platformstring</b>() result ( <i class='arg'>currentplatform</i> )</a><dd>
+
+<dl>
+<dt><strong>type ( t_vstring ) ::</strong> <i class='arg'>currentplatform</i><dd>
+</dl>
+Returns a string containing the current platform running on the current machine,
+one of &quot;Windows&quot;, &quot;Mac&quot;, &quot;Unix&quot;.
+
+
+
+<br><br>
+<dt><a name="4"><b class='cmd'>vstrplatform_getenvvar</b>(<i class='arg'>envvar</i>) result ( <i class='arg'>value</i> )</a><dd>
+
+<dl>
+<dt><strong>type ( t_vstring ), intent(in) ::</strong> <i class='arg'>envvar</i><dd>
+<dt><strong>type ( t_vstring ) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Returns the value of the environment variable <i class='arg'>envvar</i>.
+
+
+<br><br>
+<dt><a name="5"><b class='cmd'>vstrplatform_getenvvar</b>(<i class='arg'>envvar</i>) result ( <i class='arg'>value</i> )</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(in) ::</strong> <i class='arg'>envvar</i><dd>
+<dt><strong>type ( t_vstring ) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Same as previous with <em>character(len=*)</em> <i class='arg'>dirname</i>.
+
+
+<br><br>
+<dt><a name="6"><b class='cmd'>vstrplatform_cd</b> ( <i class='arg'>dirname</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>type(t_vstring), intent(in) ::</strong> <i class='arg'>dirname</i><dd>
+<dt><strong>integer, intent(out) , optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+Change working directory to <i class='arg'>dirname</i>. 
+If <i class='arg'>status</i> is supplied, it contains 0 on success or nonzero error code
+upon return
+
+<br><br>
+<dt><a name="7"><b class='cmd'>vstrplatform_cd</b> ( <i class='arg'>dirname</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(in) ::</strong> <i class='arg'>dirname</i><dd>
+<dt><strong>integer, intent(out) , optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+Same as previous with <em>character(len=*)</em> <i class='arg'>dirname</i>.
+
+
+<br><br>
+<dt><a name="8"><b class='cmd'>platform_stat</b> ( <i class='arg'>filename</i> <i class='arg'>, statarray</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>type(t_vstring), intent(in) ::</strong> <i class='arg'>filename</i><dd>
+<dt><strong>integer, dimension (1:13) , intent(out) ::</strong> <i class='arg'>filename</i><dd>
+<dt><strong>integer, intent(out) , optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+Get status of the file <i class='arg'>filename</i> and fills the array <i class='arg'>statarray</i>
+with the following content.
+<br><br>
+<ul>
+<li> statarray(1) Device ID
+<br><br>
+<li> statarray(2) Inode number
+<br><br>
+<li> statarray(3) File mode
+<br><br>
+<li> statarray(4) Number of links
+<br><br>
+<li> statarray(5) Owner's uid
+<br><br>
+<li> statarray(6) Owner's gid
+<br><br>
+<li> statarray(7) ID of device containing directory entry for file (0 if not available)
+<br><br>
+<li> statarray(8) File size (bytes)
+<br><br>
+<li> statarray(9) Last access time
+<br><br>
+<li> statarray(10) Last modification time
+<br><br>
+<li> statarray(11) Last file status change time
+<br><br>
+<li> statarray(12) Preferred I/O block size (-1 if not available)
+<br><br>
+<li> statarray(13) Number of blocks allocated (-1 if not available)
+</ul>
+If <i class='arg'>status</i> is supplied, it contains 0 on success or nonzero error code
+upon return
+
+<br><br>
+<dt><a name="9"><b class='cmd'>platform_stat</b> ( <i class='arg'>filename</i> <i class='arg'>, statarray</i> ?, status?)</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(in) ::</strong> <i class='arg'>filename</i><dd>
+<dt><strong>integer, dimension (1:13) , intent(out) ::</strong> <i class='arg'>filename</i><dd>
+<dt><strong>integer, intent(out) , optional ::</strong> <i class='arg'>status</i><dd>
+</dl>
+Same as previous with <em>character(len=*)</em> <i class='arg'>dirname</i>.
+
+
+
+</dl>
+
+
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+Copyright &copy; 2008 Michael Baudin &lt;michael.baudin@gmail.com&gt;<br>
+</body></html>

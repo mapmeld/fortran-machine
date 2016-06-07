@@ -1,0 +1,210 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>flibs/backtracking - flibs </title>
+</head>
+<! -- Generated from file 'backtrack.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: backtrack.html,v 1.1 2008/09/09 04:29:30 arjenmarkus Exp $ flibs/backtracking.n
+   -->
+
+<body>
+<h1> flibs/backtracking(n) 1.1  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/backtracking - Backtracking
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#todo">TODO</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>call runtests( testproc )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>call test( proc, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>call assert_true( cond, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>exists = funit_file_exists( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call funit_get_lun( lun )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>call funit_remove_file( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>call funit_make_empty_file( filename )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The module <em>Backtracking</em> implements in a general way a well-known
+algorithm to solve certain combinatorial problems. The module actually
+consists of a single routine that forms the framework of the algorithm
+and is to be used in conjunction with a small set of user-defined
+routines that implement the specific problem.
+
+<p>
+The backtracking technique is especially useful if you can build a
+solution in stages. The classic example is the &quot;eight queens&quot; problem,
+where you must place eight queens on a chess board in such a way that
+none can get another in one move. A little thought shows that
+each queen must be placed in its own column (or row). Placing the first
+queen in the first column gives us eight possibilities. Placing the
+second is only possible if it is not within the range of the first one.
+
+<p>
+If it is, it makes no sense to continue so we can eliminate in the
+second step a whole subset of possible configurations, namely those with
+the second queeen within range of the first.
+We can continue building up a partial solution in this way until we
+finally have eight queens on the board.
+
+<p>
+The idea of the module is that all the data that describe a possible
+partial solution to the problem are contained in a derived type called
+SOLUTION_DATA. Then the user-defined routine <em>generate</em> generates
+a new set of partial solutions based on this.
+
+<p>
+The new set is examined to see if any is acceptable within the context
+of the problem, which is done via another user-defined routine.
+
+<p>
+Each acceptable solution within this new step may give rise to its own
+set of further solutions. This way the partial solutions are extended in
+each step until finally a complete solution is found.
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module backtracking contains
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>call runtests( testproc )</b> </a><dd>
+
+Routine to start the unit tests. It checks if the file &quot;funit.run&quot;
+exists. If so, it will call the subroutine <em>testproc</em> that was
+passed. Otherwise it will simply return, so that the ordinary program
+execution may continue.
+<br><br>
+If the subroutine testproc returns, the program stops.
+
+<br><br>
+<dl>
+<dt>subroutine <i class='arg'>testproc</i><dd>
+Subroutine that calls the individual test routines. It takes no
+arguments. It wil generally exist of a series of calls to the
+routine <em>test</em> - see below.
+</dl>
+
+
+<dt><a name="2"><b class='cmd'>call test( proc, text )</b> </a><dd>
+
+Routine to run the individual unit test routine (emph proc). It decides
+if the test has not run yet and if so, the test routine is called.
+Otherwise it is skipped.
+<br><br>
+<em>test</em> takes care of all administrative details.
+<br><br>
+Note: to make it possible to use <em>private</em> unit test routines,
+the source code of this subroutine is kept in a separate file,
+<em>funit_test.f90</em> that should be included in an appropriate
+place in the program's sources. This way, you can make it a private
+routine in each module. The only public access to the unit testing
+routines is then via the subroutine <em>testproc</em> that is passed to
+<em>runtests</em>.
+
+<br><br>
+<dl>
+<dt>subroutine <i class='arg'>proc</i><dd>
+Subroutine that implements an individual unit test. It takes no
+arguments. Within each such subroutine the complete unit test is run.
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>text</i><dd>
+Text describing the particular unit test. It is printed in the log
+file.
+</dl>
+
+
+<dt><a name="3"><b class='cmd'>call assert_true( cond, text )</b> </a><dd>
+
+Routine to check that a condition is true. If not, a message is printed
+in the log file and the number of failures is increased.
+
+<br><br>
+<dl>
+<dt>logical <i class='arg'>cond</i><dd>
+The condition to be checked
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>text</i><dd>
+Text describing the condition
+</dl>
+
+
+<dt><a name="4"><b class='cmd'>exists = funit_file_exists( filename )</b> </a><dd>
+
+Logical function to check that a particular file exists
+
+<br><br>
+<dl>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+Name of the file to be checked
+</dl>
+
+
+<dt><a name="5"><b class='cmd'>call funit_get_lun( lun )</b> </a><dd>
+
+Subroutine to get a free LU-number
+
+<br><br>
+<dl>
+<dt>integer, intent(out) <i class='arg'>lun</i><dd>
+Next free LU-number
+</dl>
+
+
+<dt><a name="6"><b class='cmd'>call funit_remove_file( filename )</b> </a><dd>
+
+Subroutine to remove (delete) a file
+
+<br><br>
+<dl>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+Name of the file to be removed
+</dl>
+
+
+<dt><a name="7"><b class='cmd'>call funit_make_empty_file( filename )</b> </a><dd>
+
+Subroutine to make a new, empty file
+
+<br><br>
+<dl>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+Name of the file to be created
+</dl>
+
+</dl>
+
+
+<h2><a name="todo">TODO</a></h2>
+<p>
+The following things are still left to do:
+<ul>
+<li>
+Proper inclusion of the routine <em>prolog</em> and <em>epilog</em>
+
+<br><br>
+<li>
+Extension of the set of assertion routines
+
+</ul>
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

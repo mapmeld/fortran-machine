@@ -1,0 +1,237 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>flibs/tools - flibs </title>
+</head>
+<! -- Generated from file 'editcode.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id$ flibs/tools.n
+   -->
+
+<body>
+<h1> flibs/tools(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/tools - Modify program code
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#examples">EXAMPLES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+The <em>editcode</em> program is a specialised preprocessor for Fortran code:
+its purpose is to transform
+the code according to certain simple rules:
+
+<ul>
+<li>
+Add an &quot;IMPLICIT NONE&quot; statement at the beginning of a module or
+routine.
+
+<br><br>
+<li>
+Replace one type by another (for instance: real ==&gt; real(dp)).
+
+<br><br>
+<li>
+Instrument the code (add extra statements).
+
+<br><br>
+<li>
+Enable preconditions/postconditions/assertions.
+
+</ul>
+
+It reads an input file called &quot;editcode.inp&quot; which should contain
+keywords and possibly parameters, steering the transformation of
+the code.
+
+<p>
+Here is a list of the keywords and their parameters:
+<ul>
+<li>
+<em>INPUT-DIRECTORY dirname</em> - Directory to expect the input source files
+<br><br>
+<li>
+<em>OUTPUT-DIRECTORY dirname</em> - Directory to put the output source files in
+<br><br>
+<li>
+<em>FILE filename</em> - Name of the source file to process
+<br><br>
+<li>
+<em>ADD-CODE-START code</em> - Line of code to add at the start of a routine.
+<br><br>
+<li>
+If more than one line is required, then just use several such keywords
+<em>ADD-CODE-END code</em> - Ditto at the end of a routine (this includes: RETURN, STOP and END)
+<br><br>
+<li>
+<em>ADD-CODE-STATEMENT code</em> - Line of code to add _after_ each statement
+<br><br>
+<li>
+<em>ADD-USE code</em> - Add a USE statement
+<br><br>
+<li>
+<em>REPLACE-TYPE old new</em> - Replace variable type &quot;old&quot; by variable type &quot;new&quot;
+<br><br>
+<li>
+<em>REPLACE-STRING old new</em> - Replace any string &quot;old&quot; by string &quot;new&quot;
+<br><br>
+<li>
+<em>ENABLE-IMPLICIT-NONE yes/no</em> - Add an IMPLICIT NONE statement if none is present
+<br><br>
+<li>
+<em>ENABLE-PRECONDITIONS yes/no</em> - Enable preconditions
+<br><br>
+<li>
+<em>ENABLE-POSTCONDITIONS yes/no</em> - Ditto for postconditions
+<br><br>
+<li>
+<em>ENABLE-ASSERTIONS yes/no</em> - Ditto for assertions
+<br><br>
+<li>
+<em>CLEAR-ALL-SETTINGS</em> - Re-initialise the preprocessing information (everything is set to the default again)
+<br><br>
+<li>
+<em>INCLUDE filename</em> - Read keywords from the given file before processing the rest
+of this input file (multiple levels possible)
+<br><br>
+<li>
+<em>__FILE__</em> - Macro replaced by the name of the current source file
+<br><br>
+<li>
+<em>__LINE__</em> - Macro replaced by the current line number
+<br><br>
+<li>
+<em>__ROUTINE__</em> - Macro replaced by the current routine name
+<br><br>
+<li>
+<em>__MODULE__</em> - Macro replaced by the current module name
+
+</ul>
+
+Preconditions, postconditions and assertions are implemented as
+special comments:
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    ! pre: x &gt; 0.0
+    ! post: x &gt; 0.0
+    ! assert: x &gt; 0.0
+</pre></td></tr></table></p>
+
+If a condition is longer than one line, simply use &amp; like any
+ordinary continuation line:
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    ! assert: x &gt; 0.0 .and. &amp;
+    !         y &lt; 0.0
+</pre></td></tr></table></p>
+
+If the condition type is enabled, the condition is transformed
+into code like this:
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+if ( .not. ( &amp;
+    x &gt; 0.0 .and. &amp;
+    y &gt; 0.0 &amp;
+) then
+    write(*,*) 'Assertion failed at line 10 in file myprog.f90:'
+    write(*,*) 'x &gt; 0.0 .and. &amp;'
+    write(*,*) 'y &gt; 0.0'
+endif</pre></td></tr></table></p>
+
+The program also handles a simple form of exceptions via
+try/catch statements:
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    try
+        ... code to handle the ordinary case ...
+    catch
+        ... code to handle an exception ...
+    endtry
+</pre></td></tr></table></p>
+(Within a catch section you can use the routines of the
+<em>exception_handling</em> module)
+<p>
+<em>Note:</em>
+<ul>
+<li>
+Each argument must be surrounded by &quot; or ' if it contains spaces.
+(The lines are read via list-directed input)
+<br><br>
+<li>
+The INCLUDE statement is treated in the main program, all the
+others are treated by the preprocessor module.
+<br><br>
+<li>
+Comment lines begin with !
+<br><br>
+<li>
+The default settings are such that _nothing_ is done.
+</ul>
+
+To make this preprocessing facility flexible, it consists of a
+main program and a module that does the actual work:
+<ul>
+<li>
+preprocess_init sets or resets the preprocessor data
+<br><br>
+<li>
+preprocess_input takes a line of code and handles the
+information it contains
+<br><br>
+<li>
+preprocess_file processes the given input file
+</ul>
+
+<h2><a name="examples">EXAMPLES</a></h2>
+<p>
+The <em>tests/tools</em> directory contains several examples and a
+detailed explanation, but here is the input file <em>editcode.inp</em>
+for these examples:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+INPUT-DIRECTORY   in
+OUTPUT-DIRECTORY  out
+ADD-CODE-START    &quot;write(*,*) 'In __ROUTINE__ (__MODULE__)'&quot;
+ADD-CODE-END      &quot;write(*,*) 'Leaving __ROUTINE__'&quot;
+ADD-CODE-STATEMENT &quot;write(*,*) 'At __LINE__'&quot;
+ADD-USE            &quot;use exceptions&quot;
+REPLACE-TYPE       &quot;real&quot;  real(dp)
+REPLACE-STRING     X Y
+ENABLE-IMPLICIT-NONE  yes
+!
+! Does this cause an error?
+ENABLE-PRECONDITIONS
+
+ENABLE-PRECONDITIONS yes
+
+FILE              example.f90
+
+!
+! Now the check_init/check_reals example
+!
+CLEAR-ALL-SETTINGS
+
+INPUT-DIRECTORY   in
+OUTPUT-DIRECTORY  out
+REPLACE-TYPE real type(checked_real)
+ADD-USE &quot;use check_reals&quot;
+ADD-CODE-STATEMENT &quot;call check_assignment( __LINE__, '__FILE__' )&quot;
+!
+! List of files to treat
+!
+FILE &quot;check_init.f90&quot;
+</pre></td></tr></table></p>
+
+While mainly meant to test the correct working of the program, it does
+in fact illustrate its capabilities. The README file contains more
+information.
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

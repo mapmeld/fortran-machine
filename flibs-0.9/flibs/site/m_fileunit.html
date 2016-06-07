@@ -1,0 +1,179 @@
+
+<html><head>
+<title>flibs/m_fileunit - flibs </title>
+</head>
+<! -- Generated from file 'filedir/m_fileunit.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com
+   -->
+<! -- CVS: $Id: m_fileunit.html,v 1.2 2008/06/17 12:44:21 relaxmike Exp $ flibs/m_fileunit.n
+   -->
+
+<body>
+<h1> flibs/m_fileunit(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/m_fileunit - Manage file units
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#overview">OVERVIEW</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#todo">TODO</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><strong>fileunit_getallopen</strong> ( <i class='arg'>nbunits</i> <i class='arg'>, units</i> )</a></td></tr>
+<tr valign=top ><td ><a href="#2"><strong>fileunit_displayopen</strong> ( <i class='arg'>reportunitnumber</i> )</a></td></tr>
+<tr valign=top ><td ><a href="#3"><strong>fileunit_report</strong> ( <i class='arg'>reportunitnumber</i> <i class='arg'>iunit</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#4"><strong>fileunit_closeallopen</strong> ( )</a></td></tr>
+<tr valign=top ><td ><a href="#5"><strong>fileunit_getfreeunit</strong> ( ) result ( freeunit )</a></td></tr>
+<tr valign=top ><td ><a href="#6"><strong>fileunit_set_stoponerror</strong> ( <i class='arg'>stoponerror</i>)</a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The component <em>m_fileunit</em> provides services to manage fortran file units.
+
+<h2><a name="overview">OVERVIEW</a></h2>
+<p>
+
+The function fileunit_getfreeunit returns an integer representing
+a fortran unit which is available for opening a file.
+The typical use of this function is to manage the files dynamically,
+without any database of file units in the library/software.
+In the following example, one opens a file with a dynamical
+file unit.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    integer :: fileunit
+    fileunit = fileunit_getfreeunit ()
+    open ( unit = fileunit , file = &quot;data.txt&quot; )
+    [lb]etc...[rb]
+</pre></td></tr></table></p>
+
+If several files are to be opened, the &quot;fileunit_getfreeunit&quot;
+method has to be inserted between the &quot;open&quot; statements.
+This is because two consecutive calls to &quot;fileunit_getfreeunit&quot;
+will return the same integer, as expected : if a unit is available
+the first time, it will also be available the second time.
+In the following example, several files are opened and connected
+to several files.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    integer :: fileunit1
+    integer :: fileunit2
+    fileunit1 = fileunit_getfreeunit ()
+    open ( unit = fileunit1 , file = &quot;data.txt&quot; )
+    fileunit2 = fileunit_getfreeunit ()
+    open ( unit = fileunit2 , file = &quot;data2.txt&quot; )
+    [lb]etc...[rb]
+</pre></td></tr></table></p>
+
+In a large fortran software, it may be difficult to see if some
+bug has been introduced in the file management, especially
+when the software is the composition of several libraries.
+The subroutines fileunit_getallopen , fileunit_closeallopen ,
+fileunit_report , fileunit_displayopen allow to manage for
+the units currently used in the software.
+The fileunit_getallopen returns an array of integers which
+contains all the currently opened units. The fileunit_closeallopen
+subroutine close all currently opened units. The fileunit_report
+displays a full report about a given unit number by using the
+&quot;inquire&quot; fortran intrinsic statement.
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+
+<dl>
+
+<dt><a name="1"><strong>fileunit_getallopen</strong> ( <i class='arg'>nbunits</i> <i class='arg'>, units</i> )</a><dd>
+
+<dl>
+<dt><strong>integer, intent ( out ) ::</strong> <i class='arg'>nbunits</i><dd>
+<dt><strong>integer , dimension(:) , pointer ::</strong> <i class='arg'>units</i><dd>
+</dl>
+Computes an array of integers made of all currently opened units.
+On output, <i class='arg'>nbunits</i> is the number of opened units and 
+<i class='arg'>units ( iunit )</i> is the unit number for the opened unit #iunit 
+with 1&lt;= iunit &lt;= nbunits.
+
+
+<br><br>
+<dt><a name="2"><strong>fileunit_displayopen</strong> ( <i class='arg'>reportunitnumber</i> )</a><dd>
+
+<dl>
+<dt><strong>integer, intent ( in ) ::</strong> <i class='arg'>reportunitnumber</i><dd>
+</dl>
+Writes on unit <i class='arg'>unitnumber</i> the full list of opened units and their associated 
+filenames.
+
+
+
+<br><br>
+<dt><a name="3"><strong>fileunit_report</strong> ( <i class='arg'>reportunitnumber</i> <i class='arg'>iunit</i>)</a><dd>
+
+<dl>
+<dt><strong>integer, intent ( in ) ::</strong> <i class='arg'>reportunitnumber</i><dd>
+<dt><strong>integer, intent ( in ) ::</strong> <i class='arg'>iunit</i><dd>
+</dl>
+Compute report about logical unit <i class='arg'>iunit</i> and write it on
+unit <i class='arg'>unitnumber</i>. Note : All possible features of the &quot;inquire&quot; intrinsic are used.
+
+
+
+<br><br>
+<dt><a name="4"><strong>fileunit_closeallopen</strong> ( )</a><dd>
+
+Close all currently opened units.
+
+
+
+<br><br>
+<dt><a name="5"><strong>fileunit_getfreeunit</strong> ( ) result ( freeunit )</a><dd>
+
+<dl>
+<dt><strong>integer ::</strong> <i class='arg'>freeunit</i><dd>
+</dl>
+Returns a free fortran unit <i class='arg'>freeunit</i> as an integer between 1 and FILEUNIT_MAX_UNIT_NUMBER,
+representing a free FORTRAN logical unit.
+If no free unit can be found, generates an error.
+Note that fileunit_getfreeunit assumes that units 5 and 6
+are special, and will never return those values.
+Original Author : John Burkardt
+
+
+<br><br>
+<dt><a name="6"><strong>fileunit_set_stoponerror</strong> ( <i class='arg'>stoponerror</i>)</a><dd>
+
+<dl>
+<dt><strong>integer ::</strong> <i class='arg'>freeunit</i><dd>
+</dl>
+Configure the behaviour of the component whenever an 
+error is met.
+If <i class='arg'>stoponerror</i> is true, then the execution stops if an error is encountered.
+If <i class='arg'>stoponerror</i> is false, then the execution continues if an error is encountered.
+In both cases, a message is displayed on standard output.
+
+  
+
+</dl>
+
+<h2><a name="todo">TODO</a></h2>
+<p>
+<ul>
+<li> allow to &quot;lock&quot; a collection of logical units, so that an
+ external library which may use constant units can be linked.
+<br><br>
+<li> allow to &quot;unlock&quot; one unit, or all units at once.
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com<br>
+</body></html>

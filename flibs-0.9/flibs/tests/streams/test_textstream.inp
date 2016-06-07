@@ -1,0 +1,11 @@
+This file contains a long line to test that the module indeed can handle lines longer than eighty characters, even though it can not handle
+individual items longer than eighty characters (more accurately: maxbuf characters)
+And of course, we need to be
+able to jump to the next line without a problem ...
+
+
+
+And empty lines should present no problem
+either
+(At least one empty line at the end)
+

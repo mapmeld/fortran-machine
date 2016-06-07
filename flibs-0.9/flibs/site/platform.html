@@ -1,0 +1,188 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>flibs/platform - flibs </title>
+</head>
+<! -- Generated from file 'platform.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id$ flibs/platform.n
+   -->
+
+<body>
+<h1> flibs/platform(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/platform - Platform-dependent routines and features
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#compiling">COMPILING</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use platform</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>platform_system( command, status )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>os_type = platform_get_os()</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>platform_type = platform_get_platform()</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call platform_get_environment_variable( envvar, value)</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>platform</em> contains parameters to identify the
+platform the program is running on and several routines to interact with
+the operating system, for instance:
+
+<ul>
+<li>
+The parameter PLATFORM_OS identifies the operating system and the
+parameter PLATFORM_PLATFORM identifies the general category.
+
+<br><br>
+<li>
+The subroutine platform_system() hides the platform-specific details of
+running an external command or program.
+
+</ul>
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module contains the following routines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use platform</b> </a><dd>
+
+To import the subroutines, use this module.
+
+
+<br><br>
+<dt><a name="2"><b class='cmd'>platform_system( command, status )</b> </a><dd>
+
+Run an external command or program, optionally retrieving the status of
+that command.
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>command</i><dd>
+Command to run (note: this is quite likely platform-dependent)
+
+<br><br>
+<dt>integer <i class='arg'>status</i><dd>
+Optional argument returning the status (note: the information contained
+in it is not very reliable - some systems do not give any informatio)
+
+</dl>
+<br><br>
+
+
+<dt><a name="3"><b class='cmd'>os_type = platform_get_os()</b> </a><dd>
+
+Return the type of operating system, one of:
+PLATFORM_OS_WINDOWS_95, PLATFORM_OS_WINDOWS_NT,
+PLATFORM_OS_MACOS, PLATFORM_OS_SUNOS, PLATFORM_OS_LINUX,
+PLATFORM_OS_UNIX
+
+<br><br>
+
+
+<br><br>
+<dt><a name="4"><b class='cmd'>platform_type = platform_get_platform()</b> </a><dd>
+
+Return the category of platform, one of:
+PLATFORM_PLATFORM_WINDOWS, PLATFORM_PLATFORM_MAC, PLATFORM_PLATFORM_UNIX
+
+<br><br>
+
+
+<br><br>
+<dt><a name="5"><b class='cmd'>call platform_get_environment_variable( envvar, value)</b> </a><dd>
+
+Retrieve the value of an environment variable. There is no indication of
+whether the variable indeed exists and it is up to the calling program
+to provide a string argument sufficiently long to hold the value.
+
+<br><br>
+<dl>
+
+<dt>character(len=*) <i class='arg'>envvar</i><dd>
+The name of the environment variable (note: this is case-sensitive on
+some platforms, case-insensitive on others. This is entirely up to the
+platform).
+
+<br><br>
+<dt>character(len=*) <i class='arg'>envvar</i><dd>
+Value of the environment variable upon return. As the underlying
+routines give no indication of its existence, it is probably best to
+fill it with a known value first (like: &quot;????&quot;) to check it.
+
+</dl>
+
+</dl>
+
+
+<h2><a name="compiling">COMPILING</a></h2>
+<p>
+There is nothing magic about this module: the platform-specific
+information has to be provided at compile time via preprocessor macros.
+As almost all Fortran compilers offer a preprocessor option, this
+should cause little trouble. The makefile for this module contains a
+template for how to do this.
+
+<p>
+
+<em>Operating System dependency:</em>
+<p>
+It should be compiled by defining several preprocessing macros, to
+select from the various operating systems and compilers for which this module
+is made for.
+Choose your OS between one of these:
+<p>
+_OS_WINDOWS_95 , _OS_WINDOWS_NT , _OS_MAC , _OS_SUN , _OS_LINUX , _OS_UNIX
+
+<p>
+<em>System fortran extension:</em>
+<p>
+Depending on the compiler, the SYSTEM fortran extension is provided
+as a subroutine or a function. See in your manual for the specific
+settings.
+For example, this is a short list of compilers and their particular
+SYSTEM provided:
+
+<ul>
+<li>
+subroutine: Intel Fortran, gfortran
+
+<br><br>
+<li>
+function : g95.
+</ul>
+
+Choose your SYSTEM version between one of these:
+<p>
+_PLATFORM_SYSTEM_SUBROUTINE , _PLATFORM_SYSTEM_FUNCTION
+
+
+<em>Environment variables extension:</em>
+The fortran 2003 standard introduces a standard way of accessing
+to the environment variables. Older compilers does not match
+that standard but provide extensions to access to environment variables.
+Choose your option between one of these:
+<p>
+_INTEL_FORTRAN_PORTABILITY_ROUTINES , _FORTRAN_2003
+
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

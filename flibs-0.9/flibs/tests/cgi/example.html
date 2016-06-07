@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Generating tables of function values</title>
+</head>
+<body>
+This example produces simple tables in two forms:
+<ul>
+<li>As an HTML page
+<li>As CSV output
+</ul>
+
+As such it illustrates the use of the value "output_no_header"
+for the "type" parameter to CGI_BEGIN and the routine CGI_ERROR
+as one of the functions mentioned here is not actually implemented.
+
+<p>
+Function: f(x) =
+<select>
+    <option name="function" value="sin" selected>sin(x)</option>
+    <option name="function" value="cos">cos(x)</option>
+    <option name="function" value="J0">J0(x)</option>
+</select>
+
+<br>
+Range:
+<table>
+<tr>
+<td>Minimum = </td><td><input type="text" name="minimum"></td>
+</tr>
+<tr>
+<td>Maximum = </td><td><input type="text" name="maximum"></td>
+</tr>
+<tr>
+<td>Steps = </td><td><input type="text" name="steps"></td>
+</tr>
+</table>
+
+<p>
+Type of output:
+<input type="radio" name="output" value="html" checked>HTML</input>
+<input type="radio" name="output" value="csv">CSV</input>
+
+<p>
+<input type="submit">
+
+</body>
+</html>
+

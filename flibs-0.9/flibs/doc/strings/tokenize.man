@@ -1,0 +1,134 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/strings n 1.1]
+[copyright {2008 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Tokenizing strings}]
+
+[description]
+
+The [strong tokenize] module provides a method to split a string
+into parts according to some simple rules:
+[list_begin bullet]
+[bullet]
+A string can be split into "words" by considering spaces and commas and
+such as separating the words. Two or more such characters are treated as
+a single such separator. In the terminology of the module they represent
+gaps of varying width. As a consequence there are no zero-length words.
+
+[bullet]
+A string can be split into "words" by considering each individual comma
+as a separator. A string like "One,,two" would then be split into three
+fields: "One", an empty field and "two".
+
+[bullet]
+Just like Fortran's list-directed input, the module handles strings with
+delimiters: "Just say 'Hello, world!'" would be split in "Just", "say"
+and "Hello, world!".
+
+[list_end]
+
+The module is meant to help analyse input data where list-directed
+input can not be used: for instance because the data are not separated
+by the standard characters or you need a finer control over the handling
+of the data.
+
+
+[section INTERFACE]
+The module contains three routines and it defines a single derived type
+and a few convenient parameters.
+
+[para]
+The data type is [emph "type(tokenizer)"], a derived type that holds all
+the information needed for parsing the string. It is initialised via the
+[emph set_tokenizer] subroutine and it is meant for the string passed to
+the [emph first_token()] function. If you want to reuse it for a
+different string, but the same definition, simply use
+[emph first_token()] on the new string.
+
+[list_begin definitions]
+
+[call [cmd "use tokenize"]]
+To import the definitions, use this module.
+
+[call [cmd "call set_tokenizer( token, gaps, separators, delimiters )"]]
+Initialise the tokenizer "token" with various sets of characters
+controlling the splitting process.
+otherwise.
+
+[list_begin arg]
+
+[arg_def "type(tokenizer)" token]
+The tokenizer to be initialised
+
+[arg_def "character(len=*)" gaps]
+The string of characters that are to be treated as "gaps". They take
+precedence over the "separators". Use "token_empty" if there are none.
+
+[arg_def "character(len=*)" separators]
+The string of characters that are to be treated as "separators".
+Use "token_empty" if there are none.
+
+[arg_def "character(len=*)" delimiters]
+The string of characters that are to be treated as
+"delimiters". Use "token_empty" if there are none.
+
+[list_end]
+
+
+[call [cmd "part = first_token( token, string, length)"]]
+Find the first token of the string (also initialises the tokenisation
+for this string). Returns a string of the same length as the original
+one.
+
+[list_begin arg]
+
+[arg_def "type(tokenizer)" token]
+The tokenizer to be used
+
+[arg_def "character(len=*)" string]
+The string to be split into tokens.
+
+[arg_def "integer, intent(out)" length]
+The length of the token. If the length is -1, no token was found.
+
+[list_end]
+
+
+[call [cmd "part = next_token( token, string, length)"]]
+Find the first token of the string (also initialises the tokenisation
+for this string). Returns a string of the same length as the original
+one.
+
+[list_begin arg]
+
+[arg_def "type(tokenizer)" token]
+The tokenizer to be used
+
+[arg_def "character(len=*)" string]
+The string to be split into tokens.
+
+[arg_def "integer, intent(out)" length]
+The length of the token. If the length is -1, no token was found.
+
+[list_end]
+
+
+[list_end]
+
+Convenient parameters:
+[list_begin bullet]
+[bullet]
+[emph token_whitespace] - whitespace (a single character)
+[bullet]
+[emph token_tsv] - tab, useful for tab-separated values files
+[bullet]
+[emph token_csv] - comma, useful for comma-separated values files
+[bullet]
+[emph token_quotes] - single and double quotes, commonly used delimiters
+[bullet]
+[emph token_empty] - empty string, useful to suppress any of the
+arguments in the [emph set_tokenizer] routine.
+
+[list_end]
+
+[manpage_end]

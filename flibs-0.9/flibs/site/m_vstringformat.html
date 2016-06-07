@@ -1,0 +1,276 @@
+
+<html><head>
+<title>flibs/m_vstringformat - flibs </title>
+</head>
+<! -- Generated from file 'm_vstringformat.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com
+   -->
+<! -- CVS: $Id: m_vstringformat.html,v 1.1 2008/06/13 10:09:18 relaxmike Exp $ flibs/m_vstringformat.n
+   -->
+
+<body>
+<h1> flibs/m_vstringformat(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/m_vstringformat - Formatting dynamic strings
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#overview">OVERVIEW</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#formatting_logical_values">Formatting logical values</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#formatting_integer_values">Formatting integer values</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#limitations">Limitations</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#planned_features">Planned features</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#methods">METHODS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><strong>vstring_format</strong> <i class='arg'>value</i> ?fmt?</a></td></tr>
+<tr valign=top ><td ><a href="#2"><strong>vstring_format</strong> <i class='arg'>logical_value</i></a></td></tr>
+<tr valign=top ><td ><a href="#3"><strong>vstring_format</strong> <i class='arg'>logical_value</i> <i class='arg'>fmt</i></a></td></tr>
+<tr valign=top ><td ><a href="#4"><strong>vstring_format</strong> <i class='arg'>logical_value</i> <i class='arg'>fmt</i></a></td></tr>
+<tr valign=top ><td ><a href="#5"><strong>vstring_format</strong> <i class='arg'>integer_value</i></a></td></tr>
+<tr valign=top ><td ><a href="#6"><strong>vstring_format</strong> <i class='arg'>integer_value</i> <i class='arg'>fmt</i></a></td></tr>
+<tr valign=top ><td ><a href="#7"><strong>vstring_format</strong> <i class='arg'>integer_value</i> <i class='arg'>fmt</i></a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The module <em>m_vstringformat</em> provides services to format one string, that is to
+say to convert a basic fortran data type into a dynamic vstring.
+The current version of m_vstringformat can handle logical variables
+and integers of all kinds. The format can be given by the client code,
+or computed automatically. The format can be given as a basic character
+string, or as a vstring.
+
+
+<h2><a name="overview">OVERVIEW</a></h2>
+<p>
+
+
+   The only method provided here is vstring_format, which takes one basic 
+   basic fortran data type as the first argument (and, optionnaly, a format),
+   and returns a dynamic string which represents that value.
+   
+   <h3><a name="formatting_logical_values">Formatting logical values</a></h3>
+<p>
+   One can format a logical into a vstring with automatic or explicit format.
+   In the following sample, one format the &quot;.false.&quot; logical into a vstring.
+   After formatting, the string &quot;mystring&quot; has a length of 1 and its content 
+   is &quot;F&quot;.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      logical :: mybool
+      type ( t_vstring ) :: mystring
+      mybool = .false.
+      mystring = vstring_format ( mybool )
+</pre></td></tr></table></p>
+
+   In the following sample, one format the &quot;.false.&quot; logical into a vstring 
+   with an explicit format given as a character string :
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      logical :: mybool
+      type ( t_vstring ) :: mystring
+      mybool = .false.
+      mystring = vstring_format ( mybool , &quot;(L3)&quot; )
+</pre></td></tr></table></p>
+
+   After formatting, the string &quot;mystring&quot; has a length of 3 and its content 
+   is &quot;  F&quot;.
+
+   In the following sample, one format the &quot;.false.&quot; logical into a vstring 
+   with an explicit format given as a vstring :
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      logical :: mybool
+      type ( t_vstring ) :: mystring
+      type ( t_vstring ) :: myformat
+      mybool = .false.
+      call vstring_new ( myformat , &quot;(L3)&quot; )
+      mystring = vstring_format ( mybool , myformat )
+      call vstring_free ( myformat )
+</pre></td></tr></table></p>
+
+   <h3><a name="formatting_integer_values">Formatting integer values</a></h3>
+<p>
+   One can format an integer into a vstring, with automatic or explict format.
+   The string formatting system can handle all fortran kinds of integers.
+   The automatic format makes so that the resulting string has the 
+   length which exactly matches the number of digits necessary to represent 
+   the integer :
+<ul>
+<li> if the integer is negative, the &quot;-&quot; sign is at the begining of the string,
+<br><br>
+<li>  if the integer is positive, the &quot;+&quot; sign is not in the string.
+</ul>
+   In the following example, one formats the integer 2008 into a vstring.
+   After formatting, the string has a length of 4 and its content is the 
+   string &quot;2008&quot;.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      type ( t_vstring ) :: mystring
+      mystring = vstring_format ( 2008 )
+</pre></td></tr></table></p>
+
+   To acheive the same effect, one can use the &quot;I0&quot; format of the fortran 90
+   standard :
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      type ( t_vstring ) :: mystring
+      mystring = vstring_format ( 2008 , &quot;(I0)&quot; )
+</pre></td></tr></table></p>
+
+   The component can handle long integers with specified kinds 1, 2, 4 or 8.
+   In the following example, one automatically format a 32-bits integer 
+   (1073741824 = 2**31) into a dynamic string.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      integer (kind=4) :: integerkind4 = 1073741824
+      mystring = vstring_format ( integerkind4 )
+</pre></td></tr></table></p>
+
+   After formatting, the string has a length of 4 and its content is the 
+   string &quot;1073741824&quot;.
+
+   <h3><a name="limitations">Limitations</a></h3>
+<p>
+   The current implementation of the string formatting is based 
+   on the standard &quot;write&quot; fortran statement, which takes 
+   a basic character string as argument.
+   Moreover the format given to the string formatting command 
+   is not analysed at all, so that the length of the resulting 
+   string is not computed.
+   The current component use therefore a character string of 
+   fixed length VSTRING_FORMAT_MAXIMUM_FORMAT_LENGTH.
+   This leads to at least two limitations :
+   <ul>
+<li> if the client code has to manage formated strings which length is over 
+     VSTRING_FORMAT_MAXIMUM_FORMAT_LENGTH characters, the 
+     current algorithm will generate an error at execution time.
+<br><br>
+<li>  the &quot;write&quot; statement has to manage a long string, even
+     if the result is short, which raise performances issues.
+</ul>
+
+   The current string formatting takes only one value. 
+   An effective implementation would in fact take a list of
+   one or more arguments, which may be of different types.
+
+   The current implementation does not manage real values.
+
+   The limitations of the current component are so strong that the 
+   component should not be released... but is useful to format 
+   integers and that is why it has been finally released.
+
+   <h3><a name="planned_features">Planned features</a></h3>
+<p>
+   It is expected that future releases of this component can manage 
+   more basic data types, including real types of all kinds.
+   Future releases may also extend the formats by taking into account
+   string formatting coming from other languages than fortran (for example C), 
+   including:
+   - the &quot;-&quot; specification which specifies that the converted argument 
+     should be left-justified in its field
+   - the &quot;+&quot; specification which specifies that a number should always 
+     be printed with a sign, even if positive.
+   - etc...
+
+<h2><a name="methods">METHODS</a></h2>
+<p>
+
+<dl>
+
+<dt><a name="1"><strong>vstring_format</strong> <i class='arg'>value</i> ?fmt?</a><dd>
+
+<dl>
+<dt>&lt;value type&gt;, intent(in) :: <i class='arg'>value</i><dd>
+<dt>&lt;fmt type&gt;, intent(in), optional :: <i class='arg'>fmt</i><dd>
+</dl>
+Generic converter from a basic fortran data type into a vstring.
+Returns a new dynamic string with type t_vstring by formating the 
+given <i class='arg'>value</i> against the optional format <i class='arg'>fmt</i>.
+The <i class='arg'>value</i> may be a logical or and integer of kind 1, 2, 4 or 8 to format.
+If <i class='arg'>fmt</i> is provided, then this format is used to compute the
+new string. If format is provided, it may be either with a character(len=*) type
+or with a t_vstring type.
+If format is not provided, an automatic format is computed and applied
+to compute the new string. With automatic format, the computed
+string has a minimum length, that is, does not contain any blank and
+begins with &quot;-&quot; only if the value is a strictly negative integer.
+
+<br><br>
+<dt><a name="2"><strong>vstring_format</strong> <i class='arg'>logical_value</i></a><dd>
+
+<dl>
+<dt>logical , intent(in) :: <i class='arg'>logical_value</i><dd>
+</dl>
+Returns a new vstring by formatting the logical <i class='arg'>logical_value</i> 
+with automatic format.
+
+<br><br>
+<dt><a name="3"><strong>vstring_format</strong> <i class='arg'>logical_value</i> <i class='arg'>fmt</i></a><dd>
+
+<dl>
+<dt>logical , intent(in) :: <i class='arg'>logical_value</i><dd>
+<dt>character(len=*), intent(in) :: <i class='arg'>fmt</i><dd>
+</dl>
+Returns a new vstring by formatting the logical <i class='arg'>logical_value</i> 
+with the given character(len=*) format <i class='arg'>fmt</i>.
+
+<br><br>
+<dt><a name="4"><strong>vstring_format</strong> <i class='arg'>logical_value</i> <i class='arg'>fmt</i></a><dd>
+
+<dl>
+<dt>logical, intent(in) :: <i class='arg'>logical_value</i><dd>
+<dt>type ( t_vstring ), intent(in) :: <i class='arg'>fmt</i><dd>
+</dl>
+Returns a new vstring by formatting the logical <i class='arg'>logical_value</i> 
+with the given vstring format <i class='arg'>fmt</i>.
+
+<br><br>
+<dt><a name="5"><strong>vstring_format</strong> <i class='arg'>integer_value</i></a><dd>
+
+<dl>
+<dt>integer (kind = INTEGER_KIND ), intent(in) :: <i class='arg'>integer_value</i><dd>
+</dl>
+Returns a new vstring by formatting the integer <i class='arg'>integer_value</i> with an automatic format.
+With automatic format, the computed 
+string has a minimum length, that is, does not contain any blank and
+begins with &quot;-&quot; only if the integer_value is a strictly negative integer.
+The INTEGER_KIND kind of integer may by 1, 2, 4 or 8.
+
+<br><br>
+<dt><a name="6"><strong>vstring_format</strong> <i class='arg'>integer_value</i> <i class='arg'>fmt</i></a><dd>
+
+<dl>
+<dt>integer (kind = INTEGER_KIND ), intent(in) :: <i class='arg'>integer_value</i><dd>
+<dt>character(len=*), intent(in) :: <i class='arg'>fmt</i><dd>
+</dl>
+Returns a new vstring by formatting the integer <i class='arg'>integer_value</i>
+ with the given format <i class='arg'>fmt</i>.
+The INTEGER_KIND kind of integer may by 1, 2, 4 or 8.
+
+<br><br>
+<dt><a name="7"><strong>vstring_format</strong> <i class='arg'>integer_value</i> <i class='arg'>fmt</i></a><dd>
+
+<dl>
+<dt>integer (kind = INTEGER_KIND ), intent(in) :: <i class='arg'>integer_value</i><dd>
+<dt>type ( t_vstring ), intent(in) :: <i class='arg'>fmt</i><dd>
+</dl>
+Returns a new vstring by formatting the integer <i class='arg'>integer_value</i>
+ with the given format <i class='arg'>fmt</i>.
+The INTEGER_KIND kind of integer may by 1, 2, 4 or 8.
+
+</dl>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com<br>
+</body></html>

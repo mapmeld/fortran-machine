@@ -1,0 +1,18 @@
+! Right now: modulename is required!
+!
+MODULENAME := example
+routine1 :=
+subroutine do_something( string )
+character(len=*) :: string
+
+write(*,*) 'String is: >', trim(string), "<"
+
+end subroutine do_something
+!
+routine2 :=
+subroutine do_something_else( string )
+character(len=*) :: string
+
+write(*,*) 'Length is: ', len_trim(string)
+
+end subroutine do_something_else

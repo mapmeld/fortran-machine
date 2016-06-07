@@ -1,0 +1,2 @@
+gfortran -c tokenize.f90
+gfortran -o readfile readfile.f90 tokenize.o

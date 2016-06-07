@@ -1,0 +1,586 @@
+
+<html><head>
+<title>flibs/ftnunit - flibs </title>
+</head>
+<! -- Generated from file 'ftnunit.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: ftnunit.html,v 1.1 2008/06/13 10:30:53 relaxmike Exp $ flibs/ftnunit.n
+   -->
+
+<body>
+<h1> flibs/ftnunit(n) 1.1  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/ftnunit - Unit testing
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#generating_tests_from_a_table">GENERATING TESTS FROM A TABLE</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#todo">TODO</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#related_work">RELATED WORK</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1">runtests.bat </a></td></tr>
+<tr valign=top ><td ><a href="#2">runtests.sh </a></td></tr>
+<tr valign=top ><td ><a href="#3">runtests.tcl </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>call runtests( testproc )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call runtests_init</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>call runtests_final</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>call test( proc, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>call assert_true( cond, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>call assert_false( cond, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#10"><b class='cmd'>call assert_equal( value1, value2, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#11"><b class='cmd'>call assert_comparable( value1, value2, margin, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#12"><b class='cmd'>exists = ftnunit_file_exists( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#13"><b class='cmd'>call ftnunit_get_lun( lun )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#14"><b class='cmd'>call ftnunit_remove_file( filename )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#15"><b class='cmd'>call ftnunit_make_empty_file( filename )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+<em>JUnit</em> is a well-known facility for defining and running unit
+tests in Java programs. The <em>ftnunit</em> framework was inspired by
+that facility. It is not as good-looking as JUnit, by no means:
+<ul>
+<li>
+It has no graphical user-interface
+
+<br><br>
+<li>
+As Fortran does not allow introspection, the test routines can not
+be detected automatically, instead as a programmer you need to set up a
+high-level routine yourself that collects all the unit tests.
+
+<br><br>
+<li>
+A runtime error, like division by zero, may lead to a termination of
+the program. There is no (portable) way to catch these. Instead, the
+framework relies on a batch file or shell script to repeatedly start the
+program until all tests are run.
+
+</ul>
+
+Despite these limitations, <em>ftnunit</em> can be a great help:
+
+<ul>
+<li>
+The Tcl program <em>gentabletest.tcl</em> generates a complete test program based
+on a simple input file (see <a href="#generating_tests_from_a_table">GENERATING TESTS FROM A TABLE</a>).
+
+<br><br>
+<li>
+The code to test the various components (subroutines, functions, tasks
+consisting of several program units) can be combined with the program
+itself, without interfering with the ordinary code.
+<br><br>
+This is achieved by defining a single routine (test_all, say) that runs
+all the unit tests and that is called via the provided routine
+<em>runtests</em>:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+program myprog
+    ...
+!
+! The routine runtests will check if unit tests are requested
+! If not, it will return immediately. This way we make sure
+! the unit tests remain part of the program.
+!
+! The routine test_all runs all unit tests
+! (see the dataproc_testing module)
+!
+    call runtests( test_all )
+!
+! Ordinary processing
+!
+    ...
+
+end program
+</pre></td></tr></table></p>
+
+The routine runtests checks if there is a file &quot;ftnunit.run&quot;. If there is
+such a file, it will run the given subroutine. Otherwise it will return
+and the rest of the program is executed.
+
+<br><br>
+<li>
+Because the test code is incorporated in the program itself, it is less
+likely that they evolve independently: changes in the argument lists of
+the subroutines and functions may lead to compile errors in the test
+code.
+
+<br><br>
+<li>
+There is no need to set up a whole new program for testing portions of
+the program.
+
+</ul>
+
+The source file &quot;test_ftnunit.f90&quot; illustrates how to use the ftnunit
+framework:
+
+<ul>
+<li>
+The main program calls the routine &quot;runtests&quot; and passes it the argument
+&quot;test_all&quot;, a routine defined in a module called &quot;dataproc_testing&quot;.
+
+<br><br>
+<li>
+The routine &quot;test_all&quot; consists of nothing but calls to the generic
+routine &quot;test&quot;:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+subroutine test_all
+
+    call test( test_no_file, &quot;Read non-existent file&quot; )
+    call test( test_empty_file, &quot;Read an empty file&quot; )
+    call test( test_invalid_file, &quot;Read an invalid file&quot; )
+    call test( test_ordinary_file, &quot;Read an ordinary file&quot; )
+
+end subroutine test_all
+</pre></td></tr></table></p>
+
+<br><br>
+<li>
+The module includes a source file &quot;ftnunit_test.f90&quot;. This is a remnant
+of a previous version. Please ignore this.
+
+<br><br>
+<li>
+The generic routine &quot;test&quot; checks whether a particular unit
+test needs to be run (via the test number) and then runs the subroutine
+that was passed as one of its arguments. One such routine looks like
+this:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+subroutine test_no_file
+
+    integer :: nodata
+    real    :: vmean, vmin, vmax
+
+    call ftnunit_remove_file( 'no_such_file' )
+    call write_name( 'no_such_file' )
+
+    call open_files
+    call process_data( nodata, vmean, vmax, vmin )
+
+    call assert_true( nodata == 0, &quot;No data read&quot; )
+
+end subroutine test_no_file
+</pre></td></tr></table></p>
+
+The assertion is used to check that the result is as expected.
+
+<br><br>
+<li>
+The program contains some deliberate errors and the resulting
+log file looks like this&quot;:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+Test: Read non-existent file
+Test: Read an empty file
+Test: Read an invalid file
+forrtl: severe (59): list-directed I/O syntax error, unit 11, file c:\arjen\flibs\tests\ftnunit\invalid_file
+
+Image              PC        Routine            Line        Source
+test_ftnunit.exe     004151B9  Unknown               Unknown  Unknown
+test_ftnunit.exe     00415017  Unknown               Unknown  Unknown
+test_ftnunit.exe     004141F4  Unknown               Unknown  Unknown
+test_ftnunit.exe     00414629  Unknown               Unknown  Unknown
+test_ftnunit.exe     00409C05  Unknown               Unknown  Unknown
+test_ftnunit.exe     004095FB  Unknown               Unknown  Unknown
+test_ftnunit.exe     0040144B  Unknown               Unknown  Unknown
+test_ftnunit.exe     00401FE9  Unknown               Unknown  Unknown
+test_ftnunit.exe     00401A2C  Unknown               Unknown  Unknown
+test_ftnunit.exe     00401BB3  Unknown               Unknown  Unknown
+test_ftnunit.exe     0040294A  Unknown               Unknown  Unknown
+test_ftnunit.exe     0040232E  Unknown               Unknown  Unknown
+test_ftnunit.exe     0044A1E9  Unknown               Unknown  Unknown
+test_ftnunit.exe     00433519  Unknown               Unknown  Unknown
+kernel32.dll       7C816D4F  Unknown               Unknown  Unknown
+
+Incrementally linked image--PC correlation disabled.
+Test: Read an ordinary file
+Number of failed assertions:                    0
+Number of runs needed to complete the tests:    3
+</pre></td></tr></table></p>
+
+</ul>
+
+The program is run via one of the following files:
+
+<dl>
+
+<dt><a name="1">runtests.bat </a><dd>
+
+A batch file for use under MS Windows
+<br><br>
+<dt><a name="2">runtests.sh </a><dd>
+
+A Bourne shell script for use under UNIX/Linux or similar systems, like
+Cygwin or Mingw.
+<br><br>
+<dt><a name="3">runtests.tcl </a><dd>
+
+A Tcl program that presents a simple graphical user-interface
+
+</dl>
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module ftnunit contains the following subroutines and functions:
+
+<dl>
+
+<dt><a name="4"><b class='cmd'>call runtests( testproc )</b> </a><dd>
+
+Routine to start the unit tests. It checks if the file &quot;ftnunit.run&quot;
+exists. If so, it will call the subroutine <em>testproc</em> that was
+passed. Otherwise it will simply return, so that the ordinary program
+execution may continue.
+<br><br>
+If the subroutine testproc returns, the program stops, unless you have
+called the subroutine <em>runtests_init</em> before <em>runtests</em>.
+
+<br><br>
+<dt><a name="5"><b class='cmd'>call runtests_init</b> </a><dd>
+
+Routine to initialise the ftnunit system, so that you call <em>runtests</em>
+more than once. To complete the tests, call <em>runtests_final</em>, as
+this will print the final statistics and stop the program.
+
+<br><br>
+<dt><a name="6"><b class='cmd'>call runtests_final</b> </a><dd>
+
+Routine to finalise the ftnunit system: it will print the final statistics
+and stop the program, but only if the file &quot;ftnunit.run&quot; is present.
+
+<br><br>
+<dl>
+<dt>subroutine <i class='arg'>testproc</i><dd>
+Subroutine that calls the individual test routines. It takes no
+arguments. It wil generally exist of a series of calls to the
+routine <em>test</em> - see below.
+</dl>
+
+
+<dt><a name="7"><b class='cmd'>call test( proc, text )</b> </a><dd>
+
+Routine to run the individual unit test routine (emph proc). It decides
+if the test has not run yet and if so, the test routine is called.
+Otherwise it is skipped.
+<br><br>
+<em>test</em> takes care of all administrative details.
+<br><br>
+Note: to make it possible to use <em>private</em> unit test routines,
+the source code of this subroutine is kept in a separate file,
+<em>ftnunit_test.f90</em> that should be included in an appropriate
+place in the program's sources. This way, you can make it a private
+routine in each module. The only public access to the unit testing
+routines is then via the subroutine <em>testproc</em> that is passed to
+<em>runtests</em>.
+
+<br><br>
+<dl>
+<dt>subroutine <i class='arg'>proc</i><dd>
+Subroutine that implements an individual unit test. It takes no
+arguments. Within each such subroutine the complete unit test is run.
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>text</i><dd>
+Text describing the particular unit test. It is printed in the log
+file.
+</dl>
+
+
+<dt><a name="8"><b class='cmd'>call assert_true( cond, text )</b> </a><dd>
+
+Routine to check that a condition is true. If not, a message is printed
+in the log file and the number of failures is increased.
+
+<br><br>
+<dl>
+<dt>logical <i class='arg'>cond</i><dd>
+The condition to be checked
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>text</i><dd>
+Text describing the condition
+</dl>
+
+
+<dt><a name="9"><b class='cmd'>call assert_false( cond, text )</b> </a><dd>
+
+Routine to check that a condition is false. If not, a message is
+printed in the log file and the number of failures is increased.
+
+<br><br>
+<dl>
+<dt>logical <i class='arg'>cond</i><dd>
+The condition to be checked
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>text</i><dd>
+Text describing the condition
+</dl>
+
+
+<dt><a name="10"><b class='cmd'>call assert_equal( value1, value2, text )</b> </a><dd>
+
+Routine to check that two integers are equal or if two one-dimensional
+integer arrays are equal. If not, a message is printed, along with the
+values that were different.
+
+<br><br>
+<dl>
+<dt>integer [, dimension(:)] <i class='arg'>value1</i><dd>
+The first integer value or array
+
+<br><br>
+<dt>integer [, dimension(:)] <i class='arg'>value2</i><dd>
+The second integer value or array
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>text</i><dd>
+Text describing the condition
+</dl>
+
+
+<dt><a name="11"><b class='cmd'>call assert_comparable( value1, value2, margin, text )</b> </a><dd>
+
+Routine to check that two reals are almost equal or if two one-dimensional
+real arrays are almost equal. If not, a message is printed, along with
+the values that were different.
+<br><br>
+The margin is taken as a relative tolerance. Two values are
+considered almost equal if:
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    abs( v1 - v2 ) &lt; margin * (abs(v1)+abs(v2)) / 2
+</pre></td></tr></table></p>
+
+<br><br>
+<dl>
+<dt>real [, dimension(:)] <i class='arg'>value1</i><dd>
+The first real value or array
+
+<br><br>
+<dt>real [, dimension(:)] <i class='arg'>value2</i><dd>
+The second real value or array
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>text</i><dd>
+Text describing the condition
+</dl>
+
+
+<dt><a name="12"><b class='cmd'>exists = ftnunit_file_exists( filename )</b> </a><dd>
+
+Logical function to check that a particular file exists
+
+<br><br>
+<dl>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+Name of the file to be checked
+</dl>
+
+
+<dt><a name="13"><b class='cmd'>call ftnunit_get_lun( lun )</b> </a><dd>
+
+Subroutine to get a free LU-number
+
+<br><br>
+<dl>
+<dt>integer, intent(out) <i class='arg'>lun</i><dd>
+Next free LU-number
+</dl>
+
+
+<dt><a name="14"><b class='cmd'>call ftnunit_remove_file( filename )</b> </a><dd>
+
+Subroutine to remove (delete) a file
+
+<br><br>
+<dl>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+Name of the file to be removed
+</dl>
+
+
+<dt><a name="15"><b class='cmd'>call ftnunit_make_empty_file( filename )</b> </a><dd>
+
+Subroutine to make a new, empty file
+
+<br><br>
+<dl>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+Name of the file to be created
+</dl>
+
+</dl>
+
+
+<h2><a name="generating_tests_from_a_table">GENERATING TESTS FROM A TABLE</a></h2>
+<p>
+The Tcl program &quot;gentabletest.tcl&quot; reads the test specifications from an
+input file and generates a complete Fortran program. The ideas from
+Bil Kleb's  &quot;Toward Scientific Numerical Modeling&quot;
+<a href="ftp://ftp.rta.nato.int/PubFullText/RTO/MP/RTO-MP-AVT-147/RTO-MP-AVT-147-P-17-Kleb.pdf">ftp://ftp.rta.nato.int/PubFullText/RTO/MP/RTO-MP-AVT-147/RTO-MP-AVT-147-P-17-Kleb.pdf</a>
+were used for the set-up.
+
+<p>
+To do: provide a detailed description. For the moment: see <em>example.tbl</em>, including below.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+! Example of generating test code via a table
+! -------------------------------------------
+! The routine to be tested determines the minimum oxygen concentration
+! in a river, based on the Streeter-Phelps model:
+!
+!    dBOD/dt = -k * BOD
+!
+!    dO2/dt = -k * BOD + ka * (O2sat-O2) / H
+!
+! where
+!    BOD   - biological oxygen demand (mg O2/l)
+!    O2    - oxygen concentration (mg O2/l)
+!    O2sat - saturation concentration of oxygen (mg O2/l)
+!    k     - decay rate of BOD (1/day)
+!    ka    - reareation rate of oxygen (m/day)
+!    H     - depth of the river
+!
+! We need boundary (initial) conditions for BOD and oxygen and
+! the equations describe the concentrations of BOD and oxygen in a
+! packet of water as it flows along the river.
+!
+! Note:
+! It is a very simple model, it is not meant as a realistic
+! representation.
+!
+! The routine simply continues the solution until a minimum is found.
+! The results are: oxymin and time
+!
+!
+! The keyword DECLARATIONS introduces the declarations we need for the
+! complete generated code
+!
+DECLARATIONS
+    use streeter_phelps
+    real :: bod, oxy
+    real :: k, ka, h, oxysat, dt, oxymin, time
+!
+! The keyword CODE introduces the code fragment required to run the
+! routine or routines. The results and possible checking of error
+! conditions are separated.
+!
+CODE
+    call compute_min_oxygen( bod, oxy, k, ka, h, oxysat, dt, oxymin, time )
+!
+! The keyword RESULT indicates which arguments/variables hold the
+! interesting results. Specify one name per line (you can not currently
+! use array elements) and the allowed margin (taken as absolute, if
+! followed by &quot;%&quot; as a percentage)
+!
+RESULT
+    oxymin  0.001        ! Minimum oxygen concentration
+    time    0.01%        ! Time the minimum is reached
+
+!
+! The keyword ERROR is used for a code fragment that checks if the
+! routine has correctly found an error in the input (that is, some
+! parameter value is out of range). The code is invoked when any of
+! result variables in a table entry has the keyword ERROR instead of
+! a proper value.
+! Use the subroutine &quot;error&quot; to indicate the correctly reported error
+! condition.
+!
+ERROR
+    if ( time == -999.0 ) then
+        call error
+    endif
+!
+! The keyword RANGES specifies that the variables are to be taken
+! from a uniform or a normal distribution. The generated program will
+! simply select values at random and run the code with them. The report
+! consists of the detailed output as well as a summary.
+!
+RANGES
+    oxy   10.0   2.0  Uniform ! Name of the variable, the mean and the margin (uniform)
+                              ! Normal: mean and standard deviation followed by Normal
+                              ! Note: all parameters must be given!
+!
+! The keyword TABLE indicates the beginning of a table of input data and
+! expected values. The first (non-comment) line contains the names of
+! the variables as used in the code fragments and all others are the
+! values expected.
+!
+! There are two special values:
+! ? -     indicating an unknown value for result variables and a &quot;do not
+!         care&quot; value for input variables
+!         It is useful to generate a table that does contain the (computed)
+!         results (see the file table.out) or to indicate situations
+!         where one or more input variables are out of range and this
+!         should lead to an error
+! ERROR - indicating that the entry should cause the routine to be
+!         tested to flag an error condition.
+!
+TABLE
+dt   oxy       bod       oxysat    h         k         ka        oxymin    time
+0.1  10        1         10        10        0.1       1.0       10.0      2.0
+1.0  10        1         10        10        0.1       1.0       ?         ?
+!
+! This case is unacceptable: time step must be positive
+0.0  ?         ?         ?         ?         ?         ?         ?         ERROR
+1.0  0.        10        10        10        0.1       1.0       ?         ?
+</pre></td></tr></table></p>
+
+<h2><a name="todo">TODO</a></h2>
+<p>
+The following things are still left to do:
+<ul>
+<li>
+Proper inclusion of the routine <em>prolog</em> and <em>epilog</em>
+
+<br><br>
+<li>
+Extension of the set of assertion routines
+
+</ul>
+
+<h2><a name="related_work">RELATED WORK</a></h2>
+<p>
+There are at least two similar initiatives with regard to a unit testing
+framework for Fortran:
+
+<ul>
+<li>
+<a href="http://nasarb.rubyforge.org">Funit (implemented in Fortran and
+Ruby)</a> by Bil Kleb and others
+
+<br><br>
+<li>
+<a href="http://www.sourceforge.net/projects/pfunit">A framework
+implemented in Fortran</a> by Brice Womack and Tom Clune
+
+<br><br>
+<li>
+<a href="http://www.sourceforge.net/projects/fortranxunit">FRUIT
+(implemented in Fortran and Ruby)</a> by Andrew Chen
+
+</ul>
+
+(Note: To avoid confusion, I have renamed my original module &quot;funit&quot; to
+<em>ftnunit</em>)
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

@@ -1,0 +1,13 @@
+Interval-rekenen:
+
+Gebruik dit om na te gaan of een routine "stabiel" is:
+- Geen delingen door nul 
+- Geen logarithme van een negatief getal etc
+
+Constanten:
+- Klein interval indien niet exact (int(2**10*c) /= 2**10*c)
+
+Groter dan/etc:
+- Verschillende mogelijkheden uitproberen
+
+Er moet een testprogramma gegenereerd worden!

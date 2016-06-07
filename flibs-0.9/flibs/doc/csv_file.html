@@ -1,0 +1,185 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>flibs/strings - flibs </title>
+</head>
+<! -- Generated from file 'csv_file.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id$ flibs/strings.n
+   -->
+
+<body>
+<h1> flibs/strings(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/strings - Writing CSV files
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use csv_file</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>call csv_next_record( lun )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>call csv_write( lun, data )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>csv_file</em> module facilitates the writing of
+CSV files. Whereas it is very easy to read CSV files with Fortran, using
+list-directed read statements:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+    integer           :: i1, i2
+    character(len=20) :: string
+    real              :: f3
+    read(10,*) i1, i2, string, f3
+</pre></td></tr></table></p>
+
+for instance, writing them is slightly more complicated. The module
+helps with this by two routines, <em>csv_next_record</em> and
+<em>csv_write</em>.
+<p>
+
+The module supports writing scalar variables, one- and two-dimensional
+arrays according to a simple scheme. As CSV files are ordinary formatted
+files where each field is separated by commas and strings are possibly
+delimited by quotation marks (&quot;), the procedure is this:
+
+<ul>
+<li>
+Open the file as a formatted file
+
+<br><br>
+<li>
+Pass the LU-number for the file to the routines mentioned above,
+using the second to write the data and the first to force a new record.
+
+</ul>
+
+In more detail, the layout of the CSV-file can be described as follows:
+
+<ul>
+<li>
+Single items are written to the end of the current record
+
+<br><br>
+<li>
+One-dimensional items are also written to the end of the current
+record
+
+<br><br>
+<li>
+Two-dimensional items are written to separate records, one for
+each row
+
+<br><br>
+<li>
+Except for the two-dimensional versions, all routines allow
+you to suppress advancing to the next record:
+
+<br><br>
+<ul>
+<li>
+for single items you must indicate whether to advance or not
+<br><br>
+<li>
+for one-dimensional items, the argument is optional. Default
+is to advance.
+</ul>
+
+</ul>
+
+<em>Note on the format:</em>
+CSV-files apparently come in different guises (Kernighan and Pike,
+The practice of Programming, Addison-Wesley, 1999). This module
+uses the following rules:
+
+<ul>
+<li>
+items are always separated by a single comma (,)
+<br><br>
+<li>
+string items are delimited by double quotes (&quot;)
+<br><br>
+<li>
+embedded double quotes are treated by doubling the quote
+<br><br>
+<li>
+trailing blanks are considered irrelevant
+</ul>
+
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module contains two public subroutines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use csv_file</b> </a><dd>
+
+To import the subroutines for writing a CSV file, use this module.
+
+
+<br><br>
+<dt><a name="2"><b class='cmd'>call csv_next_record( lun )</b> </a><dd>
+
+Writes a new line to the file.
+
+<br><br>
+<dl>
+
+<dt>integer <i class='arg'>lun</i><dd>
+The LU-number the file is connected to
+
+</dl>
+
+
+<dt><a name="3"><b class='cmd'>call csv_write( lun, data )</b> </a><dd>
+
+Writes data to the file in the proper format.
+
+<br><br>
+<dl>
+
+<dt>integer <i class='arg'>lun</i><dd>
+The LU-number the file is connected to
+
+<br><br>
+<dt>(...) <i class='arg'>data</i><dd>
+The data to be written to the file. The type can be:
+<br><br>
+<ul>
+<li>
+an integer or a real (single or double precision) number or a character
+string
+<br><br>
+<li>
+an integer or a real (single or double precision)one-dimensional array or a one-dimensional
+array of character strings
+<br><br>
+<li>
+an integer or a real (single or double precision)two-dimensional array or a two-dimensional
+array of character strings
+</ul>
+
+
+</dl>
+
+
+</dl>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

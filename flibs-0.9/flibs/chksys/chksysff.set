@@ -1,0 +1,18 @@
+# CHKSYSFF: Which checks to perform
+# Possible keywords:
+# @GENERAL            - all general (well-behaved) tests
+# @ALLOCATED-POINTERS - check pointers to allocated memory
+# @INTERACTIVE        - interactively select a set of tests
+#                       (all of them disruptive!)
+#
+# To include the test, the keyword must begin in the first column
+# To exclude it, use the word SKIP in front.
+#
+# If you want concise information about the tests, put the keyword
+# SUMMARY in (VERBOSE is just to show the opposite: a full report
+# is default)
+#
+VERBOSE
+@GENERAL
+@ALLOCATED-POINTERS
+SKIP @INTERACTIVE

@@ -1,0 +1,2 @@
+character(len=80), dimension(6) :: routine1
+character(len=80), dimension(6) :: routine2

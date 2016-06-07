@@ -1,0 +1,63 @@
+The C to Fortran wrapper is implemented in Tcl, so you need an
+installation of this dynamic language or a run-time shell (see
+below) to use it.
+
+Instructions for use
+--------------------
+The wrapper can be run as follows:
+
+    tclsh cwrap.tcl header.h
+
+Or, if you use the tclkit run-time shell:
+
+    tclkit cwrap.tcl header.h
+
+(and type "exit" to stop the program)
+
+It will produce the following Fortran and C files:
+
+- header_wrap.c: The C wrapper functions that transform the Fortran call
+                 into a proper C call
+- header_mod.f90: A Fortran module (called "header") that contains the
+                 interfaces for the wrapper functions
+
+
+Limitations
+-----------
+This is a very first version of the wrapper, it is not able to
+do very much. In particular:
+
+- No conversion yet of Fortran strings to C strings
+- Only one calling convention for passing the length of strings
+- No customisation for user-defined types
+- No support for functions that return pointers
+- No support for structs or typedefs
+- No support for function arguments
+
+Something that would be nice to have is a way of dealing with NULLs
+in Fortran, as NULLs are frequently used in C as defaults or missing
+arguments.
+
+It is very probable that the wrapper breaks if the C header has a
+somewhat unusual layout.
+
+
+Getting a Tcl run-time shell
+----------------------------
+To use this wrapper you need to know nothing of Tcl, but you do need
+the Tcl shell or the Tclkit shell.
+
+If you work on a Linux or UNIX system or on MacOS, chances are that
+you already have the Tcl shell, tclsh.
+
+If you are on Windows, you may either want to install Tcl (for instance:
+from http://www.activestate.com) or, alternatively, get the Tclkit
+shell. This is a single-file run-time environment for Tcl and its
+graphical user-interface component Tk. You can get it from:
+http://www.equi4.com
+
+More information on Tcl and Tk:
+http://www.tcl.tk
+http://wiki.tcl.tk
+
+There is an abundance of online tutorials on Tcl/Tk.

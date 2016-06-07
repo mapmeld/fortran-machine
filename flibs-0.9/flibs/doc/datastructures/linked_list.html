@@ -1,0 +1,275 @@
+
+<html><head>
+<title>flibs/datastructures - flibs </title>
+</head>
+<! -- Generated from file 'linked_list.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: linked_list.html,v 1.1 2008/06/13 10:27:02 relaxmike Exp $ flibs/datastructures.n
+   -->
+
+<body>
+<h1> flibs/datastructures(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/datastructures - Linked lists
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>call list_create( list, data)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>call list_destroy( list)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>count = list_count( list)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>next =&gt; list_next( elem )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call list_insert( elem, data )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>call list_insert_head( list, data )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>call list_delete_element( list, elem )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>call list_get_data( elem, data )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>call list_put_data( elem, data )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>linkedlist.f90</em> source file allows you to implement
+<em>linked lists</em> of any (derived) type without having to edit
+the supplied source code. To this end a simple technique is used,
+which is best illustrated by an example:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+module MYDATA_MODULE
+
+type MYDATA
+    character(len=20) :: string
+end type MYDATA
+
+end module
+
+module MYDATA_LISTS
+    use MYDATA_MODULE, LIST_DATA =&gt; MYDATA
+
+    include &quot;linkedlist.f90&quot;
+end module MYDATA_LISTS
+</pre></td></tr></table></p>
+
+The above code defines a module <em>MYDATA_MODULE</em> with the derived
+type that is to be stored in the linked lists. The name of that derived
+type can be anything.
+<p>
+It also defines a module <em>MYDATA_LISTS</em> which will be the module
+that holds the functionality to use linked lists:
+
+<ul>
+
+<li>
+The module <em>MYDATA_MODULE</em> is <em>used</em>, but the derived type
+<em>MYDATA</em> is renamed to the (fixed) name <em>LIST_DATA</em>. (This
+is the name used in the generic source file.)
+
+<br><br>
+<li>
+The source code for the actual routines is simply included via the
+INCLUDE statement.
+
+<br><br>
+<li>
+Nothing more is required, we can close the source text for the module.
+
+</ul>
+
+To use a single type of linked lists in a program, we can just use the
+MYDATA_LISTS module. If you need more than one type of data in linked
+lists, then apply the same renaming trick on using the specific linked
+lists modules.
+
+<p>
+In fact the example in the source file &quot;two_lists.f90&quot; shows the general
+technique of how to accomplish this.
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The source file <em>linkedlist.f90</em> provides the following
+routines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>call list_create( list, data)</b> </a><dd>
+
+Create a new list with one element. The given data are copied and stored
+in that element.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>list</i><dd>
+The variable that will be used for accessing the list
+<br><br>
+<dt>type(LIST_DATA), intent(in) <i class='arg'>data</i><dd>
+The data to be stored in the first element
+
+</dl>
+<br><br>
+
+
+<dt><a name="2"><b class='cmd'>call list_destroy( list)</b> </a><dd>
+
+Destroy the list. All elements contained in it will be destroyed as
+well.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>list</i><dd>
+The list to be destroyed
+
+</dl>
+<br><br>
+
+
+<dt><a name="3"><b class='cmd'>count = list_count( list)</b> </a><dd>
+
+Function to return the number of elements in the list.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>list</i><dd>
+The list in question
+
+</dl>
+<br><br>
+
+
+<dt><a name="4"><b class='cmd'>next =&gt; list_next( elem )</b> </a><dd>
+
+Function to return the next element in the list. Note: it returns a
+<em>pointer</em> to the next element, so you must use <em>=&gt;</em>.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>elem</i><dd>
+The element in the list
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>call list_insert( elem, data )</b> </a><dd>
+
+Insert a new element (with the given data) into the list, <em>after</em>
+the given element.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>elem</i><dd>
+The element in the list after which to insert a new one.
+<br><br>
+<dt>type(LIST_DATA), intent(in) <i class='arg'>data</i><dd>
+The data to be stored in the new element
+
+</dl>
+<br><br>
+
+
+<dt><a name="6"><b class='cmd'>call list_insert_head( list, data )</b> </a><dd>
+
+Insert a new element (with the given data) before the head of list.
+The argument &quot;list&quot; will point to the new head.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>list</i><dd>
+The list in question
+<br><br>
+<dt>type(LIST_DATA), intent(in) <i class='arg'>data</i><dd>
+The data to be stored at the new head
+
+</dl>
+<br><br>
+
+
+<dt><a name="7"><b class='cmd'>call list_delete_element( list, elem )</b> </a><dd>
+
+Delete the given element from the list. The associated data
+will disappear.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>list</i><dd>
+The list in question
+<br><br>
+<dt>type(LINKED_LIST), pointer <i class='arg'>elem</i><dd>
+The element to be deleted
+
+</dl>
+<br><br>
+
+
+<dt><a name="8"><b class='cmd'>call list_get_data( elem, data )</b> </a><dd>
+
+Copy the data belonging to the given element into the argument &quot;data&quot;.
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>list</i><dd>
+The element in question
+<br><br>
+<dt>type(LIST_DATA), intent(out) <i class='arg'>data</i><dd>
+The variable to hold the data
+
+</dl>
+<br><br>
+
+
+<dt><a name="9"><b class='cmd'>call list_put_data( elem, data )</b> </a><dd>
+
+Copy the given data into the given element (overwriting the previous)
+
+<br><br>
+<dl>
+
+<dt>type(LINKED_LIST), pointer <i class='arg'>list</i><dd>
+The element in question
+<br><br>
+<br><br>
+<dt>type(LIST_DATA), intent(in) <i class='arg'>data</i><dd>
+The new data
+
+</dl>
+
+
+</dl>
+
+Notes:
+<ul>
+<li>
+The lists can only store data of the same derived type. In that sense
+the code is not generic.
+<br><br>
+<li>
+Currently, the lists can only store derived types that do not require
+an explicit destruction. If you want to store a derived type with
+pointers to allocated memory, you can do that however, by supplying an
+assignment operator. This would lead to a memory leak though. It is best
+to wait for the next version which will allow such derived types to be
+stored.
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

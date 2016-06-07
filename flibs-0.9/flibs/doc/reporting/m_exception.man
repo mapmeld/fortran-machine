@@ -1,0 +1,315 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/m_vfile n 1.0]
+[copyright {2008 Michael Baudin michael.baudin@gmail.com}]
+[copyright {2008 Arjen Markus arjenmarkus@sourceforge.net}]
+[moddesc flibs]
+[titledesc {Manage exceptions}]
+
+[description]
+
+Provides services to generate different levels of exceptions
+and display the message of the exception.
+Five levels of exceptions can be generated, from the lowest
+to the highest level :
+[list_begin bullet]
+[bullet] information, warning : just print a message and continue
+[bullet] error, fatal_error and failure : prints a message and stop the execution
+[list_end]
+
+[section OVERVIEW]
+
+[subsection "Simple use-case"]
+
+Suppose that one would like to compute the square root of one
+real value. The "compute_sqrt" function takes one positive real argument,
+and if the argument is negative, one cannot compute the square root so
+that one would generate an error. In the following example, extracted from the
+unit tests included in the project, one uses the static method "exception_raiseError"
+to display a user-friendly message and stop the execution of the program
+ 
+[example {
+    function compute_sqrt ( value ) result ( root )
+      use m_exception
+      implicit none
+      real, intent(in) :: value
+      real :: root
+      if ( value < 0. ) then
+        call exception_raiseError ( "Value is negative in compute_sqrt" )
+      else 
+        root = sqrt ( value )
+      endif
+   end function compute_sqrt
+
+   real :: root
+   root = compute_sqrt ( -1. )
+}]
+ 
+ In the previous example, the standard output is written so that the
+ following message appears on screen.
+
+[example {
+   Error.
+   Message: Value is negative in compute_sqrt
+}]
+
+[subsection "Controlling the execution"]
+ 
+ The client code can control the behaviour of the component each time
+ an exception is raised.
+ The default behaviour is to stop the execution. This can be modified
+ by calling "exception_setstoponerror" in order to continue the execution,
+ even if error, fatal error or failure exceptions are raised.
+
+[para]
+   In the following example, the static method "exception_setstoponerror" is 
+   called so that an error does not interrupt the execution.
+
+[example {
+   call exception_setstoponerror ( .false. )
+   call exception_raiseError ( "There is an error, but the execution will continue." )
+}]
+
+[subsection "Controlling output"]
+
+   The default behaviour is to write messages onto the standard output
+   each time an exception is raised.
+   This can be modified in two ways.
+[list_begin bullet]
+[bullet] the first possibility is to disable the writing of the messages 
+     with "exception_logactive". This feature might be useful in the case
+     where a component has known bugs but generates lots of unwanted
+     exceptions messages.
+[bullet] the second possibility is to connect the component to an existing unit
+     with "exception_setlogunit", so that the messages are written
+     on the given logical unit number. 
+     This allows for example to write on an existing log file, may be the log 
+     file manage by the m_logger component included in the project.
+[list_end]
+
+[para]
+   In the following example, the client code first disables all output,
+   set "stoponerror" to false and generates an error which is not displayed
+   and does not interrupt the execution.
+
+[example {
+   call exception_setstoponerror ( .false. )
+   call exception_logactive ( .false. )
+   call exception_raiseError ( "This message will not be displayed and the execution will continue." )
+   call exception_logactive ( .true. )
+   call exception_raiseError ( "This message WILL be displayed and the execution will continue." )
+}]
+
+   In the following example, the client code connect the m_exception component to 
+   an existing unit so that the exception messages are written onto a client log file.
+
+[example {
+     log_fileunit = 12
+     call exception_setstoponerror ( .false. )
+     open ( log_fileunit , FILE= "log_file.log" )
+     call exception_setlogunit ( log_fileunit )
+     call exception_raiseError ( "This message will be written in log_file.log and the execution will continue." )
+     call exception_setlogunit ( 0 )
+     call exception_raiseError ( "This message will be written on standard output and the execution will continue." )
+     close ( log_fileunit )
+}]
+
+   In the following example, the client code connects the m_exception component to 
+   the logfile manage by m_logger. This way, the exception messages are collected in the 
+   unique log file of the client code.
+
+[example {
+     call log_startup ( "log_file.log" , append=.true. )
+     call log_cget ( "logfileunit" , log_fileunit )
+     call exception_setstoponerror ( .false. )
+     call exception_setlogunit ( log_fileunit )
+     call exception_raiseError ( "This message will be written in log_file.log and the execution will continue." )
+     call log_shutdown ()
+}]
+
+[subsection "Pseudo-catch"]
+
+The client code can use a pseudo-catch system which provides
+a simple way to manage exceptions which are raised at a lower
+level in the call stack. This allows to provide special
+treatments when exceptions are generated, without modifiying
+all lower level subroutines/function, but just by inserting
+exception management when needed.
+Suppose that you have a subroutine which source code is the following.
+
+[example {
+     subroutine yoursubroutine ()
+       use m_exception, only : exception_raiseFatalError
+       implicit none
+       [...]
+       call exception_raiseFatalError ( "Wrong blabla in yoursubroutine" )
+       [...]
+     end subroutine yoursubroutine
+}]
+
+   When calling the subroutine "yoursubroutine", one may wonder if exceptions
+   have been generated so that these errors may be processed, or not.
+   One can use the "exception_catch" service to compute the status 
+   of one subroutine and manage that status.
+
+[example {
+     use m_exception, only : exception_catch, &
+         EXCEPTION_INFORMATION, &
+         EXCEPTION_WARNING &
+         EXCEPTION_ERROR &
+         EXCEPTION_FATAL_ERROR &
+         EXCEPTION_FAILURE
+     integer :: status
+     call exception_catch ( yoursubroutine , status )
+     select case ( status )
+     case ( EXCEPTION_INFORMATION )
+        write(6,*) "Information"
+     case ( EXCEPTION_WARNING )
+        write(6,*) "Warning"
+     case ( EXCEPTION_ERROR , EXCEPTION_FATAL_ERROR , EXCEPTION_FAILURE )
+        write(6,*) "Fatal error"
+     case default
+        write(6,*) "No problem, continue."
+     end select
+}]
+
+[section ROUTINES]
+
+[list_begin definitions]
+
+[call [method "exception_raiseFatalError"] ( [arg message] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] message]
+[list_end]
+Generates a fatal error message and stops the execution.
+
+
+[call [method "exception_raiseError"] ( [arg message] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] message]
+[list_end]
+Generates an error message and stops the execution.
+
+[call [method "exception_raiseWarning"] ( [arg message] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] message]
+[list_end]
+Generates a warning message.
+
+
+[call [method "exception_raiseInformation"] ( [arg message] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] message]
+[list_end]
+Generates an information message.
+
+[call [method "exception_raiseFailure"] ( [arg message] )]
+[list_begin arg]
+[arg_def [type "character(len=*), intent(in) ::"] message]
+[list_end]
+Generates a failure message and stops the execution
+
+[call [method "exception_setstoponerror"] ( [arg stoponerror] )]
+[list_begin arg]
+[arg_def [type "logical, intent(in) ::"] message]
+[list_end]
+If [arg stoponerror] is true, then when an error, a fatal_error or a failure
+is generated, then stop the execution.
+If [arg stoponerror] is false, then the same exceptions do not stop the
+execution.
+
+
+
+[call [method "exception_initcounter"] ( )]
+[list_begin arg]
+[arg_def [type "logical, intent(in) ::"] message]
+[list_end]
+Reset to 0 all the exceptions counters.
+
+[call [method "exception_getcounter"] ( )]
+[list_begin arg]
+[arg_def [type "integer, dimension(1:EXCEPTION_SIZE), intent(out) ::"] counter]
+[list_end]
+Returns an array of size EXCEPTION_SIZE indicating the number
+of exceptions of each type. The value of [arg "excepcounters ( iexcept )"]
+is the total number of exceptions of type #iexcept generated since the begining 
+of the execution. The possible values for iexcept are the following.
+[list_begin bullet]
+[bullet] counter ( EXCEPTION_INFORMATION ) : total number of information exceptions raised
+[bullet] counter ( EXCEPTION_WARNING ) : total number of warning exceptions raised
+[bullet] counter ( EXCEPTION_ERROR ) : total number of error exceptions raised
+[bullet] counter ( EXCEPTION_FATAL_ERROR ) : total number of fatal error exceptions raised
+[bullet] counter ( EXCEPTION_FAILURE ) : total number of failure exceptions raised
+[list_end]
+
+[call [method "exception_report"] ( )]
+Writes on the current exception unit number a report
+which details the number of exceptions of all types
+since the begining of the execution or the last reset of
+all counters.
+
+
+[call [method "exception_setlogunit"] ( [arg unitnumber] )]
+[list_begin arg]
+[arg_def [type "integer, intent(in) ::"] unitnumber]
+[list_end]
+Set the unit number onto which the messages are output.
+If the unitnumber is negative or 0, the messages are written
+to the standard output (unit *).
+Note : a unitnumber equals to 6 is generally the standard output, 
+but this may depend on the fortran compiler.
+
+[call [method "exception_getlogunit"] ( ) result ( logunit )]
+[list_begin arg]
+[arg_def [type "integer ::"] logunit]
+[list_end]
+Returns the positive unit number onto which the messages are output,
+if enabled or a negative integer if the feature is disabled.
+
+
+[call [method "exception_logactive"] ( [arg bool] )]
+[list_begin arg]
+[arg_def [type "logical, intent(in) ::"] bool]
+[list_end]
+If the boolean argument [arg bool] is true, enable the logging 
+of the exceptions messages.
+If the boolean argument [arg bool] is false, disable the logging
+of the exceptions messages.
+
+
+[call [method "exception_islogactive"] ( ) result ( islogactive )]
+[list_begin arg]
+[arg_def [type "logical ::"] islogactive]
+[list_end]
+Returns .true. if the current exception messages are written,
+either on standard output or into a log file.
+
+
+[call [method "exception_catch"] ( [arg callback] [arg ", status"] ) result ( islogactive )]
+[list_begin arg]
+[arg_def [type "integer, intent(out) ::"] status]
+[list_end]
+[example {
+    interface interfacecallback
+       subroutine callback ()
+       end subroutine callback
+    end interface interfacecallback
+}]
+Calls the given subroutine [arg callback] and set [arg status] as an 
+the integer associated with last exception, higher level, code or 0 if no exception
+was raised.
+Caution : the internal algorithm is based on the exception counters,
+which implies that any call to exception_initcounter in the client
+code can result in a wrong status.
+
+
+
+
+[list_end]
+
+[section TODO]
+[list_begin bullet]
+[bullet] design a more powerful exception management system, which manages exceptions
+through the call stack.
+[list_end]
+
+[manpage_end]

@@ -1,0 +1,227 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/binarytree n 1.0]
+[copyright {2005 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Linked lists}]
+
+[description]
+
+The [strong binarytree.f90] source file allows you to implement
+[strong "binary trees"] of any (derived) type without having to edit
+the supplied source code. (The resulting binary tree is [strong not]
+balanced, that would require a method of ordering the data.) To achieve
+genericty, a simple technique is used, which is best illustrated by an
+example:
+
+[example {
+module MYDATA_MODULE
+
+type MYDATA
+    character(len=20) :: string
+end type MYDATA
+
+end module
+
+module MYDATA_BTREES
+    use MYDATA_MODULE, TREE_DATA => MYDATA
+
+    include "binarytree.f90"
+end module MYDATA_BTREES
+}]
+
+The above code defines a module [strong MYDATA_MODULE] with the derived
+type that is to be stored in the binary trees. The name of that
+derived type can be anything.
+[para]
+It also defines a module [strong MYDATA_BTREES] which will be the module
+that holds the functionality to use binary trees:
+
+[list_begin bullet]
+
+[bullet]
+The module [strong MYDATA_MODULE] is [strong used], but the derived type
+[strong MYDATA] is renamed to the (fixed) name [strong LIST_DATA]. (This
+is the name used in the generic source file.)
+
+[bullet]
+The source code for the actual routines is simply included via the
+INCLUDE statement.
+
+[bullet]
+Nothing more is required, we can close the source text for the module.
+
+[list_end]
+
+To use a single type of binary trees in a program, we can just use the
+MYDATA_BTREES module. If you need more than one type of data in binary
+trees, then apply the same renaming trick on using the specific binary
+trees modules.
+
+[para]
+In fact the example in the source file "two_lists.f90" shows the general
+technique of how to accomplish this for linked lists. The same applies
+to binary trees.
+
+[section ROUTINES]
+The source file [strong "binarytree.f90"] provides the following
+routines:
+
+[list_begin definitions]
+
+[call [cmd "call btree_create( btree, data)"]]
+Create a new tree with the given data associated to the root.
+The data are copied and stored in that root.
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  btree]
+The variable that will be used for accessing the tree's root
+[arg_def "type(TREE_DATA), intent(in)" data]
+The data to be stored in the root
+
+[list_end]
+[nl]
+
+
+[call [cmd "call btree_destroy(btree )"]]
+Destroy the tree. All nodes contained in it will be destroyed as
+well.
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  btree]
+The list to be destroyed
+
+[list_end]
+[nl]
+
+
+[call [cmd "count = btree_count( btree )"]]
+Function to return the number of nodes in the tree.
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  btree]
+The tree in question
+
+[list_end]
+[nl]
+
+
+[call [cmd "child => btree_child_node( node, right )"]]
+Function to return the left or right child node of a given node in the
+tree. As each node is itself a tree, you can traverse the tree by
+repeatedly using this function on the result.
+[nl]
+Note: it returns a [strong pointer] to the child node,
+so you must use [strong =>].
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  node]
+The (parent) node in a tree or the root of a tree
+
+[arg_def "logical"  right]
+Whether to return the right (.true.) or the left (.false.) child node.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call btree_append_data( node, data, right )"]]
+Append a new node to the left or right to the given node. (Note that no
+balancing is taken care of). If the node already has a child node,
+nothing is done.
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer" node]
+The node in the tree that should get a child node
+[arg_def "type(TREE_DATA), intent(in)" data]
+The data to be stored in the child node
+[arg_def "logical"  right]
+Whether to append on the right (.true.) or the left (.false.) side.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call btree_append_subtree( node, subtree, right )"]]
+Append a subtree to the left or right to the given node.
+If the node already has a child node, nothing is done. (Note: the
+subtree is referred to, not copied!)
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  node]
+The node in the tree that should get a child node
+[arg_def "type(BINARY_TREE), pointer" subtree]
+The tree to be appended as the child node
+[arg_def "logical"  right]
+Whether to append on the right (.true.) or the left (.false.) side.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call btree_remove_subtree( node, subtree, right )"]]
+Remove a subtree to the left or right to the given node.
+A pointer to the subtree is returned in the "subtree" argument, so that
+this can be destroyed or used independently of the original tree.
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  node]
+The element in the list after which to insert a new one.
+[arg_def "type(BINARY_TREE), pointer" subtree]
+The subtree that was removeds the child node
+[arg_def "logical"  right]
+Whether to remove on the right (.true.) or the left (.false.) side.
+
+[list_end]
+[nl]
+
+
+[call [cmd "data = btree_get_data( node )"]]
+Return the data belonging to a node
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  node]
+The node of the tree in question
+
+[list_end]
+[nl]
+
+
+[call [cmd "call btree_put_data( node, data )"]]
+Put new data at a given node
+
+[list_begin arg]
+
+[arg_def "type(BINARY_TREE), pointer"  node]
+The node of the tree in question
+[arg_def "type(TREE_DATA), intent(in)" data]
+The data to be stored in the node
+
+[list_end]
+
+
+[list_end]
+
+Notes:
+[list_begin bullet]
+[bullet]
+The binary trees can only store data of the same derived type. In
+that sense the code is not generic.
+[bullet]
+Currently, the trees can only store derived types that do not require
+an explicit destruction. If you want to store a derived type with
+pointers to allocated memory, you can do that however, by supplying an
+assignment operator. This would lead to a memory leak though. It is best
+to wait for a next version that will allow such derived types to be
+stored.
+
+[list_end]
+
+[manpage_end]

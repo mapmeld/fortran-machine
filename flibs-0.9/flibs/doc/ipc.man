@@ -1,0 +1,129 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/ipc n 0.1]
+[copyright {2006 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Inter-process communication}]
+
+[description]
+
+[emph IPC] or inter-process communication is the name for various
+mechanisms by which programs (either multiple instances of the same
+program or different programs) can exchange information. There are
+numerous mechanisms available, each with its own pros and cons.
+
+[para]
+The modules in the [emph ipc] directory are intended to make
+inter-process communication possible with a minimum of OS requirements:
+
+[list_begin bullet]
+
+[bullet]
+The module [emph ipc_file] uses plain files for this communication and
+can therefore only be used if the processes have access to the same
+disks.
+[nl]
+The advantage however is that it can be in standard Fortran, without any
+reliance on special system libraries. The sole exception is the use of a
+sleep routine, to make sure the program can pause without consuming too
+much CPU (like in a long computation).
+
+[bullet]
+The module [emph ipc_mmap] uses so-called memory-mapped files. This is
+a more sophisticated method that does rely on system libraries
+(currently Windows and Linux, including Cygwin, are supported).
+[nl]
+The advantage is mostly in better performance - data are communicated
+via memory and not via the hard disk. The disadvantages are that a C
+compiler is required, as part of the code is in C and it is limited to
+shared-memory systems.
+
+[list_end]
+
+Both modules use the [emph same] set of routines and the [emph same]
+programming methods can be used. In fact, you select either one by
+changing the module [emph ipc], not by using [emph ipc_file] or
+[emph ipc_mmap] directly.
+
+
+[section "PROGRAMMING PHILOSOPHY"]
+
+[section ROUTINES]
+
+The set of routines offered by the [emph IPC] modules consists of
+the following:
+
+[list_begin definitions]
+
+[call [cmd "call ipc_open( comm, src, dest, dir, maxsize )"]]
+Open the connection between sender (src) and receiver (dest). The
+connection parameters are stored in the argument [emph comm], which is
+then used for all other routines to identify the connection.
+
+[list_begin arg]
+
+[arg_def type(ipc_comm) comm]
+Variable of derived type "ipc_comm" which will hold all information.
+
+[arg_def character(len=*) src]
+String identifying the sender process. This should be unique among all
+the processes involved. (Maximum significant length: 20 characters)
+
+[arg_def character(len=*) dest]
+String identifying the receiver process. This should be unique
+among all the processes involved. (Maximum significant length: 20
+characters)
+
+[arg_def character(len=*) dir]
+Directory to be used for the files. This directory must be accessible to
+all processes. An empty string signifies a default directory, which
+depends on the platform, such as /tmp or c:\temp - but it is not
+recommended. (Maximum significant length: 256 characters)
+
+[arg_def integer maxsize]
+The maximum size for all the data sent in one message. It is measured in
+bytes. (Note: you should not take it too tight, as per call to
+ipc_send there will be a small overhead, some 40 bytes, to identify the
+type and dimension of the data. It is ignored, however, when using the
+[emph ipc_file] module).
+
+
+[call [cmd "call ipc_send_start( comm, tag, id )"]]
+Start the sending of the data. The message as a whole is identified by a
+short string and an ID number, so that the receiver can check (if
+needed) that the right message is received.
+
+[arg_def type(ipc_comm) comm]
+Variable of derived type "ipc_comm" which holds the connection information.
+
+[arg_def character(len=*) tag]
+String identifying the type of message (maximum length: 20)
+
+[arg_def integer id]
+ID number of the message
+
+
+[call [cmd "call ipc_send_stop( comm )"]]
+Signals that all data have been sent.
+
+[arg_def type(ipc_comm) comm]
+Variable of derived type "ipc_comm" which holds the connection information.
+
+
+...
+
+[call [cmd "call ipc_receive_start( comm, tag, id )"]]
+Start receiving of the data. The message as a whole is identified by the
+short string and an ID number. so that the receiver can check (if
+needed) that the right message is received.
+
+[arg_def type(ipc_comm) comm]
+Variable of derived type "ipc_comm" which holds the connection information.
+
+[arg_def character(len=*) tag]
+String identifying the type of message (maximum length: 20)
+
+[arg_def integer id]
+ID number of the message
+
+
+[manpage_end]

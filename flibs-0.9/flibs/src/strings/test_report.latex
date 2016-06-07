@@ -1,0 +1,33 @@
+\documentclass[a4paper,11pt]{report}
+\title{This is a test!}
+\begin{document}
+\maketitle
+Hm, I should provide a scalar version too.
+And a longer text to find out what parapgraphs really look like.
+ 
+Yes, definitely!
+\subsection{How about a table?}
+\begin{tabular}{|l|l|l|}
+\hline
+\emph{Column 1} &
+\emph{Column 2} &
+\emph{Column 3} \\
+\hline
+Value 1 &
+Value 2 &
+Value 3\\
+A &
+B &
+C\\
+\hline
+\end{tabular}
+\begin{itemize}
+\item{
+A first item
+}
+\item{
+A second item
+with more text
+}
+\end{itemize}
+\end{document}

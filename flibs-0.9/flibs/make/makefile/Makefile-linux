@@ -1,0 +1,13 @@
+#
+# Commands specific for the Windows system
+#
+SHELL=/bin/sh
+MKDIR= mkdir
+CD= cd
+CP= cp
+REMOVE= rm
+ECHO= echo
+AR= ar
+OS = linux
+OS_TAG = _PLATFORM_LINUX
+

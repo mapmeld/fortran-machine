@@ -1,0 +1,560 @@
+<html><head>
+    <title>TestMake</title>
+</head>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<h1>TestMake</h1>
+<h2><a name="introduction">Introduction</a></h2>
+The TestMake script is a facility that generates a complete test program
+for a given subroutine or module in general from a very limited amount of
+information:
+<ul>
+
+<li>
+Two files generated with the <i>McCabe Toolset</i>, one
+      containing the data usage and one containing a description of
+      the basis testpaths.
+<li>
+A file that must be prepared manually, although the first round
+      through the generation process will help you
+      (<i>cf.</i> <a href="#the_generation_process">THE GENERATION PROCESS</a>)
+</ul>
+
+From this information a test program is made that tries to exercise all
+or most test paths in the module.
+<p>
+
+While it is (probably) possible to use any programming language as a
+host for the test program, several specific features make one language
+easier to use than another. These items are discussed in the section on
+<a href="#programming_languages">PROGRAMMING LANGUAGES</a>
+
+<h2><a name="the_generation_process">The Generation Process</a></h2>
+The TestMake facility is easy to use. As stated in the introduction,
+you need two reports from the Toolset that describe basic properties
+of the module to be tested:
+<ul>
+
+<li>
+The report on the data usage is used to identify the dummy
+      or external parameters to the module.
+<li>
+The report on the test paths is used to identify those test paths
+      that can be influenced <i>directly</i> from outside
+      (<i>cf.</i> <a href="#limitations">LIMITATIONS</a>)
+</ul>
+
+When there is no more information available, then the script will
+generate a template with a guess of the missing information, as
+described in the next section. The generated test program will
+then only sketch the test paths and how to take them.
+<p>
+
+The generated template looks like this:
+<pre>
+
+Module SOME_MODULE {
+   Input? "ARRAY" "REAL*4" {
+      ARRAY = ...
+   }
+   Input? "IERROR" "INTEGER*4" {
+      IERROR = ...
+   }
+
+   ... further parameters ...
+
+   Condition " NODATA .GT. MAXDIM  " TRUE {
+      MAXDIM = ...
+   }
+   Condition " NODATA .GT. MAXDIM  " FALSE {
+      MAXDIM = ...
+   }
+
+   ... further conditions ...
+
+   Call {
+      ? Call to module
+   }
+}
+</pre>
+
+The purpose of the template is to help set up the specific information
+about the module that is very hard or impossible to extract
+automatically.
+<p>
+
+When, however, all this information about the module is available, then
+the test program can be filled in. It is complete in the sense that
+all wholly or partially controllable test paths are included in a
+sequence of calls to the module, that the results are checked and that a
+report is generated.
+<p>
+
+The usefulness of the automatic checks depends, unfortunately, on the
+nature of the module. The automatic checks will do no more than
+determine:
+<ul>
+
+<li>
+Has an input-only variable been changed? This is not allowed, so
+      that is considered an error.
+<li>
+Has an output variable been changed? This is supposed to happen,
+      so no change is considered an error.
+<li>
+Has an error flag been set by the module itself?
+      (Which means the module could not do its job properly,
+      possibly because it had to fail!) In that case output variables
+      need not have been set, though this is reported.
+</ul>
+
+To amend for this essential drawback, you can specify your own test
+code, either for individual output parameters or for the test as a
+whole. It is currently not possible however to make the test code
+specific for each test case.
+<p>
+
+If this particular limitation was relieved, it would mean that you
+have to supply quite a bit of information and the golden rule should be,
+because you do not want to build a test program to test this generated
+test program, <i>that all code fragments be short and their number  be small</i>).
+
+<h2><a name="details">Details</a></h2>
+The TestMake script reads a file with the name of the module for which
+the test program must be created (extension: .module) or if that does
+not exist, the default file "modules.tcl".
+<p>
+
+This so-called module file must define the call to the actual code that
+needs to be tested, the input and output variables that need to be
+observed and the test cases.
+<p>
+
+The following commands are available:
+<ul>
+
+<li>
+Select the host programming language by means of the
+      <i>HostLanguage</i> command:
+      <pre>
+
+      HostLanguage "language of choice"
+      </pre>
+
+      <i>Note:</i>
+      There should be only one such command in the <i>modules.tcl</i>
+      file, as the script has not been designed to work with more than
+      one programming language at a time.
+
+<li>
+The <i>Module</i> command is in fact a container for all other
+      commands that are specific to the module in question. The first
+      argument gives the name of the module, the second argument is
+      a list of other commands described here.
+      <pre>
+
+      Module "module-name" {
+         other commands
+      }
+      </pre>
+
+
+<li>
+With the <i>Input</i> command you define a parameter that must
+      have been set before the module can be called. The code given in
+      brackets will be exercised as a preparation to each test case. It
+      should initialise the parameter to some value or values that are
+      useful for all these test cases.
+      <br>
+
+      The type argument should reflect the actual parameter type, such
+      as "INTEGER" in Fortran or "int *" in C. It depends on the
+      programming language what details are used, for specifying arrays
+      and so on (<i>cf</i> "Programming language").
+      <pre>
+
+      Input "parameter-name" type {
+         initialisation code
+      }
+      </pre>
+
+      <i>Note:</i>
+      You may define more input and other parameters than are actually
+      passed to the module under test. This can be used for instance for
+      controlling variables in a Fortran COMMON-block or any kind of
+      global variable in C, Java and so on.
+      <p>
+
+      In these cases it may be useful to set the type to an empty string
+      ("") as then the type will possibly have been defined elsewhere.
+
+<li>
+The <i>Output</i> command defines a parameter that must be set
+      by the module under test, under normal circumstances. That means
+      that the initialisation should set the parameter to such values
+      that the automatic checks can establish that the output parameter
+      has been set (to different values). The check code fragment is
+      optional, but allows a finer-grain check than the automatic one.
+      <pre>
+
+      Output "parameter-name" type {
+         initialisation code
+      } {
+         check code
+      }
+      </pre>
+
+
+<li>
+The <i>In/out</i> command defines a parameter that must be set
+      before the call and will be set to some other value
+      by the module under test, under normal circumstances. Again,
+      the initialisation should set the parameter to such values
+      that the automatic checks can establish that it has been set
+      (to different values). The check code fragment is optional.
+      <pre>
+
+      In/out "parameter-name" type {
+         initialisation code
+      } {
+         check code
+      }
+      </pre>
+
+
+<li>
+The <i>Error</i> command defines a parameter that will be set
+      in case of an error condition. Under normal circumstances it will
+      keep the original value. If the automatic checks find out that
+      the value has changed, they assume an error condition was
+      encountered by the module under test. This means that the output
+      input/output parameter need not be set any more.
+      <br>
+
+      Note:
+      <br>
+
+      Forcing error conditions is a very valuable way to test
+      the module. Therefore the bare fact that the error condition has
+      occurred possibly means the test has succeeded. It is up to you to
+      determine whether that is indeed the case.
+      <pre>
+
+      Error "parameter-name" type {
+         initialisation code
+      } {
+         check code
+      }
+      </pre>
+
+
+<li>
+With the <i>Call</i> command you specify a code fragment that
+      will execute the module with the correct sequence of actual
+      parameters and possibly other related code. As a golden rule:
+      keep it short and simple, preferrably no more than the call itself.
+      It may be necessary to call some other module first or do other
+      preparations, but these should go into the <i>Initialisation</i>
+      fragment.
+      <pre>
+
+      Call {
+         code to call the module under test
+      }
+      </pre>
+
+
+<li>
+The <i>Condition</i> command: For each condition in the module
+      under test, the input parameters must be set to values that make
+      the module go one way or the other. The fragments should ensure
+      the proper values for the (input) parameters, such that the
+      condition becomes true or false, just as the value represents.
+      <pre>
+
+      Condition "description" value {
+         code to make the condition within the tested module true or
+         false
+      }
+      </pre>
+
+
+<li>
+With the <i>Initialisation</i> command you specify a code
+      fragment that will be executed before the actual call to the
+      module, but after the standard initialisation (the
+      initialisation of all parameters).
+      <pre>
+
+      Initialisation {
+         code to call before the module under test is called
+      }
+      </pre>
+
+
+<li>
+With the <i>Preparation</i> command you control the
+      initialisation of the test program as a whole. It will be
+      called once only.
+      <pre>
+
+      Preparation {
+         code to call before the start of the actual test suite
+      }
+      </pre>
+
+
+<li>
+The <i>Declarations</i> command allows the declaration
+      of additional variables. The code fragment is inserted in the
+      declarations part.
+      <pre>
+
+      Declarations {
+         declarations of additional variables and such
+      }
+      </pre>
+
+
+<li>
+The <i>Headers</i> command inserts text before the actual
+      declarations for support of header files in C or <i>use</i>
+      statements in Fortran 90.
+      <pre>
+
+      Headers {
+         statements to preceed any declarations
+      }
+      </pre>
+
+
+<li>
+If there is a need for extra, specific test cases, use the
+      <i>Testcase</i> command. Each defines a new test case,
+      where the code fragment should set the input to the required
+      values.
+      <pre>
+
+      Testcase {
+         code making up a specific test case
+      } {
+         check code
+      }
+     </pre>
+
+</ul>
+
+The scheme below shows how all these commands together make a complete
+test program:
+<pre>
+
+   Main program:
+   (Program header)
+   Headers
+   Declarations of input, output and other parameters
+   Declarations
+
+   Preparation
+
+   Repeat for all test cases:
+      Call initialisation
+      Set up the conditions for the test case
+      Call the module
+      Call the check routine
+      Report the conclusions
+
+   End of main program
+
+   Subroutine to initialise:
+      Initialise all parameters
+      Initialisation fragment
+
+   Subroutine to call the module:
+      Call fragment
+
+   Subroutine to check the output:
+      Repeat for each parameter:
+         Generic check code
+         Specific check code (if given)
+      Report conclusion: test failed or not
+</pre>
+
+
+<h2><a name="supporting_routines">Supporting routines</a></h2>
+The checking code and, for that matter, any other code you specify
+may use the following support routines:
+<ul>
+
+<li>
+test_print_text( string )
+      <br>
+
+      This routine prints the string of text to the log file
+<li>
+test_failed( logical value, string )
+      <br>
+
+      Use this routine to indicate a failure (if the logical value or
+      expression is true). The string explains why the test has failed.
+</ul>
+
+
+<h2><a name="programming_languages">Programming languages</a></h2>
+The host language for the generated program is determined by all the
+fragments that are defined. The script itself simply assembles all the
+fragments in a fixed order, substitutes variable names and so on and
+writes the result to the output file.
+<p>
+
+This means that the script is very flexible: as long as you can define
+the proper code fragments, the host language can be any programming
+language you like. There are several special features, however, that
+make a language suitable for this use or not:
+<ul>
+
+<li>
+Overloading of functions can greatly simplify the checking: the
+      compiler can do most of the hard work of determining which
+      algorithm to use - comparing strings is different than comparing a
+      two-dimensional array of floating-point numbers.
+<li>
+To avoid long and varying lists of parameters, the use of global
+      variables is strongly recommended (but only for a test program
+      generator like this!).
+<li>
+Being able to inquire the size of arrays greatly simplifies
+      generating code as well.
+</ul>
+
+These features are present in languages like Fortran 90, Java and, to
+a lesser degree, C++, but not in languages like Fortran 77 and ANSI-C.
+<p>
+
+The current host language of choice is therefore Fortran 90, which has
+the additional advantage that the scope of variables can be
+better controlled than a simple global scope. The feature of internal
+subroutines makes the generated program a trifle more elegant.
+<p>
+
+The code fragments are, however, contained in a separate file so that it
+is relatively easy to change the host language.
+<p>
+
+For the currently supported languages we have the following
+special issues:
+<ul>
+
+<li>
+<i>Fortran 90:</i>
+      <br>
+
+      There is no (direct) support for allocatable types or for pointer
+      types, at least for Input/Output variables.
+      <br>
+
+      The file "test_facilities.f90 contains auxiliary routines and
+      must be linked with the program.
+<li>
+<i>C:</i>
+      <br>
+
+      Arrays must be defined like this (statically):
+      <pre>
+
+         Input "array" "int [10]"
+      </pre>
+
+      or (actually a pointer)
+      <pre>
+
+         "Input "array" "int *"
+      </pre>
+
+      Use the (aliased) <i>malloc()</i> function to allocate memory for
+      dynamic arrays. (The actual routine that is called registers the
+      size of the array and then calls <i>malloc()</i>.)
+      <br>
+
+      The files "test_fac.h" and "test_facilities.c" are part of the
+      program.
+<li>
+<i>Java:</i>
+      <br>
+
+      Arrays must be defined like this:
+      <pre>
+
+         Input "array" "int []"
+      </pre>
+
+      Via the "new" operator you can actually allocate memory, using
+      standard Java idiom.
+      <br>
+
+      The auxiliary classes for Java are contained in "Testcmp.java"
+      and "Testcopy.java".
+</ul>
+
+General remarks:
+<br>
+
+Complicated data structures (linked lists for instance) can not be
+automatically copied and compared (or only with a very large effort).
+This means that you will have to extend these classes and auxiliary
+routines if such data structures are important.
+
+<h2><a name="limitations">Limitations</a></h2>
+The current implementation has a number of restrictions, but more
+important are the restrictions on the <i>method</i> itself:
+if the module contains one or more state variables, calling it twice
+with the same input may not lead to the same behaviour and the same
+outcome. For instance, at the first call, a file is opened and some
+values are read. At each subsequent call more is read from the file.
+<p>
+
+If the operation of the module depends on features like this, you may
+need a more clever approach to get the module into the right state again
+for each test case.
+<p>
+
+Another problem is the presence of test paths that are not completely
+controllable from outside via the input parameters or are not at all
+selectable via the input parameters. For such paths, it is very
+difficult to automatically set up the proper test input (it may depend
+on all kinds of external resources, such as the presence of an input
+file).
+<p>
+
+The possibility of defining new test cases manually is a workaround for
+these problems, but not a complete solution.
+<p>
+
+Checking the results is another area that leaves room for improvement.
+In many cases, this will have to be done by module-specific code, since
+it is principally impossible to judge from the code alone what the
+module <i>should</i> do.
+
+<h2><a name="to_do">To do</a></h2>
+The TestMake script is ready for use, but there remain a
+number of things to do:
+<ul>
+
+<li>
+The code must be made more generic, so that the module
+      may determine the host language.
+<li>
+Several commands have not been implemented yet.
+<li>
+The generated test program should perhaps allow for a loop over
+      the test cases.
+<li>
+The handling of very long conditions is clumsy
+<li>
+(Relation to tools like McCabe: generating the required reports
+      by batch commands).
+</ul>
+
+
+</body>
+</html>

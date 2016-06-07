@@ -1,0 +1,5 @@
+Create a simple tokenizer:
+- Words consist of a letter or underscore and then 
+  letters, underscores or digits
+- Numbers according to the common representation
+- Sequences of non-blank, non-alphanumeric characters 

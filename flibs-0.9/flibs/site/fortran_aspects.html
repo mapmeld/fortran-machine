@@ -1,0 +1,834 @@
+<html>
+<head>
+<title>Finer details of Fortran</title>
+</head>
+<body>
+<h2>Some of the finer details of Fortran</h2>
+<p>
+Fortran is well described in a number of books, but not all
+aspects of it will become clear just from reading and studying
+them. This page is intended to highlight a few details that can
+be easily overlooked and to describe a few styles of programming
+that may be unfamiliar to most Fortran programmers.
+
+<p>
+<a href="#extensions">Compiler extensions and limitations</a>
+<br>
+<a href="#generic">Modules and generic source code</a>
+<br>
+<a href="#func">Functional programming</a>
+<br>
+<a href="#work">Using work arrays</a>
+<br>
+<a href="#generic_again">Another look at generic source code</a>
+<br>
+<a href="#readonly">Read-only components in a derived type</a>
+<a href="#ro_vars">Read-only variables</a>
+<a href="#singleton">The singleton pattern</a>
+
+<h3><a name="extensions">Compiler extensions and limitations</a></h3>
+The Fortran standard specifies the Fortran language in detail but it
+also intentionally leaves a number of things up to the compiler writers.
+Furthermore, compiler writers can add options or features that are not
+covered by the standard or that relax some restrictions.
+<p>
+This section is intended to list a few of the aspects that can cause surprises.
+<p>
+First of all, not all compilers implement the complete standard. The
+features listed below are <i>not supported</i> by at least one compiler:
+<ul>
+<li>
+Using character strings with a "dynamic" length in subroutines and
+functions:
+<pre>
+    function double_string( string ) result(r)
+        character(len=*)            :: string
+        character(len=2*len(string) :: r
+
+        r = string // string
+    end function
+</pre>
+</li>
+<li>
+Allocatable elements in derived types. This is an official extension to
+the Fortran 95 standard (Technical report ISO/IEC 15581) and is part of
+Fortran 2003. It is implemented with many current compilers. For example:
+<pre>
+    type grid
+        real, allocatable, dimension(:,:) :: x, y
+    end type
+</pre>
+If you do not want to rely on this, use the <i>pointer</i> attribute
+instead.
+</li>
+</ul>
+<p>
+Then there are a number of extensions - features that are accepted by
+some compilers, but that would flag errors with others:
+<ul>
+<li>
+Use of character strings of different length in array constructions:
+<pre>
+    ingredients = (/ 'eggs', 'butter', 'flour', 'salt', 'water' /)
+</pre>
+Strictly speaking, strings of different length have different types.
+Always use strings with the same length (this also applies to the
+<tt>merge()</tt> function).
+<p>
+</li>
+<li>
+Some compilers allow <tt>.t.</tt> and <tt>.f.</tt> as alternatives to
+<tt>.true.</tt> and <tt>.false.</tt> This means that you can not use
+<tt>.t.</tt> and <tt>.f.</tt> as user-defined operators.
+<p>
+Quite from the question whether such short names are wise, do not use
+<tt>.t.</tt> or <tt>.f.</tt> for this purpose.
+<p>
+</li>
+<li>
+Reading integer numbers with list-directed input (*) may not always
+return an error when the input is not a proper integer:
+<pre>
+    integer :: ivalue
+    character(len=20) :: string
+    string = '12.34'
+    read( string, * ) ivalue
+</pre>
+may fail with one compiler but happily succeed with another.
+<p>
+Conclusion: if you need to check whether a string is a valid
+representation of an integer (or a real), do not rely on list-directed
+input (see: <a href="#check_integers">Checking integer values</a>).
+<p>
+</li>
+</ul>
+
+<h3><a name="generic">Modules and generic source code</a></h3>
+The FLIBS collection of Fortran source files contains several files that
+are intended for <i>generic</i> purposes, most notably the files in the
+datastructures directory.
+<p>
+While "true" genericity may not be possible with the current standard
+(Fortran 90/95), we can achieve a lot with just a few devices that are
+available:
+<ul>
+<li>
+The <i>INCLUDE</i> allows us to incorporate pieces of code in a source
+file at compile-time. This can be used to avoid replication of these
+fragments of source code.
+</li>
+<li>
+Putting the source in modules makes it possible to selectively import
+the items we need under names that are convenient within the context
+where we want them.
+</li>
+</ul>
+Both these techniques are used extensively in the examples/test
+programs. (I even wrote an article for the Fortran Forum journal using
+these techniques to show how <i>design patterns</i>, well-known from the
+Java and C++ world, can be applied in a Fortran programs.)
+<p>
+Here is an example (from "test_queue.f90"):
+<pre>
+module MYDATA_MODULE
+
+type MYDATA
+    character(len=20) :: string
+end type MYDATA
+
+end module
+
+module MYDATA_QUEUES
+    use MYDATA_MODULE, QUEUE_DATA => MYDATA
+
+    include "queues.f90"
+end module MYDATA_QUEUES
+</pre>
+
+The code in the file "queues.f90" is completely independent of the
+type of data we want to store in the queues.
+<p>
+The main limitation of this style of <i>genericity</i> is that you can
+only store data of the same type in such queues. When you need queues
+for more than one data type, you can follow the method of example
+"two_lists.f90" in the tests directory.
+<p>
+Another limitation is that you can only store <i>derived types</i> in
+this way - basic types like "INTEGER" or "REAL" can not be renamed (and
+the syntax gets in the way: type(QUEUE_DATA) versus REAL for instance.)
+<p>
+Whether these limitations are prohibitive, depends entirely on the
+problem at hand: if you do need to store data of different types in a
+single "container", then you also need some way of identifying the type.
+And type safety is becoming an issue - will you always use the
+contained data in the right way (for instance pass it to routines that
+can handle such data)?
+<p>
+In principle it is possible to store data of different types in a single
+container like the queues above: via the TRANSER() function. But if that
+can be avoided, your program will probably be simpler to understand.
+
+<h3>Importing from modules</h3>
+PM
+
+<h3>Combining interfaces</h3>
+PM
+
+<h3>Character strings with arbitrary lengths</h3>
+PM
+
+<h3>Returning a pointer?</h3>
+PM
+
+<h3><a name="work">Using work arrays</a></h3>
+Often you need a work array of a size related to the size of the problem
+that you are trying to solve, for instance the transpose of a matrix or
+a few arrays that hold the intermediate steps in a numerical integration
+method for systems of differential equations.
+<p>
+As long as the work arrays are "small", you can use <i>automatic
+arrays</i>, but the problem is that these can cause a stack overflow -
+resulting in an abrupt abortion of the program without a chance to
+catch it.
+<p>
+The alternative is to allocate an array (alocatable or pointer) of the
+appropriate size, but that has a performance penalty - memory
+allocation is time-consuming. You also need to take care that the
+memory is deallocated again (though in Fortran 95 this is automatically
+taken care of by the compiler under certain circumstances - allocatable
+arrays that do not have the <i>target</i> or the <i>save</i>
+attribute). The advantage, however, is that runtime errors can be
+caught, so that you can write a decent error message to the screen or log file.
+<p>
+Can these two approaches be combined? Yes, they can, as the following
+example shows:
+
+<pre>
+subroutine mkwork( size_problem )
+    integer :: size_problem
+    real, dimension(min(100,size_problem), target :: work1
+    real, dimension(:), pointer                   :: work
+
+    !
+    ! Decide which of the two to use
+    ! (really requires Fortran 95, because of the
+    ! status of the pointer)
+    !
+    if ( size_problem <= 100 ) then
+        work => work1
+    else
+        allocate( work(1:size_problem) )
+    endif
+
+    ... Do the job
+
+    !
+    ! Free the work array, when it was allocated
+    !
+    if ( .not. associated( work, work1 ) ) then
+        deallocate( work )
+    endif
+end subroutine mkwork
+</pre>
+
+Another way to solve the problem, is simply to use allocatable/pointer
+arrays with the <i>save</i> attribute:
+
+<pre>
+subroutine mkwork( size_problem )
+    integer :: size_problem
+    real, dimension(:), allocatable, save :: work
+
+    if ( .not. allocated(work) ) then
+        allocate( work(size_problem) )
+    else
+        if ( size_problem >= size(work) ) then
+           deallocate( work )
+           allocate( work(size_problem) )
+        endif
+    endif
+
+    ... Do the job
+
+    !
+    ! We do not free the memory!
+    !
+end subroutine mkwork
+</pre>
+
+That way you keep the cost of memory allocation down to a
+minimum: you simply allocate a new array when encountering a problem of
+a larger size. Any smaller problem can be solved with the previously
+allocated memory.
+<p>
+The drawback is that you have a small memory leak to worry about, but
+it is limited as there is only one chunk of memory per subroutine.
+
+<h3>Measuring performance</h3>
+PM
+
+<h3>Distinguising "missing values"</h3>
+PM
+
+<h3>The perils of double precision</h3>
+PM
+
+<h3>Quantum computing</h3>
+PM
+
+<h3><a name="func">Functional programming</a></h3>
+One well-known feature that Fortran 90 introduced to the Fortran
+language is the ability to handle arrays as a whole, instead of merely
+via their elements:
+<pre>
+real, dimension(1:100) :: a, b
+
+b = 2*a
+</pre>
+This is in fact a simple form of functional programming. In languages
+like LISP, Haskell or ML the fundamental data type for a collection of
+data is the <i>list</i>. While not at all equivalent to an array in
+Fortran, these lists are often used via operations, such as map and
+filter that are quite easy to simulate in Fortran, or are simply present
+in another guise:
+<ul>
+<li>
+The <i>map</i> operation applies a function to each element of a list.
+This is hardly different from the fragment above - the <i>map</i>
+operation is applied to arrays instead of lists.
+</li>
+<li>
+The standard function <i>pack</i> in Fortran allows you to filter out
+unwanted elements from an array based on a logical criterium. This is
+completely analoguous to the <i>filter</i> operation in Haskell or ML.
+</li>
+</ul>
+Here are two practical examples of a functional programming style
+in Fortran:
+<ul>
+<li><i>Filtering out data points</i>
+<br>
+In a library that deals with spatial interpolation the data points that
+are passed in may contain "missing values". The interpolation methods
+are however much easier to implement if there are no missing values. So,
+this library contains code like:
+
+<pre>
+   real, dimension(:), intent(in)  :: x, y, value
+   logical, dimension(1:size(x))   :: accepted
+
+   real, dimension(:), allocatable :: xf, yf, valuef ! Filtered data points
+
+   accepted = value .ne. -999.0
+   number_data = count(accepted)
+
+   allocate( xf(1:number_data), yf(1:number_data), valuef(1:number_data) )
+
+   xf     = pack( x,     accepted )
+   yf     = pack( y,     accepted )
+   valuef = pack( value, accepted )
+</pre>
+The alternative is to use an explicit loop:
+
+<pre>
+   j = 0
+   do i = 1,size(x)
+      if ( accepted(i) ) then
+         j = j + 1
+         xf(j)     = x(i)
+         yf(j)     = y(i)
+         valuef(j) = value(i)
+      endif
+   enddo
+</pre>
+Clearly this is lengthier and easy to get wrong.
+<p>
+</li>
+<li>
+<i>Finding the closest point</i>
+<br>
+In that same library it is sometimes necessary to find the data point
+that is closest to the target point (to avoid extrapolation). Here is a
+fragment that will do that:
+
+<pre>
+   real, dimension(:), intent(in)  :: x, y, value
+   real                            :: xtarget, ytarget
+   integer, dimension(1)           :: idx
+
+   idx = minloc( (x - xtarget) ** 2 + (y -ytarget) ** 2 )
+
+   write(*,*) 'Closest point: ', x(idx(1)), y(idx(1))
+</pre>
+(The only unfortunate thing about this is the fact that we have to
+declare a short array idx instead of an ordinary variable). Compare this
+to the alternative:
+
+<pre>
+   real, dimension(:), intent(in)  :: x, y, value
+   real                            :: xtarget, ytarget
+   real                            :: dist, distmin
+   integer                         :: idx
+
+   idx = -1
+   do i = 1,size(x)
+      dist = (x(i) - xtarget) ** 2 + (y(i) -ytarget) ** 2
+      if ( idx .eq. -1 .or. dist .lt. distmin ) then
+         idx = i
+         distmin = dist
+      endif
+   endif
+
+   write(*,*) 'Closest point: ', x(idx), y(idx)
+</pre>
+
+We have an explicit do-loop and we need to take care of the initial
+case, done here by a special (impossible) value for the target.
+</li>
+</ul>
+
+<h3><a name="check_integers">Checking integer values</a></h3>
+Here is a small function to reliably check if a string is a
+valid representation of a single integer value:
+<pre>
+logical function okay(string)
+    character(len=*) :: string
+    character(len=20)          :: form
+    integer                    :: ierr
+    integer                    :: ival
+
+    write( form, '(a,i0,a)' ) '(i', len(string), ')'
+    read( string, form, iostat = ierr ) ival
+
+    okay = ierr == 0
+
+end function okay
+</pre>
+As discussed above, it is not enough to read the string with
+list-directed input (the very powerful "read(...,*)", you need to use
+formatted input.
+<p>
+If the string contains several integers, like "12, 34, ...", you can
+check the first value like this:
+
+<pre>
+logical function okay(string)
+    character(len=*)            :: string
+    character(len=len(string))  :: first
+    character(len=20)           :: form
+    integer                     :: ierr
+    integer                     :: ival
+
+    okay = .false.
+    read(string, *, iostat = ierr ) first
+
+    if ( ierr == 0 ) then
+        write( form, '(a,i0,a)' ) '(i', len(string), ')'
+        read( first, form, iostat = ierr ) ival
+    endif
+
+    okay = ierr == 0
+
+end function okay
+</pre>
+
+
+<h3><a name="generic_again">Another look at generic source code</a></h3>
+
+One vexing problem of modern programming practice is that type safety
+and flexibility do not always go together. Here is one such dilemma:
+<p>
+Solve a system of ordinary differential equations:
+<pre>
+    x'  =  f(t,x,a),  t = 0,...,T
+
+    x(t=0) = x0
+</pre>
+where x is a vector of N dependent variables, f a function describing
+the derivative of x w.r.t. time and a is a set of parameters.
+<p>
+We would like to make a general library for solving this type of
+systems. The start is simple: Define a routine that takes a
+parameter f to represent the right-hand side (the name of a
+function subprogram) and the routine can be any convenient numerical method.
+<p>
+But then we run into problems: how to represent the set of parameters a?
+For one problem an array of reals might do, for another we would need a
+more complicated data structure.
+<p>
+The numerical method is independent of this parameter - just pass it
+around. But Fortran does not allow us to define a generic type. Mucking
+about with the <tt>transfer()</tt> function is one solution but you can
+not hide it from the user then.
+<p>
+Another problem, perhaps more mundane, is that we would like to print
+(output, save) intermediate results. But that leads to a second routine
+we would like to pass to the <i>generic, mathematical algorithm</i>.
+<p>
+Can we solve this problem in a more general, indeed generic way? Yes, we
+can: using <i>reverse communication</i>. But that leads to a complicated
+interface:
+<ul>
+<li>We need to initialise everything for the solution process</i>
+<li>In a loop we call the stepwise solution procedure and examine
+the action we are expected to take</i>
+<li>We compute the derivative or we print the intermediate result</i>
+<li>Finally, we have the end result and return</li>
+</ul>
+It gives us full flexibility in implementing the computation of the
+derivative and the printing of the intermediate result, we do not have
+to interfer with the library of numerical algorithms in any way.
+<p>
+But the user does have to program this loop. And we would like to hide
+the gory details.
+<p>
+This is actually possible and here is a sketch of how to do that:
+<ul>
+<li>Define a useful interface for the function f:
+<pre>
+     function f( t, x, a ) result( r )
+         real(kind=wp)                     :: t
+         real(kind=wp), dimension(:)       :: x
+         type(params)                      :: a
+         real(kind=wp), dimension(size(x)) :: r
+     end function
+</pre>
+</li>
+<li>Define one for the printing routine:
+<pre>
+     subroutine print( t, x, a )
+         real(kind=wp)                     :: t
+         real(kind=wp), dimension(:)       :: x
+         type(params)                      :: a  ! a stores the LU-number as well
+     end subroutine
+</pre>
+</li>
+<li>Define a solution method (integrate from t0 to t1):
+<pre>
+     subroutine solve( f, t0, t1, x, a )
+         use solution_library
+         interface
+             function f( t, x, a ) result( r )
+                 use params_module
+                 real(kind=wp)                     :: t
+                 real(kind=wp), dimension(:)       :: x
+                 type(params)                      :: a
+                 real(kind=wp), dimension(size(x)) :: r
+             end function
+         end interface
+
+         real(kind=wp)                     :: t0
+         real(kind=wp)                     :: t1
+         real(kind=wp), dimension(:)       :: x  ! Initial condition at
+                                                 ! start, final result at end
+         type(params)                      :: a  ! a stores the LU-number as well
+
+         include 'generic_part.inc'
+
+     end subroutine solve
+</pre>
+</li>
+<li>The generic part in the file "generic_part.inc" is not
+entirely independent of the structure type(params), which is why we
+need the source code, but we do not need to change anything if it
+changes:
+<pre>
+      !
+      ! Sketch only
+      !
+      type(solution_struct)              :: solution  ! Required for bookkeeping
+
+      call init_solution( solution, t0, t1, x )
+      t = t0
+
+      do
+           call step_solution( solution, t, x, task )
+
+           select case( task )
+               case( print )
+                   call print( t, x, a )
+               case( deriv )
+                   x = f( t, x, a )
+               case ( completed )
+                   exit
+           endselect
+      enddo
+</pre>
+The user of the library does not have to change this generic part and
+the author of the library does not have to deliver any other source
+code.
+</li>
+</ul>
+
+<h3><a name="readonly">Read-only components in a derived type</a></h3>
+
+Fortran 90/95 allows components (fields) of a derived type to be
+either all public or all private. If they are public, the program that
+uses such a type can do whatever it likes with the components. But what if
+you want read-only components? So, components that a program can use directly
+but not change.
+<p>
+You can of course use a "get function to get the value of the component:
+<pre>
+    type personal_data
+        private
+        integer :: year_of_birth
+        ...
+    end type
+
+    integer function year_of_birth( data )
+        type(personal_data) :: data
+
+        year_of_birth = data%year_of_birth
+
+    end function
+</pre>
+This can be cumbersome in computations, as accessing the data has a
+different form than using them directly: <tt>year_of_birth(data)</tt> versus
+<tt>data%year_of_birth</tt>.
+<p>
+With a bit more work (but that can be made general enough), you can
+create read-only components (note that all direct access to the
+read-only integer is excluded, unless the user explicitly uses the
+<tt>read_only_types</tt> module:
+<pre>
+    use read_only_types
+
+    private :: set_ro_integer, ro_integer ! Imported from read_only_types, but they
+                                          ! should not be passed on
+
+    type personal_data
+        type(ro_integer) :: year_of_birth
+        ...
+    end type
+</pre>
+
+The module <tt>read_only_types</tt> looks like this:
+
+<pre>
+module read_only_types
+
+    type ro_integer
+        private
+        integer :: value
+    end type
+
+    !
+    ! Interfaces to computational facilities
+    !
+    interface assignment(=)
+        module procedure set_int_to_ro_int
+    end interface
+
+    ! etc. ...
+
+contains
+!
+! To be used by trusted modules only
+!
+subroutine set_ro_integer( ro_value, value )
+    type(ro_integer), intent(out) :: ro_value
+    integer, intent(in)           :: value
+
+    ro_value%value = value
+
+end subroutine
+
+!
+! Publically available routines
+!
+subroutine set_int_to_ro_int( value, ro_value )
+    integer, intent(out)         :: value
+    type(ro_integer), intent(in) :: ro_value
+
+    value = ro_value%value
+
+end subroutine
+
+! etc. ...
+
+end module
+</pre>
+
+With this technique, the user can freely use the component
+<tt>year_of_birth</tt> without being able to override the value,
+unless doen via the facilities offered by the encompassing
+<tt>personal_data</tt> type.
+
+<p>
+There is one caveat: you can not simply print the value of
+data%year_of_birth, as the contents of that component are private...
+
+<p>
+Here is a complete, slightly silly program that uses the above:
+<pre>
+module read_only_types
+
+    type ro_integer
+        private
+        integer :: value
+    end type
+
+    !
+    ! Interfaces to computational facilities
+    !
+    interface assignment(=)
+        module procedure set_int_to_ro_int
+    end interface
+
+    ! etc. ...
+
+contains
+!
+! To be used by trusted modules only
+!
+subroutine set_ro_integer( ro_value, value )
+    type(ro_integer), intent(out) :: ro_value
+    integer, intent(in)           :: value
+
+    ro_value%value = value
+
+end subroutine
+
+!
+! Publically available routines
+!
+subroutine set_int_to_ro_int( value, ro_value )
+    integer, intent(out)         :: value
+    type(ro_integer), intent(in) :: ro_value
+
+    value = ro_value%value
+
+end subroutine
+
+! etc. ...
+
+end module
+
+module personal_data_facilities
+
+    use read_only_types
+
+    private :: set_ro_integer, ro_integer ! Imported from read_only_types, but they
+                                          ! should not be passed on
+
+    type personal_data
+        type(ro_integer) :: year_of_birth
+    end type
+
+contains
+subroutine set_birth_year( data, year )
+    type(personal_data) :: data
+    integer             :: year
+
+    call set_ro_integer( data%year_of_birth, year )
+
+end subroutine
+end module
+
+program test_pd
+    use personal_data_facilities
+
+    type(personal_data) :: data
+    integer :: year
+
+    call set_birth_year( data, 2000 )
+
+    year = data%year_of_birth
+
+    write(*,*) 'Year: ', year
+   !write(*,*) 'Year: ', data%year_of_birth ! Alas, this does not work
+
+end program
+</pre>
+
+<h3><a name="ro_vars">Read-only variables</a></h3>
+
+The above technique to implement read-only components in a derived type
+can be used for individual variables as well:
+<p>
+<pre>
+module read_only_variables
+
+    type ro_integer
+        private
+        integer :: value
+    end type
+
+    !
+    ! Interfaces to computational facilities
+    !
+    interface assignment(=)
+        module procedure set_int_to_ro_int
+    end interface
+
+    ! etc. ...
+
+    type(ro_integer) :: ro_variable = ro_integer(10) ! Our read-only variable
+
+contains
+
+!
+! Publically available routines
+!
+subroutine set_int_to_ro_int( value, ro_value )
+    integer, intent(out)         :: value
+    type(ro_integer), intent(in) :: ro_value
+
+    value = ro_value%value
+
+end subroutine
+
+! etc. ...
+
+end module
+
+program test_ro
+    use read_only_variables
+
+    integer :: value
+
+    !
+    ! This works:
+    !
+    value = ro_variable
+
+    !
+    ! But this does not:
+    !
+    value = 30
+    ro_variable = value
+
+end program
+
+</pre>
+
+
+<h3><a name="singleton">The singleton pattern</a></h3>
+
+Design patterns are a very popular subject among people using
+object-oriented programming languages. One such pattern is the Singleton
+pattern: basically an object of which there can be only one. That one
+object can be accessed from any part in the program. It is useful to
+store data in that are in some way <i>global</i>.
+<p>
+As Fortran 90/95 does not support object oriented programming perse, is
+it impossible to use the Singleton pattern? Let us examine the
+properties of such singleton objects:
+<ul>
+<li>There is only one such object in the program</li>
+<li>You can get access to it from anywhere in the program, by merely
+calling a convenient function that returns the handle to that
+object.</li>
+<li>As it is, in all other respects, an ordinary object, you can
+retrieve data from it and store new data.</li>
+</ul>
+Now, aren't these exactly the properties one can ascribe to a module?
+Variables contained in the module are unique in the program, they can be
+accessed simply by <i>using</i> the module. You can not create more than
+one instance ... so, here we have the Singleton pattern de facto.
+
+<hr>
+-- <i>Arjen Markus, dd. november 2008</i>
+</body>
+</html>

@@ -1,0 +1,332 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/datastructures n 1.0]
+[copyright {2006 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Unordered sets}]
+
+[description]
+
+The [strong sets.f90] source file allows you to implement
+[strong "unordered sets"] of any (derived) type without having to
+edit the supplied source code. To this end a simple technique is used,
+which is best illustrated by an example:
+
+[example {
+!
+! The data that will be stored in the sets
+!
+type MYDATA
+    integer :: value
+end type MYDATA
+
+!
+! As derived types are compared, we need to define
+! how to compare them
+!
+interface operator(.eq.)
+    module procedure mydata_isequal
+end interface
+
+contains
+logical function mydata_isequal( v1, v2 )
+    type(MYDATA), intent(in) :: v1
+    type(MYDATA), intent(in) :: v2
+
+    mydata_isequal = v1%value .eq. v2%value
+end function mydata_isequal
+
+end module MYDATA_MODULE
+
+module MYDATA_SET_STRUCTS
+    use MYDATA_MODULE, SET_DATA => MYDATA
+
+    include "data_for_sets.f90"
+end module MYDATA_SET_STRUCTS
+
+module MYDATA_SETS
+    use MYDATA_SET_STRUCTS
+
+    include "sets.f90"
+end module MYDATA_SETS
+}]
+
+The above code defines a module [strong MYDATA_MODULE] with the derived
+type that is to be stored in the sets. The name of that derived
+type can be anything.
+[para]
+It also defines a module [strong MYDATA_SET_STRUCTS] which prepares the
+underlying data structure. The reason for this two-layer process is that
+you need to be able to define the name of the modules that are involved
+yourself. (Otherwise it would be impossible to use two or more
+[strong sets] holding different types of data in one program.
+
+[para]
+It finally defines a module [strong MYDATA_SETS] which will be the
+module that holds the functionality to use unordered sets:
+
+[list_begin bullet]
+
+[bullet]
+The module [strong MYDATA_MODULE] is [strong used], but the derived type
+[strong MYDATA] is renamed to the (fixed) name [strong SET_DATA]. (This
+is the name used in the generic source file.)
+
+[bullet]
+The source code for the actual routines is simply included via the
+INCLUDE statement.
+
+[bullet]
+Nothing more is required, we can close the source text for the module.
+
+[list_end]
+
+To use a single type of sets in a program, we can just use the
+MYDATA_SETS module. If you need more than one type of data in sets,
+then apply the same renaming trick on using the specific set
+modules.
+
+[para]
+In fact the example in the source file "two_lists.f90" shows the general
+technique of how to accomplish this.
+
+[section ROUTINES]
+The source file [strong "sets.f90"] provides the following
+routines:
+
+[list_begin definitions]
+
+[call [cmd "call set_create( dataset )"]]
+Create a new empty set.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The variable that will be used for accessing the set
+
+[list_end]
+[nl]
+
+
+[call [cmd "call set_destroy( dataset )"]]
+Destroy the set. All elements contained in it will be destroyed as
+well.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The set to be destroyed
+
+[list_end]
+[nl]
+
+
+[call [cmd "size = set_size( dataset )"]]
+Function to return the number of elements in the set.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The set in question
+
+[list_end]
+[nl]
+
+
+[call [cmd "call set_add( dataset, elem )"]]
+Insert a new element in the set. If the element is already present,
+nothing is done.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The dataset to add the element to.
+
+[arg_def "type(SET_DATA), intent(in)" elem]
+The element to be stored
+
+[list_end]
+[nl]
+
+
+[call [cmd "call set_delete_element( dataset, elem )"]]
+Delete the given element from the set.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The list in question
+[arg_def "type(SET_DATA)"  elem]
+The element to be deleted
+
+[list_end]
+[nl]
+
+
+[call [cmd "has = set_haselement( dataset, elem )"]]
+Returns whether or not the given element is in the set.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The set in question
+[arg_def "type(SET_DATA)"  elem]
+The element to be checked
+
+[list_end]
+[nl]
+
+
+[call [cmd "has = elem .elementof. dataset"]]
+Returns whether or not the given element is in the set.
+(The operator version)
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The set in question
+[arg_def "type(SET_DATA)"  elem]
+The element to be checked
+
+[list_end]
+[nl]
+
+
+[call [cmd "equal = set_equal( set1, set2 )"]]
+Returns whether or not the two sets contain the same elements.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  set1]
+The first set
+[arg_def "type(SET)"  set2]
+The second set
+
+[list_end]
+[nl]
+
+
+[call [cmd "equal = set1 .eq. set2"]]
+Returns whether or not the two sets contain the same elements.
+(The operator version)
+
+
+[call [cmd "notequal = set_notequal( set1, set2 )"]]
+Returns whether or not the two sets do not contain the same elements.
+(The operator version)
+
+[list_begin arg]
+
+[arg_def "type(SET)"  set1]
+The first set
+[arg_def "type(SET)"  set2]
+The second set
+
+[list_end]
+[nl]
+
+
+[call [cmd "notequal = set1 .ne. set2"]]
+Returns whether or not the two sets do not contain the same elements.
+(The operator version)
+
+
+[call [cmd "has = set_hassubset( dataset, subset )"]]
+Returns whether or not one set is contained in the other set.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  dataset]
+The set that may hold the second one
+[arg_def "type(SET)"  subset]
+The set that may be a subset of the fist
+
+[list_end]
+[nl]
+
+
+[call [cmd "has = subset .subsetof. dataset"]]
+Returns whether or not one set is contained in the other set.
+(The operator version)
+
+[list_begin arg]
+
+[arg_def "type(SET)"  subset]
+The set that may be a subset of the other
+[arg_def "type(SET)"  dataset]
+The set that may hold the first one
+
+[list_end]
+[nl]
+
+
+[call [cmd "newset = set_union( set1, set2 )"]]
+Returns the union of two sets.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  set1]
+The first set
+[arg_def "type(SET)"  set2]
+The second set
+
+[list_end]
+[nl]
+
+[call [cmd "newset = set1 .union. set2"]]
+Returns the union of two sets - operator version.
+
+
+[call [cmd "newset = set_intersection( set1, set2 )"]]
+Returns the intersection of two sets.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  set1]
+The first set
+[arg_def "type(SET)"  set2]
+The second set
+
+[list_end]
+[nl]
+
+[call [cmd "newset = set1 .intersect. set2"]]
+Returns the intersection of two sets - operator version.
+
+
+[call [cmd "newset = set_exclusion( set1, set2 )"]]
+Returns a copy of the first set with the elements of the second set
+excluded.
+
+[list_begin arg]
+
+[arg_def "type(SET)"  set1]
+The first set
+[arg_def "type(SET)"  set2]
+The second set
+
+[list_end]
+[nl]
+
+[call [cmd "newset = set1 .intersect. set2"]]
+Returns a copy of the first set with the elements of the second set
+excluded - operator version.
+
+
+[list_end]
+
+Notes:
+[list_begin bullet]
+[bullet]
+The sets can only store data of the same derived type. In that sense
+the code is not generic.
+[bullet]
+Currently, the sets can only store derived types that do not require
+an explicit destruction. If you want to store a derived type with
+pointers to allocated memory, you can do that however, by supplying an
+assignment operator. This would lead to a memory leak though. It is best
+to wait for the next version which will allow such derived types to be
+stored.
+
+[list_end]
+
+[manpage_end]

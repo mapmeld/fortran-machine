@@ -1,0 +1,6 @@
+#!/usr/bin/sh
+#
+# Quick and dirty
+#
+gfortran -o qsort_plain_test qsort_plain_test.f90 -I../../src/datastructures
+

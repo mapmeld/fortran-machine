@@ -1,0 +1,72 @@
+INPUT: INPUT-DIRECTORY   in                                                                                                                                                                                    
+INPUT: OUTPUT-DIRECTORY  out                                                                                                                                                                                   
+INPUT: ADD-CODE-START    "write(*,*) 'In __ROUTINE__ (__MODULE__)'"                                                                                                                                            
+INPUT: ADD-CODE-END      "write(*,*) 'Leaving __ROUTINE__'"                                                                                                                                                    
+INPUT: ADD-CODE-STATEMENT "write(*,*) 'At __LINE__'"                                                                                                                                                           
+INPUT: ADD-USE            "use exceptions"                                                                                                                                                                     
+INPUT: REPLACE-TYPE       "real"  real(dp)                                                                                                                                                                     
+INPUT: REPLACE-STRING     X Y                                                                                                                                                                                  
+INPUT: ENABLE-IMPLICIT-NONE  yes                                                                                                                                                                               
+INPUT: !                                                                                                                                                                                                       
+INPUT: ! Does this cause an error?                                                                                                                                                                             
+INPUT: ENABLE-PRECONDITIONS                                                                                                                                                                                    
+INPUT:                                                                                                                                                                                                         
+INPUT: ENABLE-PRECONDITIONS yes                                                                                                                                                                                
+INPUT:                                                                                                                                                                                                         
+INPUT: FILE              example.f90                                                                                                                                                                           
+Processing: example.f90
+-----------------------
+Input directory:  in
+Output directory: out
+Preconditions:            T
+Postconditions:           F
+Assertions:               F
+Insert IMPLICIT NONE:     T
+Code inserted at the start:
+    write(*,*) 'In __ROUTINE__ (__MODULE__)'
+Code inserted at the end (RETURN, STOP, END):
+    write(*,*) 'Leaving __ROUTINE__'
+Code inserted after each executable statement:
+    write(*,*) 'At __LINE__'
+Replace the following types:
+    real ==> real(dp)
+Replace the following strings:
+    X ==> Y
+   Input:in/example.f90
+   Output:out/_example.f90
+INPUT:                                                                                                                                                                                                         
+INPUT: !                                                                                                                                                                                                       
+INPUT: ! Now the check_init/check_reals example                                                                                                                                                                
+INPUT: !                                                                                                                                                                                                       
+INPUT: CLEAR-ALL-SETTINGS                                                                                                                                                                                      
+All settings cleared
+INPUT:                                                                                                                                                                                                         
+INPUT: INPUT-DIRECTORY   in                                                                                                                                                                                    
+INPUT: OUTPUT-DIRECTORY  out                                                                                                                                                                                   
+INPUT: REPLACE-TYPE real type(checked_real)                                                                                                                                                                    
+INPUT: ADD-USE "use check_reals"                                                                                                                                                                               
+INPUT: ADD-CODE-STATEMENT "call check_assignment( __LINE__, '__FILE__' )"                                                                                                                                      
+INPUT: !                                                                                                                                                                                                       
+INPUT: ! List of files to treat                                                                                                                                                                                
+INPUT: !                                                                                                                                                                                                       
+INPUT: FILE "check_init.f90"                                                                                                                                                                                   
+Processing: check_init.f90
+--------------------------
+Input directory:  in
+Output directory: out
+Preconditions:            F
+Postconditions:           F
+Assertions:               F
+Insert IMPLICIT NONE:     F
+Code inserted at the start: none
+Code inserted at the end: none
+Code inserted after each executable statement:
+    call check_assignment( __LINE__, '__FILE__' )
+Replace the following types:
+    real ==> type(checked_real)
+No string replacements
+   Input:in/check_init.f90
+   Output:out/_check_init.f90
+INPUT:                                                                                                                                                                                                         
+Closing input file
+ 

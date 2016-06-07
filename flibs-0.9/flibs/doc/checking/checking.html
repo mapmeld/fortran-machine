@@ -1,0 +1,157 @@
+
+<html><head>
+<title>checking - flibs </title>
+</head>
+<! -- Generated from file 'checking.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2007 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: checking.html,v 1.1 2008/06/13 10:22:46 relaxmike Exp $ checking.n
+   -->
+
+<body>
+<h1> checking(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> checking - Instrument source code for tracing execution
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#usage">Usage</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#notes">Notes</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+If you need to understand a program written by somebody else,
+it is often useful to run it in a debugger to see what it is
+doing, but that can be time-consuming. Adding write statements
+to the program is an alternative, but again time-consuming.
+
+<p>
+The module <em>w_</em> is meant, in conjunction with the Tcl program
+<em>instrument.tcl</em> to automate the process of adding such
+write statements.
+
+The write statements that are added record:
+<ul>
+<li>
+Calls to a subroutine (which routine, where)
+<br><br>
+<li>
+Returns from the subroutine
+<br><br>
+<li>
+Gotos within the main program or subroutine
+<br><br>
+<li>
+Opening/closing of files
+<br><br>
+<li>
+Stop statements
+</ul>
+
+Messages indicating what is happening in the program are written
+to the screen (unit * to be more precise), because that way no
+extra logical unit is consumed and it is easier to see the
+program's actions in conjunction to the output it produces.
+
+<p>
+The design goals were:
+<ul>
+<li>
+The code transformations should be simple (because these would
+be easier to implement!)
+<br><br>
+<li>
+The code transformations should not change the program's logic
+(of course!)
+</ul>
+
+The module uses <em>alternative returns</em> to succeed in achieving
+these goals, even though they are marked as <em>depricated</em> in the
+Fortran 90 standard.
+
+
+<h2><a name="usage">Usage</a></h2>
+<p>
+Using the module and the instrumentation program is easy:
+<ul>
+<li>
+Run the Tcl program <em>instrument.tcl</em> in the directory with source
+files:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+   &gt; tclsh &lt;directory containing the source&gt;/instrument.tcl
+</pre></td></tr></table></p>
+
+This will create an instrumented version of all source files in the
+directory that have an extension .f, .for or .f90. The original files
+are first renamed, so that they can be retrieved. (See the
+tests/checking directory for an example).
+
+<br><br>
+<li>
+Add the file &quot;w_.f90&quot; to the list of source files for building the
+program.
+
+<br><br>
+<li>
+Build the program by the means you ordinarily use.
+</ul>
+
+
+<h2><a name="notes">Notes</a></h2>
+<p>
+<ul>
+<li>
+It can not easily log where functions are called, as
+calls to functions are much more difficult to identify in the
+source code than subroutine calls. Still, the source code for
+functions is instrumented in the same way as subroutines
+(with the exception of pure and elemental functions and
+subroutines!)
+
+<br><br>
+<li>
+The instrumentation program is not foolproof: the generated
+source will not be correct Fortran, if you use variable names
+equal to keywords such as &quot;return&quot; or &quot;open&quot;. (It is not a
+full parser of Fortran code, it merely detects certain string
+patterns and acts accordingly)
+
+<br><br>
+<li>
+The name &quot;w_&quot; was chosen, because it is unlikely to be used in
+any ordinary program as the name of a module or routine.
+
+<br><br>
+<li>
+Running the Tcl program requires either an installation of Tcl
+or a standalone Tcl &quot;runtime program&quot; (tclkit).
+<br><br>
+For the first: have a look at http://www.activestate.com/tcl
+<br><br>
+For the second: http://www.equi4.com/tclkit/index.html
+<br><br>
+The advantage of the tclkit family of programs is that installation is
+simply a matter of copying one single file, an executable program and
+de-installation is a matter of deleting that program.
+<br><br>
+The advantage of the complete installation is that it comes with
+an extensive set of examples, libraries and documentation on Tcl/Tk.
+<br><br>
+(Note: I chose Tcl as the implementation language for this program,
+because it is very easy to manipulate strings in Tcl. It could be
+reprogrammed in Fortran - the string matching via regular expressions is
+the hardest part, but even that can be done by standard means)
+
+</ul>
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2007 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

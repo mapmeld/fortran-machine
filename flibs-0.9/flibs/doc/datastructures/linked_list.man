@@ -1,0 +1,211 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/datastructures n 1.0]
+[copyright {2005 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Linked lists}]
+
+[description]
+
+The [strong linkedlist.f90] source file allows you to implement
+[strong "linked lists"] of any (derived) type without having to edit
+the supplied source code. To this end a simple technique is used,
+which is best illustrated by an example:
+
+[example {
+module MYDATA_MODULE
+
+type MYDATA
+    character(len=20) :: string
+end type MYDATA
+
+end module
+
+module MYDATA_LISTS
+    use MYDATA_MODULE, LIST_DATA => MYDATA
+
+    include "linkedlist.f90"
+end module MYDATA_LISTS
+}]
+
+The above code defines a module [strong MYDATA_MODULE] with the derived
+type that is to be stored in the linked lists. The name of that derived
+type can be anything.
+[para]
+It also defines a module [strong MYDATA_LISTS] which will be the module
+that holds the functionality to use linked lists:
+
+[list_begin bullet]
+
+[bullet]
+The module [strong MYDATA_MODULE] is [strong used], but the derived type
+[strong MYDATA] is renamed to the (fixed) name [strong LIST_DATA]. (This
+is the name used in the generic source file.)
+
+[bullet]
+The source code for the actual routines is simply included via the
+INCLUDE statement.
+
+[bullet]
+Nothing more is required, we can close the source text for the module.
+
+[list_end]
+
+To use a single type of linked lists in a program, we can just use the
+MYDATA_LISTS module. If you need more than one type of data in linked
+lists, then apply the same renaming trick on using the specific linked
+lists modules.
+
+[para]
+In fact the example in the source file "two_lists.f90" shows the general
+technique of how to accomplish this.
+
+[section ROUTINES]
+The source file [strong "linkedlist.f90"] provides the following
+routines:
+
+[list_begin definitions]
+
+[call [cmd "call list_create( list, data)"]]
+Create a new list with one element. The given data are copied and stored
+in that element.
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  list]
+The variable that will be used for accessing the list
+[arg_def "type(LIST_DATA), intent(in)" data]
+The data to be stored in the first element
+
+[list_end]
+[nl]
+
+
+[call [cmd "call list_destroy( list)"]]
+Destroy the list. All elements contained in it will be destroyed as
+well.
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  list]
+The list to be destroyed
+
+[list_end]
+[nl]
+
+
+[call [cmd "count = list_count( list)"]]
+Function to return the number of elements in the list.
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  list]
+The list in question
+
+[list_end]
+[nl]
+
+
+[call [cmd "next => list_next( elem )"]]
+Function to return the next element in the list. Note: it returns a
+[strong pointer] to the next element, so you must use [strong =>].
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  elem]
+The element in the list
+
+[list_end]
+[nl]
+
+
+[call [cmd "call list_insert( elem, data )"]]
+Insert a new element (with the given data) into the list, [strong after]
+the given element.
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  elem]
+The element in the list after which to insert a new one.
+[arg_def "type(LIST_DATA), intent(in)" data]
+The data to be stored in the new element
+
+[list_end]
+[nl]
+
+
+[call [cmd "call list_insert_head( list, data )"]]
+Insert a new element (with the given data) before the head of list.
+The argument "list" will point to the new head.
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  list]
+The list in question
+[arg_def "type(LIST_DATA), intent(in)" data]
+The data to be stored at the new head
+
+[list_end]
+[nl]
+
+
+[call [cmd "call list_delete_element( list, elem )"]]
+Delete the given element from the list. The associated data
+will disappear.
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  list]
+The list in question
+[arg_def "type(LINKED_LIST), pointer"  elem]
+The element to be deleted
+
+[list_end]
+[nl]
+
+
+[call [cmd "call list_get_data( elem, data )"]]
+Copy the data belonging to the given element into the argument "data".
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  list]
+The element in question
+[arg_def "type(LIST_DATA), intent(out)" data]
+The variable to hold the data
+
+[list_end]
+[nl]
+
+
+[call [cmd "call list_put_data( elem, data )"]]
+Copy the given data into the given element (overwriting the previous)
+
+[list_begin arg]
+
+[arg_def "type(LINKED_LIST), pointer"  list]
+The element in question
+[nl]
+[arg_def "type(LIST_DATA), intent(in)" data]
+The new data
+
+[list_end]
+
+
+[list_end]
+
+Notes:
+[list_begin bullet]
+[bullet]
+The lists can only store data of the same derived type. In that sense
+the code is not generic.
+[bullet]
+Currently, the lists can only store derived types that do not require
+an explicit destruction. If you want to store a derived type with
+pointers to allocated memory, you can do that however, by supplying an
+assignment operator. This would lead to a memory leak though. It is best
+to wait for the next version which will allow such derived types to be
+stored.
+
+[list_end]
+
+[manpage_end]

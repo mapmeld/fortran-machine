@@ -1,0 +1,133 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/strings n 1.0]
+[copyright {2005 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Writing CSV files}]
+
+[description]
+
+The [strong csv_file] module facilitates the writing of
+CSV files. Whereas it is very easy to read CSV files with Fortran, using
+list-directed read statements:
+
+[example {
+    integer           :: i1, i2
+    character(len=20) :: string
+    real              :: f3
+    read(10,*) i1, i2, string, f3
+}]
+
+for instance, writing them is slightly more complicated. The module
+helps with this by two routines, [strong csv_next_record] and
+[strong csv_write].
+[para]
+
+The module supports writing scalar variables, one- and two-dimensional
+arrays according to a simple scheme. As CSV files are ordinary formatted
+files where each field is separated by commas and strings are possibly
+delimited by quotation marks ("), the procedure is this:
+
+[list_begin bullet]
+[bullet]
+Open the file as a formatted file
+
+[bullet]
+Pass the LU-number for the file to the routines mentioned above,
+using the second to write the data and the first to force a new record.
+
+[list_end]
+
+In more detail, the layout of the CSV-file can be described as follows:
+
+[list_begin bullet]
+[bullet]
+Single items are written to the end of the current record
+
+[bullet]
+One-dimensional items are also written to the end of the current
+record
+
+[bullet]
+Two-dimensional items are written to separate records, one for
+each row
+
+[bullet]
+Except for the two-dimensional versions, all routines allow
+you to suppress advancing to the next record:
+
+[list_begin bullet]
+[bullet]
+for single items you must indicate whether to advance or not
+[bullet]
+for one-dimensional items, the argument is optional. Default
+is to advance.
+[list_end]
+
+[list_end]
+
+[strong "Note on the format:"]
+CSV-files apparently come in different guises (Kernighan and Pike,
+The practice of Programming, Addison-Wesley, 1999). This module
+uses the following rules:
+
+[list_begin bullet]
+[bullet]
+items are always separated by a single comma (,)
+[bullet]
+string items are delimited by double quotes (")
+[bullet]
+embedded double quotes are treated by doubling the quote
+[bullet]
+trailing blanks are considered irrelevant
+[list_end]
+
+
+[section ROUTINES]
+The module contains two public subroutines:
+
+[list_begin definitions]
+
+[call [cmd "use csv_file"]]
+To import the subroutines for writing a CSV file, use this module.
+
+
+[call [cmd "call csv_next_record( lun )"]]
+Writes a new line to the file.
+
+[list_begin arg]
+
+[arg_def "integer" lun]
+The LU-number the file is connected to
+
+[list_end]
+
+
+[call [cmd "call csv_write( lun, data )"]]
+Writes data to the file in the proper format.
+
+[list_begin arg]
+
+[arg_def "integer" lun]
+The LU-number the file is connected to
+
+[arg_def "(...)" data]
+The data to be written to the file. The type can be:
+[list_begin bullet]
+[bullet]
+an integer or a real (single or double precision) number or a character
+string
+[bullet]
+an integer or a real (single or double precision) one-dimensional array
+or a one-dimensional array of character strings
+[bullet]
+an integer or a real (single or double precision) two-dimensional array
+or a two-dimensional array of character strings
+[list_end]
+
+
+[list_end]
+
+
+[list_end]
+
+[manpage_end]

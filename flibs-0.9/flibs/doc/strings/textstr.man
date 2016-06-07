@@ -1,0 +1,354 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/strings n 1.0]
+[copyright {2005 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Manipulate and store strings}]
+
+[description]
+
+The file [strong textstr.f90] contains three fairly small modules,
+designed for simple text manipulation and storage:
+
+[list_begin bullet]
+[bullet]
+[strong edit_text] for simple editing of text strings.
+
+[bullet]
+[strong singleline_text] for storing a string of arbitrary length.
+
+[bullet]
+[strong multiline_text] for storing a set of strings of arbitrary
+length, for instance a text file.
+
+[list_end]
+
+The facilities offered by these modules are geared to storage and
+some basic manipulations. They are not meant to be a complete module for
+arbitrary-length strings.
+hence the module.
+
+
+[section "DATA TYPES"]
+The modules [strong singleline_text] and [strong multiline_text]
+each a suitable derived type:
+
+[list_begin definitions]
+
+[call [cmd "type(TEXT_STRING)"]]
+Type to hold a string of arbitrary length.
+
+[call [cmd "type(MULITLINE_TEXT)"]]
+Type to hold a set of strings of arbitrary length.
+
+[list_end]
+
+[section ROUTINES]
+The module [strong edit_text] contains the following routines:
+
+[list_begin definitions]
+
+[call [cmd "use edit_text"]]
+To import the subroutines, use this module.
+
+
+[call [cmd "call edit_delete( string, pos, length )"]]
+Delete a substring from a string.
+
+[list_begin arg]
+
+[arg_def "character(len=*), intent(inout)" string]
+String to be modified
+
+[arg_def "integer, intent(in)" pos]
+Position of the first character to be deleted
+
+[arg_def "integer, intent(in)" length]
+Length of the substring to be deleted
+
+[list_end]
+[nl]
+
+
+[call [cmd "call edit_insert( string, pos, substring )"]]
+Insert a substring into a string.
+
+[list_begin arg]
+
+[arg_def "character(len=*), intent(inout)" string]
+String to be modified
+
+[arg_def "integer, intent(in)" pos]
+Position after which to insert the substring (use 0
+to insert it before the string)
+
+[arg_def "character(len=*), intent(in)" substring]
+Subtring to be inserted
+
+[list_end]
+[nl]
+
+[list_end]
+
+
+The module [strong singleline_text] contains the following routines:
+
+[list_begin definitions]
+
+[call [cmd "use singleline_text"]]
+To import the subroutines, use this module.
+
+
+[call [cmd "length = txt_length( text )"]]
+Return the length of the text. As this is a [strong pure] function, you
+cna use it to define temporary strings of the correct length.
+
+[list_begin arg]
+
+[arg_def "type(TEXT_STRING), intent(in)" text]
+Text string to be examined
+
+[list_end]
+[nl]
+
+
+[call [cmd "call txt_cleanup( text )"]]
+Clean up the storage for a previous text string.
+The result is an empty string.
+
+[list_begin arg]
+
+[arg_def "type(TEXT_STRING), intent(inout)" text]
+Text string to be examined
+
+[list_end]
+[nl]
+
+
+[call [cmd "pos = txt_index( text, substring, back )"]]
+Return the index (position) of a substring in the text.
+
+[list_begin arg]
+
+[arg_def "type(TEXT_STRING), intent(in)" text]
+Text string to be examined
+
+[arg_def "character(len=*), intent(in)" substring]
+Substring to be found
+
+[arg_def "logical, optional, intent(in)" back]
+Search from the start (.false.) or from the back (.true.)
+
+[list_end]
+[nl]
+
+
+[call [cmd "call txt_from_string( text, string )"]]
+Store a string in a text_string type. Trailing blanks
+in the original string are explicitly stored.
+
+[list_begin arg]
+
+[arg_def "type(TEXT_STRING), intent(inout)" text]
+Text string to be created/filled
+
+[arg_def "character(len=*), intent(in)" string]
+Ordinary string to be copied into the text string
+
+[list_end]
+[nl]
+
+
+[call [cmd "call txt_from_string( text, string )"]]
+Store the contents of a text_string type in an ordinary string.
+If the string is too short, the result will be a truncated string.
+
+[list_begin arg]
+
+[arg_def "type(TEXT_STRING), intent(in)" text]
+Text string to be copied
+
+[arg_def "character(len=*), intent(out)" string]
+Ordinary string to be filled
+
+[list_end]
+[nl]
+
+
+[call [cmd "call txt_read_from_file( lun, text, eof )"]]
+Read a text string from a file (one complete line).
+
+[list_begin arg]
+
+[arg_def "integer, intent(in)" lun]
+The LU-number of the file
+
+[arg_def "type(TEXT_STRING), intent(out)" text]
+Text string to be created/filled
+
+[arg_def "logical, intent(out)" eof]
+Indicates whether end-of-file was reached or not
+
+[list_end]
+[nl]
+
+
+[call [cmd "call txt_write_to_file( lun, text )"]]
+Write a text string to a file (as one complete line).
+If the LU-number is smaller/equal 0, it is written to
+the screen.
+
+[list_begin arg]
+
+[arg_def "integer, intent(in)" lun]
+The LU-number of the file
+
+[arg_def "type(TEXT_STRING), intent(in)" text]
+Text string to be written
+
+[list_end]
+[nl]
+
+
+[call [cmd "call txt_delete( text, pos, length )"]]
+Delete a substring from a text string.
+
+[list_begin arg]
+
+[arg_def "type(TEXT_STRING), intent(inout)" text]
+Text string to be modified
+
+[arg_def "integer, intent(in)" pos]
+Position of the first character to be deleted
+
+[arg_def "integer, intent(in)" length]
+Length of the substring to be deleted
+
+[list_end]
+[nl]
+
+
+[call [cmd "call txt_insert( text, pos, substring )"]]
+Insert a substring into a string.
+
+[list_begin arg]
+
+[arg_def "type(TEXT_STRING), intent(inout)" text]
+String to be modified
+
+[arg_def "integer, intent(in)" pos]
+Position after which to insert the substring (use 0
+to insert it before the string)
+
+[arg_def "character(len=*), intent(in)" substring]
+Subtring to be inserted
+
+[list_end]
+[nl]
+
+[list_end]
+
+
+The module [strong multiline_text] contains the following routines:
+
+[list_begin definitions]
+
+[call [cmd "use multiline_text"]]
+To import the subroutines, use this module.
+
+
+[call [cmd "length = mltxt_length( text )"]]
+Return the maximum length of all text strings stored. Useful to define
+temporary strings.
+
+[list_begin arg]
+
+[arg_def "type(MULTILINE_TEXT), intent(in)" text]
+Multiline text to be examined
+
+[list_end]
+[nl]
+
+
+[call [cmd "length = mltxt_number( text )"]]
+Return the number of text strings stored.
+
+[list_begin arg]
+
+[arg_def "type(MULTILINE_TEXT), intent(in)" text]
+Multiline text to be examined
+
+[list_end]
+[nl]
+
+
+[call [cmd "call mltxt_cleanup( text )"]]
+Cleans up a multiline text - all text strings are deleted
+temporary strings.
+
+[list_begin arg]
+
+[arg_def "type(MULTILINE_TEXT), intent(in)" text]
+Multiline text to be cleaned up
+
+[list_end]
+[nl]
+
+
+[call [cmd "call mltxt_insert( text, pos, line )"]]
+Inserts a text string or an ordinary string as a new line of text after
+the given position.
+
+[list_begin arg]
+
+[arg_def "type(MULTILINE_TEXT), intent(inout)" text]
+Multiline text to be modified
+
+[arg_def "integer, intent(in)" pos]
+Position after which to insert the new line (use 0
+to make it the first line)
+
+[arg_def "(...), intent(in)" line]
+Ordinary string or text_string variable holding the text that will be
+inserted.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call mltxt_delete( text, pos )"]]
+Delete the line at the given position.
+
+[list_begin arg]
+
+[arg_def "type(MULTILINE_TEXT), intent(inout)" text]
+Multiline text to be modified
+
+[arg_def "integer, intent(in)" pos]
+Position of the line to be removed.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call mltxt_get( text, pos, line )"]]
+Return a pointer (!) to the line at the given position.
+Note: no copy is made, but a pointer is returned. This means you can
+change the line of text via this pointer.
+
+[list_begin arg]
+
+[arg_def "type(MULTILINE_TEXT), intent(inout)" text]
+Multiline text to be examined
+
+[arg_def "integer, intent(in)" pos]
+Position of the line to be returned
+
+[arg_def "type(TEXT_STRING), pointer" line]
+Variable that will [strong point] to the line of text
+
+[list_end]
+
+
+[list_end]
+
+[manpage_end]

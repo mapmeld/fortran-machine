@@ -1,0 +1,128 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin text_streams n 1.0]
+[copyright {2006 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Implement text streams}]
+
+[description]
+
+The [strong text_streams] module defines a set of subroutines
+that allow you to read an ordinary text file as if it were a "stream"
+of words, that is, after reading one item, you can read the next
+item from the same line, if there is one.
+
+[para]
+
+The module uses a buffer to store the lines in the file one by one and
+list-directed reading (that is: read(lun,*)) to get the individual
+items. This means that you can take advantage of (almost) all the
+facilities of list-directed input to read the file piece by piece.
+input
+
+[para]
+
+[strong "Note:"] In Fortran 2003, the notion of "streams" is formalised.
+This module will be superfluous with compilers supporting Fortran 2003.
+Also there are a number of issues that may or may not come into play on
+a particular system - see the section on [sectref "IMPLEMENTATION NOTES"].
+
+
+[section "DATA TYPES AND ROUTINES"]
+The module defines a single data type, TEXT_STREAM, and several
+subroutines:
+
+[list_begin definitions]
+
+[call [cmd "use text_streams"]]
+The name of the module
+
+[call [cmd "type(TEXT_STREAM)"]]
+Files are opened and the necessary data are kept in variables of
+this type.
+
+
+[call [cmd "call textstream_open( stream, lun, filename, error )"]]
+Open the file "filename" using the LU-number "lun". If some error
+occurs (for instance the file does not exist), the argument "error" is
+set to true.
+
+[list_begin arg]
+
+[arg_def "type(text_stream)" stream]
+The variable by which to reference the file
+
+[arg_def "integer, intent(in)" lun]
+The LU-number to connect the file to
+
+[arg_def "character(len=*), intent(in)" filename]
+The name of the file to open
+
+[arg_def "logical, intent(out)" error]
+Argument indicating whether opening the file was successful or not.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call textstream_close( stream )"]]
+Close the file that was opened as a stream.
+
+[list_begin arg]
+
+[arg_def "type(text_stream)" stream]
+The variable by which to reference the file
+
+[list_end]
+[nl]
+
+[call [cmd "call textstream_read( stream, var, ierr )"]]
+Read a variable "var" from the current position in the file.
+
+[list_begin arg]
+
+[arg_def "type(text_stream)" stream]
+The variable by which to reference the file
+
+[arg_def "(...), intent(out)" var]
+The variable to be read. It can be either a character string, a
+(default) integer, a (default) real, a (default) logical or a
+double-precision real. Also one- and two-dimensional arrays of these
+types are supported.
+
+[arg_def "integer, intent(out)" ierr]
+Error code (0 means no error, > 0 some reading error, < 0 end of file)
+
+[list_end]
+[nl]
+
+[list_end]
+
+[section "IMPLEMENTATION NOTES"]
+The module is a simple implementation of stream-based I/O. As a
+consequence, it has a number of limitations:
+[list_begin bullet]
+[bullet]
+The file is read using non-advancing I/O and the data are stored in a
+buffer. When an item is to be read, it is read from this buffer, not
+directly from the file.
+
+[bullet]
+One practical consequence is that items longer than 80 characters
+(the size of the buffer) can not be read properly (well, it may be
+possible, because the actual buffer is twice as long, but no guarantee
+is given). Increase the parameter MAXBUF if this does not suit your
+needs.
+
+[bullet]
+List-directed I/O distinguishes a number of special characters -
+these are not always passed on to the caller: spaces,
+apostrophes (') and quotation marks ("), as well as commas and numbers
+followed by an asterisk (the string 4*1 is interpreted as four times a
+string or number 1). One character in particular that may cause
+practical problems is the slash (/). This signifies the end of the input
+but it may interfere with the end-of-line detection built into the
+module.
+
+[list_end]
+
+[manpage_end]

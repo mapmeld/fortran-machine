@@ -1,0 +1,294 @@
+
+<html><head>
+<title>flibs/binarytree - flibs </title>
+</head>
+<! -- Generated from file 'binarytree.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: binarytree.html,v 1.1 2008/06/13 10:19:49 relaxmike Exp $ flibs/binarytree.n
+   -->
+
+<body>
+<h1> flibs/binarytree(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/binarytree - Linked lists
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>call btree_create( btree, data)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>call btree_destroy(btree )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>count = btree_count( btree )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>child =&gt; btree_child_node( node, right )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call btree_append_data( node, data, right )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>call btree_append_subtree( node, subtree, right )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>call btree_remove_subtree( node, subtree, right )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>data = btree_get_data( node )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>call btree_put_data( node, data )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>binarytree.f90</em> source file allows you to implement
+<em>binary trees</em> of any (derived) type without having to edit
+the supplied source code. (The resulting binary tree is <em>not</em>
+balanced, that would require a method of ordering the data.) To achieve
+genericty, a simple technique is used, which is best illustrated by an
+example:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+module MYDATA_MODULE
+
+type MYDATA
+    character(len=20) :: string
+end type MYDATA
+
+end module
+
+module MYDATA_BTREES
+    use MYDATA_MODULE, TREE_DATA =&gt; MYDATA
+
+    include &quot;binarytree.f90&quot;
+end module MYDATA_BTREES
+</pre></td></tr></table></p>
+
+The above code defines a module <em>MYDATA_MODULE</em> with the derived
+type that is to be stored in the binary trees. The name of that
+derived type can be anything.
+<p>
+It also defines a module <em>MYDATA_BTREES</em> which will be the module
+that holds the functionality to use binary trees:
+
+<ul>
+
+<li>
+The module <em>MYDATA_MODULE</em> is <em>used</em>, but the derived type
+<em>MYDATA</em> is renamed to the (fixed) name <em>LIST_DATA</em>. (This
+is the name used in the generic source file.)
+
+<br><br>
+<li>
+The source code for the actual routines is simply included via the
+INCLUDE statement.
+
+<br><br>
+<li>
+Nothing more is required, we can close the source text for the module.
+
+</ul>
+
+To use a single type of binary trees in a program, we can just use the
+MYDATA_BTREES module. If you need more than one type of data in binary
+trees, then apply the same renaming trick on using the specific binary
+trees modules.
+
+<p>
+In fact the example in the source file &quot;two_lists.f90&quot; shows the general
+technique of how to accomplish this for linked lists. The same applies
+to binary trees.
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The source file <em>binarytree.f90</em> provides the following
+routines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>call btree_create( btree, data)</b> </a><dd>
+
+Create a new tree with the given data associated to the root.
+The data are copied and stored in that root.
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>btree</i><dd>
+The variable that will be used for accessing the tree's root
+<br><br>
+<dt>type(TREE_DATA), intent(in) <i class='arg'>data</i><dd>
+The data to be stored in the root
+
+</dl>
+<br><br>
+
+
+<dt><a name="2"><b class='cmd'>call btree_destroy(btree )</b> </a><dd>
+
+Destroy the tree. All nodes contained in it will be destroyed as
+well.
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>btree</i><dd>
+The list to be destroyed
+
+</dl>
+<br><br>
+
+
+<dt><a name="3"><b class='cmd'>count = btree_count( btree )</b> </a><dd>
+
+Function to return the number of nodes in the tree.
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>btree</i><dd>
+The tree in question
+
+</dl>
+<br><br>
+
+
+<dt><a name="4"><b class='cmd'>child =&gt; btree_child_node( node, right )</b> </a><dd>
+
+Function to return the left or right child node of a given node in the
+tree. As each node is itself a tree, you can traverse the tree by
+repeatedly using this function on the result.
+<br><br>
+Note: it returns a <em>pointer</em> to the child node,
+so you must use <em>=&gt;</em>.
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>node</i><dd>
+The (parent) node in a tree or the root of a tree
+
+<br><br>
+<dt>logical <i class='arg'>right</i><dd>
+Whether to return the right (.true.) or the left (.false.) child node.
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>call btree_append_data( node, data, right )</b> </a><dd>
+
+Append a new node to the left or right to the given node. (Note that no
+balancing is taken care of). If the node already has a child node,
+nothing is done.
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>node</i><dd>
+The node in the tree that should get a child node
+<br><br>
+<dt>type(TREE_DATA), intent(in) <i class='arg'>data</i><dd>
+The data to be stored in the child node
+<br><br>
+<dt>logical <i class='arg'>right</i><dd>
+Whether to append on the right (.true.) or the left (.false.) side.
+
+</dl>
+<br><br>
+
+
+<dt><a name="6"><b class='cmd'>call btree_append_subtree( node, subtree, right )</b> </a><dd>
+
+Append a subtree to the left or right to the given node.
+If the node already has a child node, nothing is done. (Note: the
+subtree is referred to, not copied!)
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>node</i><dd>
+The node in the tree that should get a child node
+<br><br>
+<dt>type(BINARY_TREE), pointer <i class='arg'>subtree</i><dd>
+The tree to be appended as the child node
+<br><br>
+<dt>logical <i class='arg'>right</i><dd>
+Whether to append on the right (.true.) or the left (.false.) side.
+
+</dl>
+<br><br>
+
+
+<dt><a name="7"><b class='cmd'>call btree_remove_subtree( node, subtree, right )</b> </a><dd>
+
+Remove a subtree to the left or right to the given node.
+A pointer to the subtree is returned in the &quot;subtree&quot; argument, so that
+this can be destroyed or used independently of the original tree.
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>node</i><dd>
+The element in the list after which to insert a new one.
+<br><br>
+<dt>type(BINARY_TREE), pointer <i class='arg'>subtree</i><dd>
+The subtree that was removeds the child node
+<br><br>
+<dt>logical <i class='arg'>right</i><dd>
+Whether to remove on the right (.true.) or the left (.false.) side.
+
+</dl>
+<br><br>
+
+
+<dt><a name="8"><b class='cmd'>data = btree_get_data( node )</b> </a><dd>
+
+Return the data belonging to a node
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>node</i><dd>
+The node of the tree in question
+
+</dl>
+<br><br>
+
+
+<dt><a name="9"><b class='cmd'>call btree_put_data( node, data )</b> </a><dd>
+
+Put new data at a given node
+
+<br><br>
+<dl>
+
+<dt>type(BINARY_TREE), pointer <i class='arg'>node</i><dd>
+The node of the tree in question
+<br><br>
+<dt>type(TREE_DATA), intent(in) <i class='arg'>data</i><dd>
+The data to be stored in the node
+
+</dl>
+
+
+</dl>
+
+Notes:
+<ul>
+<li>
+The binary trees can only store data of the same derived type. In
+that sense the code is not generic.
+<br><br>
+<li>
+Currently, the trees can only store derived types that do not require
+an explicit destruction. If you want to store a derived type with
+pointers to allocated memory, you can do that however, by supplying an
+assignment operator. This would lead to a memory leak though. It is best
+to wait for a next version that will allow such derived types to be
+stored.
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

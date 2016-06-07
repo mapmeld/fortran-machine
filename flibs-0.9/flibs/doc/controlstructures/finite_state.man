@@ -1,0 +1,210 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin finite_state_machine n 1.0]
+[copyright {2006 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Support for building finite state machines}]
+
+[description]
+
+The [strong finite_state.f90] source file defines a set of subroutines
+that allow you to build a so-called finite state machine. This is
+basically a way to structure a program or a part of a program that
+takes input (from a file or from some other source) and reacts to
+that input depending on the "state" it is in. A simple example could
+be a heating device with a thermostat: if the ambient temperature is
+high enough, there is no need to heat the room, so the system is in a
+rest state. If the temperature is lower than the set temperature, the
+heater should be turned on.
+
+[para]
+Finite state machines are encountered in many different areas in one
+form or other. Lexical analysers are another, more complicated example.
+When analysing an arithmetic expression like "1+2*3", the "+" that
+follows the "1" will probably bring the analyser in a different state:
+the literal number has terminated, it now needs to deal with an
+operator. This type of programming is used in the test/demo program to
+show how to use the finite_state.f90 source file to build a non-trivial
+FSM.
+
+[section "DATA TYPES AND ROUTINES"]
+The source code expects a data type, STATE_DATA, that contains all
+information describing the finite state machine. The contents is
+entirely up to the application though. The state data are passed to the
+subroutine that implements the actual state machine, so that you can use
+this argument to prepare the computation.
+
+[para]
+The type must be defined in a module called "fsm_data_definitions":
+
+[example {
+module MYDATA_POOL
+
+type POOLDATA
+    integer :: pool_index          ! For private use by pool_acquire/pool_release
+    real, dimension(100) :: work   ! The actual work space
+end type
+
+include "mem_pool.f90"
+
+end module MYDATA_POOL
+}]
+
+The code defines the following routines:
+
+[list_begin definitions]
+
+[call [cmd "call fsm_loop( data, machine )"]]
+Run a finite state machine, implemented by the subroutine "machine" that
+uses character strings to define the state. The first state is always
+set to the parameter FSM_INIT_CHAR (="INIT"), the initial state, and should be
+used to initialise the computation.
+
+[list_begin arg]
+
+[arg_def "type(STATE_DATA)" data]
+The data defining the current state of the machine
+
+[arg_def "subroutine" machine]
+Subroutine that does the actual computation. Its interface is:
+[example {
+    subroutine machine( fsm, data, curstate )
+        use fsm_data_definitions
+        implicit none
+        type(FSM_STATE),  intent(inout) :: fsm
+        type(STATE_DATA), intent(inout) :: data
+        character(len=*), intent(in)    :: curstate
+    end subroutine}]
+
+[list_end]
+[nl]
+
+[call [cmd "call fsm_loop_int( data, machine )"]]
+Similar to [emph fsm_loop] but the machine's state is an integer now.
+The first state is represented by the parameter FSM_INIT (=0).
+[nl]
+It has the same interface as [emph fsm_loop]
+
+
+[call [cmd "call fsm_loop_print( data, machine, print_debug )"]]
+Like [emph fsm_loop], but the third argument is a routine that allows
+you to print intermediate results. It's interface is:
+[example {
+    subroutine print_debug( lurep, data, oldstate, curstate )
+        use fsm_data_definitions
+        implicit none
+        integer, intent(in)             :: lurep
+        type(STATE_DATA), intent(inout) :: data
+        character(len=*), intent(in)    :: oldstate
+        character(len=*), intent(in)    :: curstate
+    end subroutine}]
+
+[call [cmd "call fsm_loop_print_int( data, machine, print_debug )"]]
+Like [emph fsm_loop_int], but the third argument is a routine that
+allows you to print intermediate results. It's interface is:
+[example {
+    subroutine print_debug( lurep, data, oldstate, curstate )
+        use fsm_data_definitions
+        implicit none
+        integer, intent(in)             :: lurep
+        type(STATE_DATA), intent(inout) :: data
+        integer, intent(in)             :: oldstate
+        integer, intent(in)             :: curstate
+    end subroutine}]
+
+
+[call [cmd "call fsm_get_state( fsm, state )"]]
+Get the current state from the FSM data structure
+
+[list_begin arg]
+
+[arg_def "type(FSM_DATA)" fsm]
+The data maintained by the FSM loop
+
+[arg_def "integer/character(len=*), intent(out)" state]
+Current state of the finite state machine - either as integer or as
+character string.
+[list_end]
+
+
+[call [cmd "call fsm_set_state( fsm, state )"]]
+Set the current state in the FSM data structure
+
+[list_begin arg]
+
+[arg_def "type(FSM_DATA)" fsm]
+The data maintained by the FSM loop
+
+[arg_def "integer/character(len=*), intent(in)" state]
+The new state of the finite state machine - either as integer or as
+character string.
+[list_end]
+
+
+[call [cmd "call fsm_set_lurep( fsm, lurep )"]]
+Set the LU-number for the print routine (by default: 0, to be
+interpreted as output to screen).
+
+[call [cmd "lurep = fsm_get_lurep( fsm )"]]
+Return the LU-number for the print routine.
+
+[call [cmd "call fsm_finish( fsm )"]]
+Instruct the FSM loop to stop.
+
+[list_end]
+
+[section "EXAMPLE"]
+The use of the source code in the two files "finite_state.f90"and
+"fsm_state.f90" is illustrated by the following example:
+
+[example {
+module fsm_data_definitions
+    implicit none
+
+    include 'fsm_state.f90'
+
+    type STATE_DATA
+        integer :: position           ! Current position in the string
+        integer :: open_parens        ! Number of open parentheses
+        character(len=80)              :: string ! String holding the expression
+    end type STATE_DATA
+
+end module fsm_data_definitions}]
+
+This module defines the STATE_DATA derived type and includes the file
+with the (private) definitions.
+
+[para]
+The module that actually implements the finite state machine looks like
+this (the included file "finite_state.f90"contains the [emph contains]
+keyword):
+
+[example {
+module analyse_string
+    use fsm_data_definitions
+    include 'finite_state.f90'
+
+!
+! Here is the actual routine that implements the finite state machine
+!
+! analyse_expression --
+!     Analyse an arithmetic expression
+! Arguments:
+!     fsm           Private data structure for the FSM machinery
+!     data          Evaluation data structure
+!     state_name    Current state of the machine
+!
+subroutine analyse_expression( fsm, data, state_name )
+    type(FSM_STATE),  intent(inout)  :: fsm
+    type(STATE_DATA), intent(inout)  :: data
+    character(len=*), intent(in)     :: state_name
+
+    ...
+
+end subroutine analyse_expression
+
+end module}]
+
+(You can find the complete source code in the file
+"tst_finite_state.f90" in the source distribution)
+
+[manpage_end]

@@ -1,0 +1,22 @@
+! fwrapper.table --
+!     File containing the translation of Fortran types to C types
+!
+!     Note:
+!     This can not be done fully automatically:
+!     - Fortran has kind parameters and C has not.
+!     - You can actually compute kind parameters, so that portable
+!       source results:
+!       integer, parameter :: longint = merge( selected_int_kind(10),
+!                                              kind(1), selected_int_kind(10) > 0)
+!       to select an extra large integer if available and otherwise fall
+!       back on ordinary ones.
+!
+integer                 int
+integer(c_int)          int
+integer(c_long)         long
+real                    float
+real(kind=sp)           float
+real(kind=dp)           double
+real(kind=kind(1.0d0))  double
+
+! Etc.

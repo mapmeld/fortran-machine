@@ -1,0 +1,22 @@
+ Test #1 : get_os
+  Current os: 2
+  -> Test # 1  PASS
+ Test #2 : get_platform
+  Current platform: 1
+  -> Test # 2  PASS
+ Test #3 : platform_system
+  Status: 0
+  -> Test # 3  PASS
+  -> Test # 4  PASS
+  -> Test # 5  PASS
+  -> Test # 6  PASS
+  -> Test # 7  PASS
+ Windows NT
+  -> Test # 8  PASS
+ Windows
+  -> Test # 9  PASS
+ Test suite completed
+ **********************
+ End of tests.
+  Total number of success tests :  9
+  Total number of failing tests :  0

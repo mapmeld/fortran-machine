@@ -1,0 +1,18 @@
+Configuration
+-------------
+This directory contains include files defining the properties of various
+compilers. Via the configure.bat/configure.sh scripts one compiler is
+chosen and the corresponding include file is copied to the file
+"config.mk".
+
+In a similar way the configuration options are chosen and implemented:
+one of normal.mk, debug.mk and optimise.mk is copied to "options.mk"
+
+Note:
+This is indeed the nth garden-variety configuration system, but any
+general system (autoconf, CMake, Scons to name the best-known) requires
+either a Linux/UNIX like OS or at least extra software.
+
+I deemed this project too "small" to warrant such a configuration
+system. The method used here is easy to expand and the configuration
+options themselves are simple.

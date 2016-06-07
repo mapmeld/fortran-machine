@@ -1,0 +1,54 @@
+OVERVIEW
+--------
+
+src/computing:
+--------------
+This directory contains:
+
+- automdiff.f90
+  Module to use a technique for automatic differentiation: rather than
+  just the function, this module allows you to compute the function and
+  its first derivative at once.
+
+
+src/datastructures:
+-------------------
+The source files together with the corresponding test programs
+show how to implement various data structures in a fairly generic way:
+
+- binarytree.f90:
+  A first implementation of a binary tree (no attempt to balance the
+  structure)
+
+- dictionary.f90:
+  Simple dictionary (that is: a mapping from a string to some data)
+
+- linkedlist.f90:
+  Classical linked lists
+
+- queues.f90:
+  An implementation of a fixed-size queue
+
+
+src/sqlite:
+-----------
+Two source files, fsqlite.f90 and csqlite.c define the wrapper routines
+to interact with SQLite from a Fortran program.
+
+
+src/strings:
+------------
+The source files in this directory manipulate character strings in some
+way or another:
+
+- filedir.f90
+  Module to manipulate the parts of a file name (directory, name, extension)
+
+- textstr.f90
+  Small collection of modules that can help to store strings of arbitrary length.
+  It is not meant to implement a general arbitrary-length module: there are only a few
+  intrinsic functions emulated.
+
+- csv_file.f90
+  Module to help _write_ CSV files
+

@@ -1,0 +1,1766 @@
+Line: ChangeLog
+file copy ../flibs/./ChangeLog flibs/.
+Line: Copyright
+file copy ../flibs/./Copyright flibs/.
+Line: README
+file copy ../flibs/./README flibs/.
+Line: TODO
+file copy ../flibs/./TODO flibs/.
+Line: app
+file mkdir flibs/./app
+Line: chksys
+file mkdir flibs/./chksys
+Line: config
+file mkdir flibs/./config
+Line: configure.bat
+file copy ../flibs/./configure.bat flibs/.
+Line: configure.sh
+file copy ../flibs/./configure.sh flibs/.
+Line: doc
+file mkdir flibs/./doc
+Line: experiments
+file mkdir flibs/./experiments
+Line: make
+file mkdir flibs/./make
+Line: site
+file mkdir flibs/./site
+Line: src
+file mkdir flibs/./src
+Line: testmake
+file mkdir flibs/./testmake
+Line: tests
+file mkdir flibs/./tests
+Line: workbench
+file mkdir flibs/./workbench
+Line: 
+Line: ./app:
+Subdir: ./app
+Line: chktype.tcl
+file copy ../flibs/./app/chktype.tcl flibs/./app
+Line: dependencies.tcl
+file copy ../flibs/./app/dependencies.tcl flibs/./app
+Line: testdep
+file mkdir flibs/./app/testdep
+Line: tsta.f90
+file copy ../flibs/./app/tsta.f90 flibs/./app
+Line: tstc.f90
+file copy ../flibs/./app/tstc.f90 flibs/./app
+Line: 
+Line: ./app/testdep:
+Subdir: ./app/testdep
+Line: test.mk
+file copy ../flibs/./app/testdep/test.mk flibs/./app/testdep
+Line: tsta.f90
+file copy ../flibs/./app/testdep/tsta.f90 flibs/./app/testdep
+Line: tstc.f90
+file copy ../flibs/./app/testdep/tstc.f90 flibs/./app/testdep
+Line: tstd.f90
+file copy ../flibs/./app/testdep/tstd.f90 flibs/./app/testdep
+Line: 
+Line: ./chksys:
+Subdir: ./chksys
+Line: chkcomp.f
+file copy ../flibs/./chksys/chkcomp.f flibs/./chksys
+Line: chkcompc.c
+file copy ../flibs/./chksys/chkcompc.c flibs/./chksys
+Line: chkcompff.f90
+file copy ../flibs/./chksys/chkcompff.f90 flibs/./chksys
+Line: chkcompff_extra.f90
+file copy ../flibs/./chksys/chkcompff_extra.f90 flibs/./chksys
+Line: chksys.f
+file copy ../flibs/./chksys/chksys.f flibs/./chksys
+Line: chksys.html
+file copy ../flibs/./chksys/chksys.html flibs/./chksys
+Line: chksys.msg
+file copy ../flibs/./chksys/chksys.msg flibs/./chksys
+Line: chksys.set
+file copy ../flibs/./chksys/chksys.set flibs/./chksys
+Line: chksysc.c
+file copy ../flibs/./chksys/chksysc.c flibs/./chksys
+Line: chksysc.msg
+file copy ../flibs/./chksys/chksysc.msg flibs/./chksys
+Line: chksysc.set
+file copy ../flibs/./chksys/chksysc.set flibs/./chksys
+Line: chksysff.f90
+file copy ../flibs/./chksys/chksysff.f90 flibs/./chksys
+Line: chksysff.msg
+file copy ../flibs/./chksys/chksysff.msg flibs/./chksys
+Line: chksysff.set
+file copy ../flibs/./chksys/chksysff.set flibs/./chksys
+Line: computing
+file mkdir flibs/./chksys/computing
+Line: fp_special.f90
+file copy ../flibs/./chksys/fp_special.f90 flibs/./chksys
+Line: os_interact
+file mkdir flibs/./chksys/os_interact
+Line: syqrout.f
+file copy ../flibs/./chksys/syqrout.f flibs/./chksys
+Line: 
+Line: ./chksys/computing:
+Subdir: ./chksys/computing
+Line: chkrandom.f90
+file copy ../flibs/./chksys/computing/chkrandom.f90 flibs/./chksys/computing
+Line: 
+Line: ./chksys/os_interact:
+Subdir: ./chksys/os_interact
+Line: chkstop.bat
+file copy ../flibs/./chksys/os_interact/chkstop.bat flibs/./chksys/os_interact
+Line: chkstop.sh
+file copy ../flibs/./chksys/os_interact/chkstop.sh flibs/./chksys/os_interact
+Line: makefile
+file copy ../flibs/./chksys/os_interact/makefile flibs/./chksys/os_interact
+Line: readme
+file copy ../flibs/./chksys/os_interact/readme flibs/./chksys/os_interact
+Line: reopen.bat
+file copy ../flibs/./chksys/os_interact/reopen.bat flibs/./chksys/os_interact
+Line: reopen.inp
+file copy ../flibs/./chksys/os_interact/reopen.inp flibs/./chksys/os_interact
+Line: reopen.sh
+file copy ../flibs/./chksys/os_interact/reopen.sh flibs/./chksys/os_interact
+Line: reopen_stdin.f90
+file copy ../flibs/./chksys/os_interact/reopen_stdin.f90 flibs/./chksys/os_interact
+Line: stopcode.f90
+file copy ../flibs/./chksys/os_interact/stopcode.f90 flibs/./chksys/os_interact
+Line: 
+Line: ./config:
+Subdir: ./config
+Line: config.mk
+file copy ../flibs/./config/config.mk flibs/./config
+Line: cvf.mk
+file copy ../flibs/./config/cvf.mk flibs/./config
+Line: debug.mk
+file copy ../flibs/./config/debug.mk flibs/./config
+Line: g95.mk
+file copy ../flibs/./config/g95.mk flibs/./config
+Line: gfortran.mk
+file copy ../flibs/./config/gfortran.mk flibs/./config
+Line: idc.f90
+file copy ../flibs/./config/idc.f90 flibs/./config
+Line: makefile
+file copy ../flibs/./config/makefile flibs/./config
+Line: normal.mk
+file copy ../flibs/./config/normal.mk flibs/./config
+Line: optimise.mk
+file copy ../flibs/./config/optimise.mk flibs/./config
+Line: options.mk
+file copy ../flibs/./config/options.mk flibs/./config
+Line: readme
+file copy ../flibs/./config/readme flibs/./config
+Line: salford.mk
+file copy ../flibs/./config/salford.mk flibs/./config
+Line: 
+Line: ./doc:
+Subdir: ./doc
+Line: array_valued.txt
+file copy ../flibs/./doc/array_valued.txt flibs/./doc
+Line: automdiff.man
+file copy ../flibs/./doc/automdiff.man flibs/./doc
+Line: backtrack.man
+file copy ../flibs/./doc/backtrack.man flibs/./doc
+Line: binstreams.html
+file copy ../flibs/./doc/binstreams.html flibs/./doc
+Line: checking
+file mkdir flibs/./doc/checking
+Line: computing
+file mkdir flibs/./doc/computing
+Line: controlstructures
+file mkdir flibs/./doc/controlstructures
+Line: csv_file.html
+file copy ../flibs/./doc/csv_file.html flibs/./doc
+Line: csv_file.man
+file copy ../flibs/./doc/csv_file.man flibs/./doc
+Line: datastructures
+file mkdir flibs/./doc/datastructures
+Line: design_patterns_f90.doc
+file copy ../flibs/./doc/design_patterns_f90.doc flibs/./doc
+Line: design_patterns_f90.pdf
+file copy ../flibs/./doc/design_patterns_f90.pdf flibs/./doc
+Line: design_patterns_in_f2003.doc
+file copy ../flibs/./doc/design_patterns_in_f2003.doc flibs/./doc
+Line: filedir
+file mkdir flibs/./doc/filedir
+Line: funit
+file mkdir flibs/./doc/funit
+Line: ipc.man
+file copy ../flibs/./doc/ipc.man flibs/./doc
+Line: makedoc
+file copy ../flibs/./doc/makedoc flibs/./doc
+Line: makedoc.bat
+file copy ../flibs/./doc/makedoc.bat flibs/./doc
+Line: makedoc.tcl
+file copy ../flibs/./doc/makedoc.tcl flibs/./doc
+Line: mem_pool.html
+file copy ../flibs/./doc/mem_pool.html flibs/./doc
+Line: overview
+file copy ../flibs/./doc/overview flibs/./doc
+Line: platform
+file mkdir flibs/./doc/platform
+Line: quantum_computing.doc
+file copy ../flibs/./doc/quantum_computing.doc flibs/./doc
+Line: quantum_computing.pdf
+file copy ../flibs/./doc/quantum_computing.pdf flibs/./doc
+Line: reporting
+file mkdir flibs/./doc/reporting
+Line: sqlite
+file mkdir flibs/./doc/sqlite
+Line: streams
+file mkdir flibs/./doc/streams
+Line: strings
+file mkdir flibs/./doc/strings
+Line: textstreams.html
+file copy ../flibs/./doc/textstreams.html flibs/./doc
+Line: tokenize.html
+file copy ../flibs/./doc/tokenize.html flibs/./doc
+Line: tools
+file mkdir flibs/./doc/tools
+Line: wrapper
+file mkdir flibs/./doc/wrapper
+Line: 
+Line: ./doc/cgi:
+Subdir: ./doc/cgi
+Line: cgi_protocol.html
+file copy ../flibs/./doc/cgi/cgi_protocol.html flibs/./doc/cgi
+Line: cgi_protocol.man
+file copy ../flibs/./doc/cgi/cgi_protocol.man flibs/./doc/cgi
+Line: 
+Line: ./doc/checking:
+Subdir: ./doc/checking
+Line: checking.html
+file copy ../flibs/./doc/checking/checking.html flibs/./doc/checking
+Line: checking.man
+file copy ../flibs/./doc/checking/checking.man flibs/./doc/checking
+Line: 
+Line: ./doc/computing:
+Subdir: ./doc/computing
+Line: annealing.html
+file copy ../flibs/./doc/computing/annealing.html flibs/./doc/computing
+Line: annealing.man
+file copy ../flibs/./doc/computing/annealing.man flibs/./doc/computing
+Line: automdiff.html
+file copy ../flibs/./doc/computing/automdiff.html flibs/./doc/computing
+Line: automdiff.man
+file copy ../flibs/./doc/computing/automdiff.man flibs/./doc/computing
+Line: backtrack.html
+file copy ../flibs/./doc/computing/backtrack.html flibs/./doc/computing
+Line: backtrack.man
+file copy ../flibs/./doc/computing/backtrack.man flibs/./doc/computing
+Line: libdate.html
+file copy ../flibs/./doc/computing/libdate.html flibs/./doc/computing
+Line: libdate.man
+file copy ../flibs/./doc/computing/libdate.man flibs/./doc/computing
+Line: select_precision.html
+file copy ../flibs/./doc/computing/select_precision.html flibs/./doc/computing
+Line: select_precision.man
+file copy ../flibs/./doc/computing/select_precision.man flibs/./doc/computing
+Line: 
+Line: ./doc/controlstructures:
+Subdir: ./doc/controlstructures
+Line: finite_state.html
+file copy ../flibs/./doc/controlstructures/finite_state.html flibs/./doc/controlstructures
+Line: finite_state.man
+file copy ../flibs/./doc/controlstructures/finite_state.man flibs/./doc/controlstructures
+Line: 
+Line: ./doc/datastructures:
+Subdir: ./doc/datastructures
+Line: binarytree.html
+file copy ../flibs/./doc/datastructures/binarytree.html flibs/./doc/datastructures
+Line: binarytree.man
+file copy ../flibs/./doc/datastructures/binarytree.man flibs/./doc/datastructures
+Line: linked_list.html
+file copy ../flibs/./doc/datastructures/linked_list.html flibs/./doc/datastructures
+Line: linked_list.man
+file copy ../flibs/./doc/datastructures/linked_list.man flibs/./doc/datastructures
+Line: mem_pool.html
+file copy ../flibs/./doc/datastructures/mem_pool.html flibs/./doc/datastructures
+Line: mem_pool.man
+file copy ../flibs/./doc/datastructures/mem_pool.man flibs/./doc/datastructures
+Line: sets.html
+file copy ../flibs/./doc/datastructures/sets.html flibs/./doc/datastructures
+Line: sets.man
+file copy ../flibs/./doc/datastructures/sets.man flibs/./doc/datastructures
+Line: 
+Line: ./doc/filedir:
+Subdir: ./doc/filedir
+Line: filedir.html
+file copy ../flibs/./doc/filedir/filedir.html flibs/./doc/filedir
+Line: filedir.man
+file copy ../flibs/./doc/filedir/filedir.man flibs/./doc/filedir
+Line: m_fileunit.html
+file copy ../flibs/./doc/filedir/m_fileunit.html flibs/./doc/filedir
+Line: m_fileunit.man
+file copy ../flibs/./doc/filedir/m_fileunit.man flibs/./doc/filedir
+Line: m_vfile.html
+file copy ../flibs/./doc/filedir/m_vfile.html flibs/./doc/filedir
+Line: m_vfile.man
+file copy ../flibs/./doc/filedir/m_vfile.man flibs/./doc/filedir
+Line: 
+Line: ./doc/funit:
+Subdir: ./doc/funit
+Line: ftnunit.html
+file copy ../flibs/./doc/funit/ftnunit.html flibs/./doc/funit
+Line: ftnunit.man
+file copy ../flibs/./doc/funit/ftnunit.man flibs/./doc/funit
+Line: 
+Line: ./doc/platform:
+Subdir: ./doc/platform
+Line: m_platform.html
+file copy ../flibs/./doc/platform/m_platform.html flibs/./doc/platform
+Line: m_platform.man
+file copy ../flibs/./doc/platform/m_platform.man flibs/./doc/platform
+Line: m_vstrplatform.html
+file copy ../flibs/./doc/platform/m_vstrplatform.html flibs/./doc/platform
+Line: m_vstrplatform.man
+file copy ../flibs/./doc/platform/m_vstrplatform.man flibs/./doc/platform
+Line: 
+Line: ./doc/reporting:
+Subdir: ./doc/reporting
+Line: m_assert.html
+file copy ../flibs/./doc/reporting/m_assert.html flibs/./doc/reporting
+Line: m_assert.man
+file copy ../flibs/./doc/reporting/m_assert.man flibs/./doc/reporting
+Line: m_exception.html
+file copy ../flibs/./doc/reporting/m_exception.html flibs/./doc/reporting
+Line: m_exception.man
+file copy ../flibs/./doc/reporting/m_exception.man flibs/./doc/reporting
+Line: m_logger.html
+file copy ../flibs/./doc/reporting/m_logger.html flibs/./doc/reporting
+Line: m_logger.man
+file copy ../flibs/./doc/reporting/m_logger.man flibs/./doc/reporting
+Line: 
+Line: ./doc/sqlite:
+Subdir: ./doc/sqlite
+Line: fsqlite.html
+file copy ../flibs/./doc/sqlite/fsqlite.html flibs/./doc/sqlite
+Line: fsqlite.man
+file copy ../flibs/./doc/sqlite/fsqlite.man flibs/./doc/sqlite
+Line: 
+Line: ./doc/streams:
+Subdir: ./doc/streams
+Line: binstreams.html
+file copy ../flibs/./doc/streams/binstreams.html flibs/./doc/streams
+Line: binstreams.man
+file copy ../flibs/./doc/streams/binstreams.man flibs/./doc/streams
+Line: textstreams.html
+file copy ../flibs/./doc/streams/textstreams.html flibs/./doc/streams
+Line: textstreams.man
+file copy ../flibs/./doc/streams/textstreams.man flibs/./doc/streams
+Line: 
+Line: ./doc/strings:
+Subdir: ./doc/strings
+Line: globmatch.html
+file copy ../flibs/./doc/strings/globmatch.html flibs/./doc/strings
+Line: globmatch.man
+file copy ../flibs/./doc/strings/globmatch.man flibs/./doc/strings
+Line: m_vstring.html
+file copy ../flibs/./doc/strings/m_vstring.html flibs/./doc/strings
+Line: m_vstring.man
+file copy ../flibs/./doc/strings/m_vstring.man flibs/./doc/strings
+Line: m_vstringformat.html
+file copy ../flibs/./doc/strings/m_vstringformat.html flibs/./doc/strings
+Line: m_vstringformat.man
+file copy ../flibs/./doc/strings/m_vstringformat.man flibs/./doc/strings
+Line: m_vstringlist.html
+file copy ../flibs/./doc/strings/m_vstringlist.html flibs/./doc/strings
+Line: m_vstringlist.man
+file copy ../flibs/./doc/strings/m_vstringlist.man flibs/./doc/strings
+Line: textstr.html
+file copy ../flibs/./doc/strings/textstr.html flibs/./doc/strings
+Line: textstr.man
+file copy ../flibs/./doc/strings/textstr.man flibs/./doc/strings
+Line: tokenize.html
+file copy ../flibs/./doc/strings/tokenize.html flibs/./doc/strings
+Line: tokenize.man
+file copy ../flibs/./doc/strings/tokenize.man flibs/./doc/strings
+Line: 
+Line: ./doc/tools:
+Subdir: ./doc/tools
+Line: editcode.html
+file copy ../flibs/./doc/tools/editcode.html flibs/./doc/tools
+Line: editcode.man
+file copy ../flibs/./doc/tools/editcode.man flibs/./doc/tools
+Line: 
+Line: ./doc/wrapper:
+Subdir: ./doc/wrapper
+Line: 
+Line: ./experiments:
+Subdir: ./experiments
+Line: TODO
+file copy ../flibs/./experiments/TODO flibs/./experiments
+Line: chk_integer.f90
+file copy ../flibs/./experiments/chk_integer.f90 flibs/./experiments
+Line: func_qsort.f90
+file copy ../flibs/./experiments/func_qsort.f90 flibs/./experiments
+Line: integer_programming.f90
+file copy ../flibs/./experiments/integer_programming.f90 flibs/./experiments
+Line: integer_set.f90
+file copy ../flibs/./experiments/integer_set.f90 flibs/./experiments
+Line: joinarrays.f90
+file copy ../flibs/./experiments/joinarrays.f90 flibs/./experiments
+Line: makefile
+file copy ../flibs/./experiments/makefile flibs/./experiments
+Line: quantum.f90
+file copy ../flibs/./experiments/quantum.f90 flibs/./experiments
+Line: self.f90
+file copy ../flibs/./experiments/self.f90 flibs/./experiments
+Line: self_impl.f90
+file copy ../flibs/./experiments/self_impl.f90 flibs/./experiments
+Line: 
+Line: ./make:
+Subdir: ./make
+Line: makefile
+file mkdir flibs/./make/makefile
+Line: visualstudio
+file mkdir flibs/./make/visualstudio
+Line: 
+Line: ./make/makefile:
+Subdir: ./make/makefile
+Line: Makefile
+file copy ../flibs/./make/makefile/Makefile flibs/./make/makefile
+Line: Makefile-cfg
+file copy ../flibs/./make/makefile/Makefile-cfg flibs/./make/makefile
+Line: Makefile-flibs-dependencies
+file copy ../flibs/./make/makefile/Makefile-flibs-dependencies flibs/./make/makefile
+Line: Makefile-flibs-objects
+file copy ../flibs/./make/makefile/Makefile-flibs-objects flibs/./make/makefile
+Line: Makefile-g95
+file copy ../flibs/./make/makefile/Makefile-g95 flibs/./make/makefile
+Line: Makefile-gfortran
+file copy ../flibs/./make/makefile/Makefile-gfortran flibs/./make/makefile
+Line: Makefile-linux
+file copy ../flibs/./make/makefile/Makefile-linux flibs/./make/makefile
+Line: Makefile-win32-NT
+file copy ../flibs/./make/makefile/Makefile-win32-NT flibs/./make/makefile
+Line: Makefile.bat
+file copy ../flibs/./make/makefile/Makefile.bat flibs/./make/makefile
+Line: 
+Line: ./make/visualstudio:
+Subdir: ./make/visualstudio
+Line: flibs.sln
+file copy ../flibs/./make/visualstudio/flibs.sln flibs/./make/visualstudio
+Line: test_btree.sln
+file copy ../flibs/./make/visualstudio/test_btree.sln flibs/./make/visualstudio
+Line: test_btree.vfproj
+file copy ../flibs/./make/visualstudio/test_btree.vfproj flibs/./make/visualstudio
+Line: test_filedir.sln
+file copy ../flibs/./make/visualstudio/test_filedir.sln flibs/./make/visualstudio
+Line: test_filedir.vfproj
+file copy ../flibs/./make/visualstudio/test_filedir.vfproj flibs/./make/visualstudio
+Line: test_iso_varying_string.sln
+file copy ../flibs/./make/visualstudio/test_iso_varying_string.sln flibs/./make/visualstudio
+Line: test_iso_varying_string.vfproj
+file copy ../flibs/./make/visualstudio/test_iso_varying_string.vfproj flibs/./make/visualstudio
+Line: test_m_assert.sln
+file copy ../flibs/./make/visualstudio/test_m_assert.sln flibs/./make/visualstudio
+Line: test_m_assert.vfproj
+file copy ../flibs/./make/visualstudio/test_m_assert.vfproj flibs/./make/visualstudio
+Line: test_m_exception.sln
+file copy ../flibs/./make/visualstudio/test_m_exception.sln flibs/./make/visualstudio
+Line: test_m_exception.vfproj
+file copy ../flibs/./make/visualstudio/test_m_exception.vfproj flibs/./make/visualstudio
+Line: test_m_filedir.sln
+file copy ../flibs/./make/visualstudio/test_m_filedir.sln flibs/./make/visualstudio
+Line: test_m_filedir.vfproj
+file copy ../flibs/./make/visualstudio/test_m_filedir.vfproj flibs/./make/visualstudio
+Line: test_m_fileunit.sln
+file copy ../flibs/./make/visualstudio/test_m_fileunit.sln flibs/./make/visualstudio
+Line: test_m_fileunit.vfproj
+file copy ../flibs/./make/visualstudio/test_m_fileunit.vfproj flibs/./make/visualstudio
+Line: test_m_platform.sln
+file copy ../flibs/./make/visualstudio/test_m_platform.sln flibs/./make/visualstudio
+Line: test_m_platform.vfproj
+file copy ../flibs/./make/visualstudio/test_m_platform.vfproj flibs/./make/visualstudio
+Line: test_m_throwable.sln
+file copy ../flibs/./make/visualstudio/test_m_throwable.sln flibs/./make/visualstudio
+Line: test_m_throwable.vfproj
+file copy ../flibs/./make/visualstudio/test_m_throwable.vfproj flibs/./make/visualstudio
+Line: test_m_vfile.sln
+file copy ../flibs/./make/visualstudio/test_m_vfile.sln flibs/./make/visualstudio
+Line: test_m_vfile.vfproj
+file copy ../flibs/./make/visualstudio/test_m_vfile.vfproj flibs/./make/visualstudio
+Line: test_m_vstring.sln
+file copy ../flibs/./make/visualstudio/test_m_vstring.sln flibs/./make/visualstudio
+Line: test_m_vstring.vfproj
+file copy ../flibs/./make/visualstudio/test_m_vstring.vfproj flibs/./make/visualstudio
+Line: test_m_vstringformat.sln
+file copy ../flibs/./make/visualstudio/test_m_vstringformat.sln flibs/./make/visualstudio
+Line: test_m_vstringformat.vfproj
+file copy ../flibs/./make/visualstudio/test_m_vstringformat.vfproj flibs/./make/visualstudio
+Line: test_m_vstringlist.sln
+file copy ../flibs/./make/visualstudio/test_m_vstringlist.sln flibs/./make/visualstudio
+Line: test_m_vstringlist.vfproj
+file copy ../flibs/./make/visualstudio/test_m_vstringlist.vfproj flibs/./make/visualstudio
+Line: test_m_vstrplatform.sln
+file copy ../flibs/./make/visualstudio/test_m_vstrplatform.sln flibs/./make/visualstudio
+Line: test_m_vstrplatform.vfproj
+file copy ../flibs/./make/visualstudio/test_m_vstrplatform.vfproj flibs/./make/visualstudio
+Line: test_qsortarray_template.sln
+file copy ../flibs/./make/visualstudio/test_qsortarray_template.sln flibs/./make/visualstudio
+Line: test_qsortarray_template.vfproj
+file copy ../flibs/./make/visualstudio/test_qsortarray_template.vfproj flibs/./make/visualstudio
+Line: 
+Line: ./site:
+Subdir: ./site
+Line: annealing.html
+file copy ../flibs/./site/annealing.html flibs/./site
+Line: article_testmake.pdf
+file copy ../flibs/./site/article_testmake.pdf flibs/./site
+Line: automdiff.html
+file copy ../flibs/./site/automdiff.html flibs/./site
+Line: backtrack.html
+file copy ../flibs/./site/backtrack.html flibs/./site
+Line: binarytree.html
+file copy ../flibs/./site/binarytree.html flibs/./site
+Line: binstreams.html
+file copy ../flibs/./site/binstreams.html flibs/./site
+Line: checking.html
+file copy ../flibs/./site/checking.html flibs/./site
+Line: cgi_protocol.html
+file copy ../flibs/./site/cgi_protocol.html flibs/./site
+Line: chksys.html
+file copy ../flibs/./site/chksys.html flibs/./site
+Line: csv_file.html
+file copy ../flibs/./site/csv_file.html flibs/./site
+Line: cwrap.html
+file copy ../flibs/./site/cwrap.html flibs/./site
+Line: editcode.html
+file copy ../flibs/./site/editcode.html flibs/./site
+Line: filedir.html
+file copy ../flibs/./site/filedir.html flibs/./site
+Line: finite_state.html
+file copy ../flibs/./site/finite_state.html flibs/./site
+Line: fortran_aspects.html
+file copy ../flibs/./site/fortran_aspects.html flibs/./site
+Line: fsqlite.html
+file copy ../flibs/./site/fsqlite.html flibs/./site
+Line: ftnunit.html
+file copy ../flibs/./site/ftnunit.html flibs/./site
+Line: globmatch.html
+file copy ../flibs/./site/globmatch.html flibs/./site
+Line: index.html
+file copy ../flibs/./site/index.html flibs/./site
+Line: libdate.html
+file copy ../flibs/./site/libdate.html flibs/./site
+Line: linked_list.html
+file copy ../flibs/./site/linked_list.html flibs/./site
+Line: m_assert.html
+file copy ../flibs/./site/m_assert.html flibs/./site
+Line: m_exception.html
+file copy ../flibs/./site/m_exception.html flibs/./site
+Line: m_fileunit.html
+file copy ../flibs/./site/m_fileunit.html flibs/./site
+Line: m_logger.html
+file copy ../flibs/./site/m_logger.html flibs/./site
+Line: m_platform.html
+file copy ../flibs/./site/m_platform.html flibs/./site
+Line: m_vfile.html
+file copy ../flibs/./site/m_vfile.html flibs/./site
+Line: m_vstring.html
+file copy ../flibs/./site/m_vstring.html flibs/./site
+Line: m_vstringformat.html
+file copy ../flibs/./site/m_vstringformat.html flibs/./site
+Line: m_vstringlist.html
+file copy ../flibs/./site/m_vstringlist.html flibs/./site
+Line: m_vstrplatform.html
+file copy ../flibs/./site/m_vstrplatform.html flibs/./site
+Line: makedoc
+file copy ../flibs/./site/makedoc flibs/./site
+Line: mem_pool.html
+file copy ../flibs/./site/mem_pool.html flibs/./site
+Line: platform.html
+file copy ../flibs/./site/platform.html flibs/./site
+Line: quantum_computing.pdf
+file copy ../flibs/./site/quantum_computing.pdf flibs/./site
+Line: select_precision.html
+file copy ../flibs/./site/select_precision.html flibs/./site
+Line: sets.html
+file copy ../flibs/./site/sets.html flibs/./site
+Line: testmake.html
+file copy ../flibs/./site/testmake.html flibs/./site
+Line: textstr.html
+file copy ../flibs/./site/textstr.html flibs/./site
+Line: textstreams.html
+file copy ../flibs/./site/textstreams.html flibs/./site
+Line: tokenize.html
+file copy ../flibs/./site/tokenize.html flibs/./site
+Line: update_doc
+file copy ../flibs/./site/update_doc flibs/./site
+Line: 
+Line: ./src:
+Subdir: ./src
+Line: cgi
+file mkdir flibs/./src/cgi
+Line: checking
+file mkdir flibs/./src/checking
+Line: computing
+file mkdir flibs/./src/computing
+Line: controlstructures
+file mkdir flibs/./src/controlstructures
+Line: datastructures
+file mkdir flibs/./src/datastructures
+Line: filedir
+file mkdir flibs/./src/filedir
+Line: funit
+file mkdir flibs/./src/funit
+Line: funit2
+file mkdir flibs/./src/funit2
+Line: ipc
+file mkdir flibs/./src/ipc
+Line: lemon
+file mkdir flibs/./src/lemon
+Line: osutils
+file mkdir flibs/./src/osutils
+Line: platform
+file mkdir flibs/./src/platform
+Line: reporting
+file mkdir flibs/./src/reporting
+Line: specs
+file mkdir flibs/./src/specs
+Line: sqlite
+file mkdir flibs/./src/sqlite
+Line: streams
+file mkdir flibs/./src/streams
+Line: strings
+file mkdir flibs/./src/strings
+Line: tools
+file mkdir flibs/./src/tools
+Line: wrapper
+file mkdir flibs/./src/wrapper
+Line: 
+Line: ./src/cgi:
+Subdir: ./src/cgi
+Line: Debug
+file mkdir flibs/./src/cgi/Debug
+Line: cgi.f90
+file copy ../flibs/./src/cgi/cgi.f90 flibs/./src/cgi
+Line: cgi.inp
+file copy ../flibs/./src/cgi/cgi.inp flibs/./src/cgi
+Line: cgi.zip
+file copy ../flibs/./src/cgi/cgi.zip flibs/./src/cgi
+Line: cgi_protocol.f90
+file copy ../flibs/./src/cgi/cgi_protocol.f90 flibs/./src/cgi
+Line: cgiout
+file copy ../flibs/./src/cgi/cgiout flibs/./src/cgi
+Line: cgiserver.tcl
+file copy ../flibs/./src/cgi/cgiserver.tcl flibs/./src/cgi
+Line: dictionary.f90
+file copy ../flibs/./src/cgi/dictionary.f90 flibs/./src/cgi
+Line: linkedlist.f90
+file copy ../flibs/./src/cgi/linkedlist.f90 flibs/./src/cgi
+Line: mimick_server.tcl
+file copy ../flibs/./src/cgi/mimick_server.tcl flibs/./src/cgi
+Line: mk
+file copy ../flibs/./src/cgi/mk flibs/./src/cgi
+Line: run_noenv.bat
+file copy ../flibs/./src/cgi/run_noenv.bat flibs/./src/cgi
+Line: run_noenv.sh
+file copy ../flibs/./src/cgi/run_noenv.sh flibs/./src/cgi
+Line: 
+Line: ./src/checking:
+Subdir: ./src/checking
+Line: instrument.tcl
+file copy ../flibs/./src/checking/instrument.tcl flibs/./src/checking
+Line: test
+file mkdir flibs/./src/checking/test
+Line: test_w.f90
+file copy ../flibs/./src/checking/test_w.f90 flibs/./src/checking
+Line: w_.f90
+file copy ../flibs/./src/checking/w_.f90 flibs/./src/checking
+Line: 
+Line: ./src/checking/test:
+Subdir: ./src/checking/test
+Line: test_w.f90
+file copy ../flibs/./src/checking/test/test_w.f90 flibs/./src/checking/test
+Line: test_w.f90.org
+file copy ../flibs/./src/checking/test/test_w.f90.org flibs/./src/checking/test
+Line: 
+Line: ./src/computing:
+Subdir: ./src/computing
+Line: annealing.f90
+file copy ../flibs/./src/computing/annealing.f90 flibs/./src/computing
+Line: annealing_decl.f90
+file copy ../flibs/./src/computing/annealing_decl.f90 flibs/./src/computing
+Line: annealing_revcom.f90
+file copy ../flibs/./src/computing/annealing_revcom.f90 flibs/./src/computing
+Line: automdiff.f90
+file copy ../flibs/./src/computing/automdiff.f90 flibs/./src/computing
+Line: backtrack.f90
+file copy ../flibs/./src/computing/backtrack.f90 flibs/./src/computing
+Line: combinations.f90
+file copy ../flibs/./src/computing/combinations.f90 flibs/./src/computing
+Line: decimal.f90
+file copy ../flibs/./src/computing/decimal.f90 flibs/./src/computing
+Line: genetic_algorithms.f90
+file copy ../flibs/./src/computing/genetic_algorithms.f90 flibs/./src/computing
+Line: interval_simple.f90
+file copy ../flibs/./src/computing/interval_simple.f90 flibs/./src/computing
+Line: libdate.f90
+file copy ../flibs/./src/computing/libdate.f90 flibs/./src/computing
+Line: m_coordinates.f90
+file copy ../flibs/./src/computing/m_coordinates.f90 flibs/./src/computing
+Line: m_datetime.f90
+file copy ../flibs/./src/computing/m_datetime.f90 flibs/./src/computing
+Line: pointsets.f90
+file copy ../flibs/./src/computing/pointsets.f90 flibs/./src/computing
+Line: readme
+file copy ../flibs/./src/computing/readme flibs/./src/computing
+Line: select_precision.f90
+file copy ../flibs/./src/computing/select_precision.f90 flibs/./src/computing
+Line: simulated_annealing.f90
+file copy ../flibs/./src/computing/simulated_annealing.f90 flibs/./src/computing
+Line: timing.f90
+file copy ../flibs/./src/computing/timing.f90 flibs/./src/computing
+Line: 
+Line: ./src/controlstructures:
+Subdir: ./src/controlstructures
+Line: finite_state.f90
+file copy ../flibs/./src/controlstructures/finite_state.f90 flibs/./src/controlstructures
+Line: fsm_state.f90
+file copy ../flibs/./src/controlstructures/fsm_state.f90 flibs/./src/controlstructures
+Line: messages.f90
+file copy ../flibs/./src/controlstructures/messages.f90 flibs/./src/controlstructures
+Line: readme
+file copy ../flibs/./src/controlstructures/readme flibs/./src/controlstructures
+Line: 
+Line: ./src/datastructures:
+Subdir: ./src/datastructures
+Line: binarytree.f90
+file copy ../flibs/./src/datastructures/binarytree.f90 flibs/./src/datastructures
+Line: data_for_sets.f90
+file copy ../flibs/./src/datastructures/data_for_sets.f90 flibs/./src/datastructures
+Line: dict_linked_list.f90
+file copy ../flibs/./src/datastructures/dict_linked_list.f90 flibs/./src/datastructures
+Line: dictionary.f90
+file copy ../flibs/./src/datastructures/dictionary.f90 flibs/./src/datastructures
+Line: hashtable.f90
+file copy ../flibs/./src/datastructures/hashtable.f90 flibs/./src/datastructures
+Line: indexset.f90
+file copy ../flibs/./src/datastructures/indexset.f90 flibs/./src/datastructures
+Line: linkedlist.f90
+file copy ../flibs/./src/datastructures/linkedlist.f90 flibs/./src/datastructures
+Line: mem_pool.f90
+file copy ../flibs/./src/datastructures/mem_pool.f90 flibs/./src/datastructures
+Line: qsort_inline.f90
+file copy ../flibs/./src/datastructures/qsort_inline.f90 flibs/./src/datastructures
+Line: qsortarray_template.f90
+file copy ../flibs/./src/datastructures/qsortarray_template.f90 flibs/./src/datastructures
+Line: queues.f90
+file copy ../flibs/./src/datastructures/queues.f90 flibs/./src/datastructures
+Line: sets.f90
+file copy ../flibs/./src/datastructures/sets.f90 flibs/./src/datastructures
+Line: sorting.f90
+file copy ../flibs/./src/datastructures/sorting.f90 flibs/./src/datastructures
+Line: vectors.f90
+file copy ../flibs/./src/datastructures/vectors.f90 flibs/./src/datastructures
+Line: 
+Line: ./src/filedir:
+Subdir: ./src/filedir
+Line: m_filedir.f90
+file copy ../flibs/./src/filedir/m_filedir.f90 flibs/./src/filedir
+Line: m_fileunit.f90
+file copy ../flibs/./src/filedir/m_fileunit.f90 flibs/./src/filedir
+Line: m_vfile.f90
+file copy ../flibs/./src/filedir/m_vfile.f90 flibs/./src/filedir
+Line: m_vfile_template_casttovstring1.f90
+file copy ../flibs/./src/filedir/m_vfile_template_casttovstring1.f90 flibs/./src/filedir
+Line: m_vfile_template_casttovstring2.f90
+file copy ../flibs/./src/filedir/m_vfile_template_casttovstring2.f90 flibs/./src/filedir
+Line: 
+Line: ./src/funit:
+Subdir: ./src/funit
+Line: ftnunit.f90
+file copy ../flibs/./src/funit/ftnunit.f90 flibs/./src/funit
+Line: ftnunit_test.f90
+file copy ../flibs/./src/funit/ftnunit_test.f90 flibs/./src/funit
+Line: gen.tcl.new
+file copy ../flibs/./src/funit/gen.tcl.new flibs/./src/funit
+Line: gentabletest.tcl
+file copy ../flibs/./src/funit/gentabletest.tcl flibs/./src/funit
+Line: runtests.bat
+file copy ../flibs/./src/funit/runtests.bat flibs/./src/funit
+Line: runtests.sh
+file copy ../flibs/./src/funit/runtests.sh flibs/./src/funit
+Line: runtests.tcl
+file copy ../flibs/./src/funit/runtests.tcl flibs/./src/funit
+Line: table_verification.f90
+file copy ../flibs/./src/funit/table_verification.f90 flibs/./src/funit
+Line: todo
+file copy ../flibs/./src/funit/todo flibs/./src/funit
+Line: 
+Line: ./src/ipc:
+Subdir: ./src/ipc
+Line: file1.inp
+file copy ../flibs/./src/ipc/file1.inp flibs/./src/ipc
+Line: file2.inp
+file copy ../flibs/./src/ipc/file2.inp flibs/./src/ipc
+Line: genipc.tcl
+file copy ../flibs/./src/ipc/genipc.tcl flibs/./src/ipc
+Line: ipc_file.f90
+file copy ../flibs/./src/ipc/ipc_file.f90 flibs/./src/ipc
+Line: ipc_file_data.f90
+file copy ../flibs/./src/ipc/ipc_file_data.f90 flibs/./src/ipc
+Line: readme
+file copy ../flibs/./src/ipc/readme flibs/./src/ipc
+Line: runtest.bat
+file copy ../flibs/./src/ipc/runtest.bat flibs/./src/ipc
+Line: test_ipc_file.f90
+file copy ../flibs/./src/ipc/test_ipc_file.f90 flibs/./src/ipc
+Line: test_sleep.f90
+file copy ../flibs/./src/ipc/test_sleep.f90 flibs/./src/ipc
+Line: tupleserver.f90
+file copy ../flibs/./src/ipc/tupleserver.f90 flibs/./src/ipc
+Line: tuplespace.f90
+file copy ../flibs/./src/ipc/tuplespace.f90 flibs/./src/ipc
+Line: 
+Line: ./src/lemon:
+Subdir: ./src/lemon
+Line: fexpr.y
+file copy ../flibs/./src/lemon/fexpr.y flibs/./src/lemon
+Line: flemon.c
+file copy ../flibs/./src/lemon/flemon.c flibs/./src/lemon
+Line: flempar.f90
+file copy ../flibs/./src/lemon/flempar.f90 flibs/./src/lemon
+Line: readme
+file copy ../flibs/./src/lemon/readme flibs/./src/lemon
+Line: 
+Line: ./src/osutils:
+Subdir: ./src/osutils
+Line: config.sh
+file copy ../flibs/./src/osutils/config.sh flibs/./src/osutils
+Line: config_utils.f90
+file copy ../flibs/./src/osutils/config_utils.f90 flibs/./src/osutils
+Line: filelist.f90
+file copy ../flibs/./src/osutils/filelist.f90 flibs/./src/osutils
+Line: gather.f90
+file copy ../flibs/./src/osutils/gather.f90 flibs/./src/osutils
+Line: getenv.f90
+file copy ../flibs/./src/osutils/getenv.f90 flibs/./src/osutils
+Line: makefile
+file copy ../flibs/./src/osutils/makefile flibs/./src/osutils
+Line: makefile.tst
+file copy ../flibs/./src/osutils/makefile.tst flibs/./src/osutils
+Line: oscommands.dos
+file copy ../flibs/./src/osutils/oscommands.dos flibs/./src/osutils
+Line: oscommands.inc
+file copy ../flibs/./src/osutils/oscommands.inc flibs/./src/osutils
+Line: oscommands.unix
+file copy ../flibs/./src/osutils/oscommands.unix flibs/./src/osutils
+Line: osutils.f90
+file copy ../flibs/./src/osutils/osutils.f90 flibs/./src/osutils
+Line: osutils.mod
+file copy ../flibs/./src/osutils/osutils.mod flibs/./src/osutils
+Line: osutils.zip
+file copy ../flibs/./src/osutils/osutils.zip flibs/./src/osutils
+Line: save
+file mkdir flibs/./src/osutils/save
+Line: save.zip
+file copy ../flibs/./src/osutils/save.zip flibs/./src/osutils
+Line: 
+Line: ./src/osutils/save:
+Subdir: ./src/osutils/save
+Line: _system_
+file copy ../flibs/./src/osutils/save/_system_ flibs/./src/osutils/save
+Line: _system_1.f90
+file copy ../flibs/./src/osutils/save/_system_1.f90 flibs/./src/osutils/save
+Line: _system_2.f90
+file copy ../flibs/./src/osutils/save/_system_2.f90 flibs/./src/osutils/save
+Line: config.sh
+file copy ../flibs/./src/osutils/save/config.sh flibs/./src/osutils/save
+Line: config_utils.f90
+file copy ../flibs/./src/osutils/save/config_utils.f90 flibs/./src/osutils/save
+Line: filelist.f90
+file copy ../flibs/./src/osutils/save/filelist.f90 flibs/./src/osutils/save
+Line: gather.f90
+file copy ../flibs/./src/osutils/save/gather.f90 flibs/./src/osutils/save
+Line: gather.inp
+file copy ../flibs/./src/osutils/save/gather.inp flibs/./src/osutils/save
+Line: makefile
+file copy ../flibs/./src/osutils/save/makefile flibs/./src/osutils/save
+Line: makefile.tst
+file copy ../flibs/./src/osutils/save/makefile.tst flibs/./src/osutils/save
+Line: oscommands.dos
+file copy ../flibs/./src/osutils/save/oscommands.dos flibs/./src/osutils/save
+Line: oscommands.inc
+file copy ../flibs/./src/osutils/save/oscommands.inc flibs/./src/osutils/save
+Line: oscommands.unix
+file copy ../flibs/./src/osutils/save/oscommands.unix flibs/./src/osutils/save
+Line: osutils.f90
+file copy ../flibs/./src/osutils/save/osutils.f90 flibs/./src/osutils/save
+Line: 
+Line: ./src/platform:
+Subdir: ./src/platform
+Line: m_platform.f90
+file copy ../flibs/./src/platform/m_platform.f90 flibs/./src/platform
+Line: m_vstrplatform.f90
+file copy ../flibs/./src/platform/m_vstrplatform.f90 flibs/./src/platform
+Line: 
+Line: ./src/reporting:
+Subdir: ./src/reporting
+Line: gen_report.tcl
+file copy ../flibs/./src/reporting/gen_report.tcl flibs/./src/reporting
+Line: m_assert.f90
+file copy ../flibs/./src/reporting/m_assert.f90 flibs/./src/reporting
+Line: m_exception.f90
+file copy ../flibs/./src/reporting/m_exception.f90 flibs/./src/reporting
+Line: m_logger.f90
+file copy ../flibs/./src/reporting/m_logger.f90 flibs/./src/reporting
+Line: m_throwable.f90
+file copy ../flibs/./src/reporting/m_throwable.f90 flibs/./src/reporting
+Line: report.f90
+file copy ../flibs/./src/reporting/report.f90 flibs/./src/reporting
+Line: report_generated.f90
+file copy ../flibs/./src/reporting/report_generated.f90 flibs/./src/reporting
+Line: report_html.f90
+file copy ../flibs/./src/reporting/report_html.f90 flibs/./src/reporting
+Line: report_latex.f90
+file copy ../flibs/./src/reporting/report_latex.f90 flibs/./src/reporting
+Line: report_rtf.f90
+file copy ../flibs/./src/reporting/report_rtf.f90 flibs/./src/reporting
+Line: 
+Line: ./src/specs:
+Subdir: ./src/specs
+Line: develop
+file mkdir flibs/./src/specs/develop
+Line: example.inp
+file copy ../flibs/./src/specs/example.inp flibs/./src/specs
+Line: genreader.code
+file copy ../flibs/./src/specs/genreader.code flibs/./src/specs
+Line: genreader.f90
+file copy ../flibs/./src/specs/genreader.f90 flibs/./src/specs
+Line: genreader.inp
+file copy ../flibs/./src/specs/genreader.inp flibs/./src/specs
+Line: 
+Line: ./src/specs/develop:
+Subdir: ./src/specs/develop
+Line: data.inp
+file copy ../flibs/./src/specs/develop/data.inp flibs/./src/specs/develop
+Line: mk
+file copy ../flibs/./src/specs/develop/mk flibs/./src/specs/develop
+Line: readfile.f90
+file copy ../flibs/./src/specs/develop/readfile.f90 flibs/./src/specs/develop
+Line: tokenize.f90
+file copy ../flibs/./src/specs/develop/tokenize.f90 flibs/./src/specs/develop
+Line: 
+Line: ./src/sqlite:
+Subdir: ./src/sqlite
+Line: README
+file copy ../flibs/./src/sqlite/README flibs/./src/sqlite
+Line: csqlite.c
+file copy ../flibs/./src/sqlite/csqlite.c flibs/./src/sqlite
+Line: fsqlite.f90
+file copy ../flibs/./src/sqlite/fsqlite.f90 flibs/./src/sqlite
+Line: makefile
+file copy ../flibs/./src/sqlite/makefile flibs/./src/sqlite
+Line: 
+Line: ./src/streams:
+Subdir: ./src/streams
+Line: binstream.f90
+file copy ../flibs/./src/streams/binstream.f90 flibs/./src/streams
+Line: textstream.f90
+file copy ../flibs/./src/streams/textstream.f90 flibs/./src/streams
+Line: 
+Line: ./src/strings:
+Subdir: ./src/strings
+Line: codefrag.f90
+file copy ../flibs/./src/strings/codefrag.f90 flibs/./src/strings
+Line: codefrag.inp
+file copy ../flibs/./src/strings/codefrag.inp flibs/./src/strings
+Line: csv_file.f90
+file copy ../flibs/./src/strings/csv_file.f90 flibs/./src/strings
+Line: csv_file_1d.f90
+file copy ../flibs/./src/strings/csv_file_1d.f90 flibs/./src/strings
+Line: csv_file_2d.f90
+file copy ../flibs/./src/strings/csv_file_2d.f90 flibs/./src/strings
+Line: example.inp
+file copy ../flibs/./src/strings/example.inp flibs/./src/strings
+Line: globmatch.f90
+file copy ../flibs/./src/strings/globmatch.f90 flibs/./src/strings
+Line: m_vstring.f90
+file copy ../flibs/./src/strings/m_vstring.f90 flibs/./src/strings
+Line: m_vstringformat.f90
+file copy ../flibs/./src/strings/m_vstringformat.f90 flibs/./src/strings
+Line: m_vstringformat_integerkind_template.f90
+file copy ../flibs/./src/strings/m_vstringformat_integerkind_template.f90 flibs/./src/strings
+Line: m_vstringlist.f90
+file copy ../flibs/./src/strings/m_vstringlist.f90 flibs/./src/strings
+Line: module1
+file copy ../flibs/./src/strings/module1 flibs/./src/strings
+Line: module2
+file copy ../flibs/./src/strings/module2 flibs/./src/strings
+Line: module_text
+file copy ../flibs/./src/strings/module_text flibs/./src/strings
+Line: stringmanip.f90
+file copy ../flibs/./src/strings/stringmanip.f90 flibs/./src/strings
+Line: stringmanip.o
+file copy ../flibs/./src/strings/stringmanip.o flibs/./src/strings
+Line: stringquery.f90
+file copy ../flibs/./src/strings/stringquery.f90 flibs/./src/strings
+Line: strings.zip
+file copy ../flibs/./src/strings/strings.zip flibs/./src/strings
+Line: test_report.html
+file copy ../flibs/./src/strings/test_report.html flibs/./src/strings
+Line: test_report.latex
+file copy ../flibs/./src/strings/test_report.latex flibs/./src/strings
+Line: test_report.rtf
+file copy ../flibs/./src/strings/test_report.rtf flibs/./src/strings
+Line: textstr.f90
+file copy ../flibs/./src/strings/textstr.f90 flibs/./src/strings
+Line: tokenize.f90
+file copy ../flibs/./src/strings/tokenize.f90 flibs/./src/strings
+Line: 
+Line: ./src/tools:
+Subdir: ./src/tools
+Line: editcode.f90
+file copy ../flibs/./src/tools/editcode.f90 flibs/./src/tools
+Line: exceptions.f90
+file copy ../flibs/./src/tools/exceptions.f90 flibs/./src/tools
+Line: preprocessor.f90
+file copy ../flibs/./src/tools/preprocessor.f90 flibs/./src/tools
+Line: 
+Line: ./src/wrapper:
+Subdir: ./src/wrapper
+Line: cfstring.c
+file copy ../flibs/./src/wrapper/cfstring.c flibs/./src/wrapper
+Line: cwrap.tcl
+file copy ../flibs/./src/wrapper/cwrap.tcl flibs/./src/wrapper
+Line: fwrapper.f90
+file copy ../flibs/./src/wrapper/fwrapper.f90 flibs/./src/wrapper
+Line: fwrapper.table
+file copy ../flibs/./src/wrapper/fwrapper.table flibs/./src/wrapper
+Line: fwrapper_vars.f90
+file copy ../flibs/./src/wrapper/fwrapper_vars.f90 flibs/./src/wrapper
+Line: iso_c_wrap.f90
+file copy ../flibs/./src/wrapper/iso_c_wrap.f90 flibs/./src/wrapper
+Line: readme
+file copy ../flibs/./src/wrapper/readme flibs/./src/wrapper
+Line: todo
+file copy ../flibs/./src/wrapper/todo flibs/./src/wrapper
+Line: wikitxt
+file copy ../flibs/./src/wrapper/wikitxt flibs/./src/wrapper
+Line: 
+Line: ./testmake:
+Subdir: ./testmake
+Line: README
+file copy ../flibs/./testmake/README flibs/./testmake
+Line: bin
+file mkdir flibs/./testmake/bin
+Line: doc
+file mkdir flibs/./testmake/doc
+Line: examples
+file mkdir flibs/./testmake/examples
+Line: lib
+file mkdir flibs/./testmake/lib
+Line: tm
+file copy ../flibs/./testmake/tm flibs/./testmake
+Line: 
+Line: ./testmake/bin:
+Subdir: ./testmake/bin
+Line: codec.tcl
+file copy ../flibs/./testmake/bin/codec.tcl flibs/./testmake/bin
+Line: codef90.tcl
+file copy ../flibs/./testmake/bin/codef90.tcl flibs/./testmake/bin
+Line: codejava.tcl
+file copy ../flibs/./testmake/bin/codejava.tcl flibs/./testmake/bin
+Line: testmake.tcl
+file copy ../flibs/./testmake/bin/testmake.tcl flibs/./testmake/bin
+Line: 
+Line: ./testmake/doc:
+Subdir: ./testmake/doc
+Line: article_testmake.pdf
+file copy ../flibs/./testmake/doc/article_testmake.pdf flibs/./testmake/doc
+Line: article_testmake.ps
+file copy ../flibs/./testmake/doc/article_testmake.ps flibs/./testmake/doc
+Line: testmake.html
+file copy ../flibs/./testmake/doc/testmake.html flibs/./testmake/doc
+Line: 
+Line: ./testmake/examples:
+Subdir: ./testmake/examples
+Line: Testcmp.java
+file copy ../flibs/./testmake/examples/Testcmp.java flibs/./testmake/examples
+Line: Testcopy.java
+file copy ../flibs/./testmake/examples/Testcopy.java flibs/./testmake/examples
+Line: modules.tcl
+file copy ../flibs/./testmake/examples/modules.tcl flibs/./testmake/examples
+Line: 
+Line: ./testmake/lib:
+Subdir: ./testmake/lib
+Line: Testcmp.java
+file copy ../flibs/./testmake/lib/Testcmp.java flibs/./testmake/lib
+Line: Testcopy.java
+file copy ../flibs/./testmake/lib/Testcopy.java flibs/./testmake/lib
+Line: test_fac.h
+file copy ../flibs/./testmake/lib/test_fac.h flibs/./testmake/lib
+Line: test_facilities.c
+file copy ../flibs/./testmake/lib/test_facilities.c flibs/./testmake/lib
+Line: test_facilities.f90
+file copy ../flibs/./testmake/lib/test_facilities.f90 flibs/./testmake/lib
+Line: 
+Line: ./tests:
+Subdir: ./tests
+Line: cgi
+file mkdir flibs/./tests/cgi
+Line: checking
+file mkdir flibs/./tests/checking
+Line: computing
+file mkdir flibs/./tests/computing
+Line: controlstructures
+file mkdir flibs/./tests/controlstructures
+Line: datastructures
+file mkdir flibs/./tests/datastructures
+Line: filedir
+file mkdir flibs/./tests/filedir
+Line: funit
+file mkdir flibs/./tests/funit
+Line: funit2
+file mkdir flibs/./tests/funit2
+Line: ipc
+file mkdir flibs/./tests/ipc
+Line: lemon
+file mkdir flibs/./tests/lemon
+Line: platform
+file mkdir flibs/./tests/platform
+Line: reporting
+file mkdir flibs/./tests/reporting
+Line: sqlite
+file mkdir flibs/./tests/sqlite
+Line: streams
+file mkdir flibs/./tests/streams
+Line: strings
+file mkdir flibs/./tests/strings
+Line: support
+file mkdir flibs/./tests/support
+Line: tools
+file mkdir flibs/./tests/tools
+Line: 
+Line: ./tests/cgi:
+Subdir: ./tests/cgi
+Line: error_message.html
+file copy ../flibs/./tests/cgi/error_message.html flibs/./tests/cgi
+Line: example.html
+file copy ../flibs/./tests/cgi/example.html flibs/./tests/cgi
+Line: makefile
+file copy ../flibs/./tests/cgi/makefile flibs/./tests/cgi
+Line: mimick_server.tcl
+file copy ../flibs/./tests/cgi/mimick_server.tcl flibs/./tests/cgi
+Line: readme
+file copy ../flibs/./tests/cgi/readme flibs/./tests/cgi
+Line: test_cgi.f90
+file copy ../flibs/./tests/cgi/test_cgi.f90 flibs/./tests/cgi
+Line: 
+Line: ./tests/checking:
+Subdir: ./tests/checking
+Line: makefile
+file copy ../flibs/./tests/checking/makefile flibs/./tests/checking
+Line: test_w.f90
+file copy ../flibs/./tests/checking/test_w.f90 flibs/./tests/checking
+Line: test_w.inp
+file copy ../flibs/./tests/checking/test_w.inp flibs/./tests/checking
+Line: 
+Line: ./tests/computing:
+Subdir: ./tests/computing
+Line: eight_queens.f90
+file copy ../flibs/./tests/computing/eight_queens.f90 flibs/./tests/computing
+Line: makefile
+file copy ../flibs/./tests/computing/makefile flibs/./tests/computing
+Line: test_annealing.f90
+file copy ../flibs/./tests/computing/test_annealing.f90 flibs/./tests/computing
+Line: test_decimal.f90
+file copy ../flibs/./tests/computing/test_decimal.f90 flibs/./tests/computing
+Line: test_diff.f90
+file copy ../flibs/./tests/computing/test_diff.f90 flibs/./tests/computing
+Line: test_genalg.f90
+file copy ../flibs/./tests/computing/test_genalg.f90 flibs/./tests/computing
+Line: test_intervals.f90
+file copy ../flibs/./tests/computing/test_intervals.f90 flibs/./tests/computing
+Line: test_libdate.f90
+file copy ../flibs/./tests/computing/test_libdate.f90 flibs/./tests/computing
+Line: test_m_coordinates.f90
+file copy ../flibs/./tests/computing/test_m_coordinates.f90 flibs/./tests/computing
+Line: test_pointsets.f90
+file copy ../flibs/./tests/computing/test_pointsets.f90 flibs/./tests/computing
+Line: test_timing.f90
+file copy ../flibs/./tests/computing/test_timing.f90 flibs/./tests/computing
+Line: 
+Line: ./tests/controlstructures:
+Subdir: ./tests/controlstructures
+Line: makefile
+file copy ../flibs/./tests/controlstructures/makefile flibs/./tests/controlstructures
+Line: tst_finite_state.f90
+file copy ../flibs/./tests/controlstructures/tst_finite_state.f90 flibs/./tests/controlstructures
+Line: tst_messages.f90
+file copy ../flibs/./tests/controlstructures/tst_messages.f90 flibs/./tests/controlstructures
+Line: 
+Line: ./tests/datastructures:
+Subdir: ./tests/datastructures
+Line: mksort
+file copy ../flibs/./tests/datastructures/mksort flibs/./tests/datastructures
+Line: qsort_plain_test.f90
+file copy ../flibs/./tests/datastructures/qsort_plain_test.f90 flibs/./tests/datastructures
+Line: qsort_test.f90
+file copy ../flibs/./tests/datastructures/qsort_test.f90 flibs/./tests/datastructures
+Line: salford
+file mkdir flibs/./tests/datastructures/salford
+Line: test_btree.f90
+file copy ../flibs/./tests/datastructures/test_btree.f90 flibs/./tests/datastructures
+Line: test_dict.f90
+file copy ../flibs/./tests/datastructures/test_dict.f90 flibs/./tests/datastructures
+Line: test_list.f90
+file copy ../flibs/./tests/datastructures/test_list.f90 flibs/./tests/datastructures
+Line: test_mem_pool.f90
+file copy ../flibs/./tests/datastructures/test_mem_pool.f90 flibs/./tests/datastructures
+Line: test_qsortarray_template.f90
+file copy ../flibs/./tests/datastructures/test_qsortarray_template.f90 flibs/./tests/datastructures
+Line: test_queue.f90
+file copy ../flibs/./tests/datastructures/test_queue.f90 flibs/./tests/datastructures
+Line: test_sets.f90
+file copy ../flibs/./tests/datastructures/test_sets.f90 flibs/./tests/datastructures
+Line: test_vectors.f90
+file copy ../flibs/./tests/datastructures/test_vectors.f90 flibs/./tests/datastructures
+Line: two_lists.f90
+file copy ../flibs/./tests/datastructures/two_lists.f90 flibs/./tests/datastructures
+Line: 
+Line: ./tests/datastructures/salford:
+Subdir: ./tests/datastructures/salford
+Line: mem1.f90
+file copy ../flibs/./tests/datastructures/salford/mem1.f90 flibs/./tests/datastructures/salford
+Line: mem_pool.f90
+file copy ../flibs/./tests/datastructures/salford/mem_pool.f90 flibs/./tests/datastructures/salford
+Line: salford_errors.tgz
+file copy ../flibs/./tests/datastructures/salford/salford_errors.tgz flibs/./tests/datastructures/salford
+Line: test_mem1.f90
+file copy ../flibs/./tests/datastructures/salford/test_mem1.f90 flibs/./tests/datastructures/salford
+Line: test_mem_pool.f90
+file copy ../flibs/./tests/datastructures/salford/test_mem_pool.f90 flibs/./tests/datastructures/salford
+Line: 
+Line: ./tests/filedir:
+Subdir: ./tests/filedir
+Line: declaration.txt
+file copy ../flibs/./tests/filedir/declaration.txt flibs/./tests/filedir
+Line: declaration2.txt
+file copy ../flibs/./tests/filedir/declaration2.txt flibs/./tests/filedir
+Line: test_m_filedir.f90
+file copy ../flibs/./tests/filedir/test_m_filedir.f90 flibs/./tests/filedir
+Line: test_m_fileunit.f90
+file copy ../flibs/./tests/filedir/test_m_fileunit.f90 flibs/./tests/filedir
+Line: test_m_vfile.f90
+file copy ../flibs/./tests/filedir/test_m_vfile.f90 flibs/./tests/filedir
+Line: testfind
+file mkdir flibs/./tests/filedir/testfind
+Line: testfindbypattern
+file mkdir flibs/./tests/filedir/testfindbypattern
+Line: testls
+file mkdir flibs/./tests/filedir/testls
+Line: testls2
+file mkdir flibs/./tests/filedir/testls2
+Line: testls3
+file mkdir flibs/./tests/filedir/testls3
+Line: testls4
+file mkdir flibs/./tests/filedir/testls4
+Line: 
+Line: ./tests/filedir/testfind:
+Subdir: ./tests/filedir/testfind
+Line: adir
+file mkdir flibs/./tests/filedir/testfind/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/afile.txt flibs/./tests/filedir/testfind
+Line: mdir
+file mkdir flibs/./tests/filedir/testfind/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/mfile.txt flibs/./tests/filedir/testfind
+Line: zdir
+file mkdir flibs/./tests/filedir/testfind/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/zfile.txt flibs/./tests/filedir/testfind
+Line: 
+Line: ./tests/filedir/testfind/adir:
+Subdir: ./tests/filedir/testfind/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/afile.txt flibs/./tests/filedir/testfind/adir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/mfile.txt flibs/./tests/filedir/testfind/adir
+Line: subdir
+file mkdir flibs/./tests/filedir/testfind/adir/subdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/zfile.txt flibs/./tests/filedir/testfind/adir
+Line: 
+Line: ./tests/filedir/testfind/adir/subdir:
+Subdir: ./tests/filedir/testfind/adir/subdir
+Line: adir
+file mkdir flibs/./tests/filedir/testfind/adir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/afile.txt flibs/./tests/filedir/testfind/adir/subdir
+Line: mdir
+file mkdir flibs/./tests/filedir/testfind/adir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/mfile.txt flibs/./tests/filedir/testfind/adir/subdir
+Line: zdir
+file mkdir flibs/./tests/filedir/testfind/adir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/zfile.txt flibs/./tests/filedir/testfind/adir/subdir
+Line: 
+Line: ./tests/filedir/testfind/adir/subdir/adir:
+Subdir: ./tests/filedir/testfind/adir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/adir/afile.txt flibs/./tests/filedir/testfind/adir/subdir/adir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/adir/mfile.txt flibs/./tests/filedir/testfind/adir/subdir/adir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/adir/zfile.txt flibs/./tests/filedir/testfind/adir/subdir/adir
+Line: 
+Line: ./tests/filedir/testfind/adir/subdir/mdir:
+Subdir: ./tests/filedir/testfind/adir/subdir/mdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/mdir/afile.txt flibs/./tests/filedir/testfind/adir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/mdir/mfile.txt flibs/./tests/filedir/testfind/adir/subdir/mdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/mdir/zfile.txt flibs/./tests/filedir/testfind/adir/subdir/mdir
+Line: 
+Line: ./tests/filedir/testfind/adir/subdir/zdir:
+Subdir: ./tests/filedir/testfind/adir/subdir/zdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/zdir/afile.txt flibs/./tests/filedir/testfind/adir/subdir/zdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/zdir/mfile.txt flibs/./tests/filedir/testfind/adir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/adir/subdir/zdir/zfile.txt flibs/./tests/filedir/testfind/adir/subdir/zdir
+Line: 
+Line: ./tests/filedir/testfind/mdir:
+Subdir: ./tests/filedir/testfind/mdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/afile.txt flibs/./tests/filedir/testfind/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/mfile.txt flibs/./tests/filedir/testfind/mdir
+Line: subdir
+file mkdir flibs/./tests/filedir/testfind/mdir/subdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/zfile.txt flibs/./tests/filedir/testfind/mdir
+Line: 
+Line: ./tests/filedir/testfind/mdir/subdir:
+Subdir: ./tests/filedir/testfind/mdir/subdir
+Line: adir
+file mkdir flibs/./tests/filedir/testfind/mdir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/afile.txt flibs/./tests/filedir/testfind/mdir/subdir
+Line: mdir
+file mkdir flibs/./tests/filedir/testfind/mdir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/mfile.txt flibs/./tests/filedir/testfind/mdir/subdir
+Line: zdir
+file mkdir flibs/./tests/filedir/testfind/mdir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/zfile.txt flibs/./tests/filedir/testfind/mdir/subdir
+Line: 
+Line: ./tests/filedir/testfind/mdir/subdir/adir:
+Subdir: ./tests/filedir/testfind/mdir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/adir/afile.txt flibs/./tests/filedir/testfind/mdir/subdir/adir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/adir/mfile.txt flibs/./tests/filedir/testfind/mdir/subdir/adir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/adir/zfile.txt flibs/./tests/filedir/testfind/mdir/subdir/adir
+Line: 
+Line: ./tests/filedir/testfind/mdir/subdir/mdir:
+Subdir: ./tests/filedir/testfind/mdir/subdir/mdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/mdir/afile.txt flibs/./tests/filedir/testfind/mdir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/mdir/mfile.txt flibs/./tests/filedir/testfind/mdir/subdir/mdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/mdir/zfile.txt flibs/./tests/filedir/testfind/mdir/subdir/mdir
+Line: 
+Line: ./tests/filedir/testfind/mdir/subdir/zdir:
+Subdir: ./tests/filedir/testfind/mdir/subdir/zdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/zdir/afile.txt flibs/./tests/filedir/testfind/mdir/subdir/zdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/zdir/mfile.txt flibs/./tests/filedir/testfind/mdir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/mdir/subdir/zdir/zfile.txt flibs/./tests/filedir/testfind/mdir/subdir/zdir
+Line: 
+Line: ./tests/filedir/testfind/zdir:
+Subdir: ./tests/filedir/testfind/zdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/afile.txt flibs/./tests/filedir/testfind/zdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/mfile.txt flibs/./tests/filedir/testfind/zdir
+Line: subdir
+file mkdir flibs/./tests/filedir/testfind/zdir/subdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/zfile.txt flibs/./tests/filedir/testfind/zdir
+Line: 
+Line: ./tests/filedir/testfind/zdir/subdir:
+Subdir: ./tests/filedir/testfind/zdir/subdir
+Line: adir
+file mkdir flibs/./tests/filedir/testfind/zdir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/afile.txt flibs/./tests/filedir/testfind/zdir/subdir
+Line: mdir
+file mkdir flibs/./tests/filedir/testfind/zdir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/mfile.txt flibs/./tests/filedir/testfind/zdir/subdir
+Line: zdir
+file mkdir flibs/./tests/filedir/testfind/zdir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/zfile.txt flibs/./tests/filedir/testfind/zdir/subdir
+Line: 
+Line: ./tests/filedir/testfind/zdir/subdir/adir:
+Subdir: ./tests/filedir/testfind/zdir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/adir/afile.txt flibs/./tests/filedir/testfind/zdir/subdir/adir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/adir/mfile.txt flibs/./tests/filedir/testfind/zdir/subdir/adir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/adir/zfile.txt flibs/./tests/filedir/testfind/zdir/subdir/adir
+Line: 
+Line: ./tests/filedir/testfind/zdir/subdir/mdir:
+Subdir: ./tests/filedir/testfind/zdir/subdir/mdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/mdir/afile.txt flibs/./tests/filedir/testfind/zdir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/mdir/mfile.txt flibs/./tests/filedir/testfind/zdir/subdir/mdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/mdir/zfile.txt flibs/./tests/filedir/testfind/zdir/subdir/mdir
+Line: 
+Line: ./tests/filedir/testfind/zdir/subdir/zdir:
+Subdir: ./tests/filedir/testfind/zdir/subdir/zdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/zdir/afile.txt flibs/./tests/filedir/testfind/zdir/subdir/zdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/zdir/mfile.txt flibs/./tests/filedir/testfind/zdir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfind/zdir/subdir/zdir/zfile.txt flibs/./tests/filedir/testfind/zdir/subdir/zdir
+Line: 
+Line: ./tests/filedir/testfindbypattern:
+Subdir: ./tests/filedir/testfindbypattern
+Line: adir
+file mkdir flibs/./tests/filedir/testfindbypattern/adir
+Line: subdir
+file mkdir flibs/./tests/filedir/testfindbypattern/subdir
+Line: 
+Line: ./tests/filedir/testfindbypattern/adir:
+Subdir: ./tests/filedir/testfindbypattern/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/afile.txt flibs/./tests/filedir/testfindbypattern/adir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/mfile.txt flibs/./tests/filedir/testfindbypattern/adir
+Line: subdir
+file mkdir flibs/./tests/filedir/testfindbypattern/adir/subdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/zfile.txt flibs/./tests/filedir/testfindbypattern/adir
+Line: 
+Line: ./tests/filedir/testfindbypattern/adir/subdir:
+Subdir: ./tests/filedir/testfindbypattern/adir/subdir
+Line: adir
+file mkdir flibs/./tests/filedir/testfindbypattern/adir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/afile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir
+Line: mdir
+file mkdir flibs/./tests/filedir/testfindbypattern/adir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/mfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir
+Line: zdir
+file mkdir flibs/./tests/filedir/testfindbypattern/adir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/zfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir
+Line: 
+Line: ./tests/filedir/testfindbypattern/adir/subdir/adir:
+Subdir: ./tests/filedir/testfindbypattern/adir/subdir/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/adir/afile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/adir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/adir/mfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/adir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/adir/zfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/adir
+Line: 
+Line: ./tests/filedir/testfindbypattern/adir/subdir/mdir:
+Subdir: ./tests/filedir/testfindbypattern/adir/subdir/mdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/mdir/afile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/mdir/mfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/mdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/mdir/zfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/mdir
+Line: 
+Line: ./tests/filedir/testfindbypattern/adir/subdir/zdir:
+Subdir: ./tests/filedir/testfindbypattern/adir/subdir/zdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/zdir/afile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/zdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/zdir/mfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/adir/subdir/zdir/zfile.txt flibs/./tests/filedir/testfindbypattern/adir/subdir/zdir
+Line: 
+Line: ./tests/filedir/testfindbypattern/subdir:
+Subdir: ./tests/filedir/testfindbypattern/subdir
+Line: declaration.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/subdir/declaration.txt flibs/./tests/filedir/testfindbypattern/subdir
+Line: declaration2.txt
+file copy ../flibs/./tests/filedir/testfindbypattern/subdir/declaration2.txt flibs/./tests/filedir/testfindbypattern/subdir
+Line: 
+Line: ./tests/filedir/testls:
+Subdir: ./tests/filedir/testls
+Line: declaration.txt
+file copy ../flibs/./tests/filedir/testls/declaration.txt flibs/./tests/filedir/testls
+Line: declaration2.txt
+file copy ../flibs/./tests/filedir/testls/declaration2.txt flibs/./tests/filedir/testls
+Line: 
+Line: ./tests/filedir/testls2:
+Subdir: ./tests/filedir/testls2
+Line: declaration.txt
+file copy ../flibs/./tests/filedir/testls2/declaration.txt flibs/./tests/filedir/testls2
+Line: declaration2.txt
+file copy ../flibs/./tests/filedir/testls2/declaration2.txt flibs/./tests/filedir/testls2
+Line: subdir1
+file mkdir flibs/./tests/filedir/testls2/subdir1
+Line: subdir2
+file mkdir flibs/./tests/filedir/testls2/subdir2
+Line: 
+Line: ./tests/filedir/testls2/subdir1:
+Subdir: ./tests/filedir/testls2/subdir1
+Line: emtpy.file.just.for.cvs.txt
+file copy ../flibs/./tests/filedir/testls2/subdir1/emtpy.file.just.for.cvs.txt flibs/./tests/filedir/testls2/subdir1
+Line: 
+Line: ./tests/filedir/testls2/subdir2:
+Subdir: ./tests/filedir/testls2/subdir2
+Line: emtpy.file.just.for.cvs.txt
+file copy ../flibs/./tests/filedir/testls2/subdir2/emtpy.file.just.for.cvs.txt flibs/./tests/filedir/testls2/subdir2
+Line: 
+Line: ./tests/filedir/testls3:
+Subdir: ./tests/filedir/testls3
+Line: adir
+file mkdir flibs/./tests/filedir/testls3/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testls3/afile.txt flibs/./tests/filedir/testls3
+Line: mdir
+file mkdir flibs/./tests/filedir/testls3/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testls3/mfile.txt flibs/./tests/filedir/testls3
+Line: zdir
+file mkdir flibs/./tests/filedir/testls3/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testls3/zfile.txt flibs/./tests/filedir/testls3
+Line: 
+Line: ./tests/filedir/testls3/adir:
+Subdir: ./tests/filedir/testls3/adir
+Line: emtpy.file.just.for.cvs.txt
+file copy ../flibs/./tests/filedir/testls3/adir/emtpy.file.just.for.cvs.txt flibs/./tests/filedir/testls3/adir
+Line: 
+Line: ./tests/filedir/testls3/mdir:
+Subdir: ./tests/filedir/testls3/mdir
+Line: emtpy.file.just.for.cvs.txt
+file copy ../flibs/./tests/filedir/testls3/mdir/emtpy.file.just.for.cvs.txt flibs/./tests/filedir/testls3/mdir
+Line: 
+Line: ./tests/filedir/testls3/zdir:
+Subdir: ./tests/filedir/testls3/zdir
+Line: emtpy.file.just.for.cvs.txt
+file copy ../flibs/./tests/filedir/testls3/zdir/emtpy.file.just.for.cvs.txt flibs/./tests/filedir/testls3/zdir
+Line: 
+Line: ./tests/filedir/testls4:
+Subdir: ./tests/filedir/testls4
+Line: adir
+file mkdir flibs/./tests/filedir/testls4/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testls4/afile.txt flibs/./tests/filedir/testls4
+Line: mdir
+file mkdir flibs/./tests/filedir/testls4/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testls4/mfile.txt flibs/./tests/filedir/testls4
+Line: zdir
+file mkdir flibs/./tests/filedir/testls4/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testls4/zfile.txt flibs/./tests/filedir/testls4
+Line: 
+Line: ./tests/filedir/testls4/adir:
+Subdir: ./tests/filedir/testls4/adir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testls4/adir/afile.txt flibs/./tests/filedir/testls4/adir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testls4/adir/mfile.txt flibs/./tests/filedir/testls4/adir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testls4/adir/zfile.txt flibs/./tests/filedir/testls4/adir
+Line: 
+Line: ./tests/filedir/testls4/mdir:
+Subdir: ./tests/filedir/testls4/mdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testls4/mdir/afile.txt flibs/./tests/filedir/testls4/mdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testls4/mdir/mfile.txt flibs/./tests/filedir/testls4/mdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testls4/mdir/zfile.txt flibs/./tests/filedir/testls4/mdir
+Line: 
+Line: ./tests/filedir/testls4/zdir:
+Subdir: ./tests/filedir/testls4/zdir
+Line: afile.txt
+file copy ../flibs/./tests/filedir/testls4/zdir/afile.txt flibs/./tests/filedir/testls4/zdir
+Line: mfile.txt
+file copy ../flibs/./tests/filedir/testls4/zdir/mfile.txt flibs/./tests/filedir/testls4/zdir
+Line: zfile.txt
+file copy ../flibs/./tests/filedir/testls4/zdir/zfile.txt flibs/./tests/filedir/testls4/zdir
+Line: 
+Line: ./tests/funit:
+Subdir: ./tests/funit
+Line: empty_file
+file copy ../flibs/./tests/funit/empty_file flibs/./tests/funit
+Line: example.f90
+file copy ../flibs/./tests/funit/example.f90 flibs/./tests/funit
+Line: example.mk
+file copy ../flibs/./tests/funit/example.mk flibs/./tests/funit
+Line: example.tbl
+file copy ../flibs/./tests/funit/example.tbl flibs/./tests/funit
+Line: invalid_file
+file copy ../flibs/./tests/funit/invalid_file flibs/./tests/funit
+Line: makefile
+file copy ../flibs/./tests/funit/makefile flibs/./tests/funit
+Line: streeter.f90
+file copy ../flibs/./tests/funit/streeter.f90 flibs/./tests/funit
+Line: table.out
+file copy ../flibs/./tests/funit/table.out flibs/./tests/funit
+Line: test_ftnunit.f90
+file copy ../flibs/./tests/funit/test_ftnunit.f90 flibs/./tests/funit
+Line: test_ftnunit.inp
+file copy ../flibs/./tests/funit/test_ftnunit.inp flibs/./tests/funit
+Line: test_funit.f90
+file copy ../flibs/./tests/funit/test_funit.f90 flibs/./tests/funit
+Line: valid_file
+file copy ../flibs/./tests/funit/valid_file flibs/./tests/funit
+Line: 
+Line: ./tests/funit2:
+Subdir: ./tests/funit2
+Line: empty_file
+file copy ../flibs/./tests/funit2/empty_file flibs/./tests/funit2
+Line: invalid_file
+file copy ../flibs/./tests/funit2/invalid_file flibs/./tests/funit2
+Line: test_funit.f90
+file copy ../flibs/./tests/funit2/test_funit.f90 flibs/./tests/funit2
+Line: test_funit.inp
+file copy ../flibs/./tests/funit2/test_funit.inp flibs/./tests/funit2
+Line: valid_file
+file copy ../flibs/./tests/funit2/valid_file flibs/./tests/funit2
+Line: 
+Line: ./tests/ipc:
+Subdir: ./tests/ipc
+Line: test_ipc_file.f90
+file copy ../flibs/./tests/ipc/test_ipc_file.f90 flibs/./tests/ipc
+Line: 
+Line: ./tests/lemon:
+Subdir: ./tests/lemon
+Line: readme
+file copy ../flibs/./tests/lemon/readme flibs/./tests/lemon
+Line: 
+Line: ./tests/platform:
+Subdir: ./tests/platform
+Line: declaration.txt
+file copy ../flibs/./tests/platform/declaration.txt flibs/./tests/platform
+Line: test_m_platform.f90
+file copy ../flibs/./tests/platform/test_m_platform.f90 flibs/./tests/platform
+Line: test_m_platform.log
+file copy ../flibs/./tests/platform/test_m_platform.log flibs/./tests/platform
+Line: test_m_vstrplatform.f90
+file copy ../flibs/./tests/platform/test_m_vstrplatform.f90 flibs/./tests/platform
+Line: 
+Line: ./tests/reporting:
+Subdir: ./tests/reporting
+Line: makefile
+file copy ../flibs/./tests/reporting/makefile flibs/./tests/reporting
+Line: test_m_assert.f90
+file copy ../flibs/./tests/reporting/test_m_assert.f90 flibs/./tests/reporting
+Line: test_m_exception.f90
+file copy ../flibs/./tests/reporting/test_m_exception.f90 flibs/./tests/reporting
+Line: test_m_logger.f90
+file copy ../flibs/./tests/reporting/test_m_logger.f90 flibs/./tests/reporting
+Line: test_m_throwable.f90
+file copy ../flibs/./tests/reporting/test_m_throwable.f90 flibs/./tests/reporting
+Line: test_report.f90
+file copy ../flibs/./tests/reporting/test_report.f90 flibs/./tests/reporting
+Line: 
+Line: ./tests/sqlite:
+Subdir: ./tests/sqlite
+Line: csvdata.f90
+file copy ../flibs/./tests/sqlite/csvdata.f90 flibs/./tests/sqlite
+Line: csvtable.f90
+file copy ../flibs/./tests/sqlite/csvtable.f90 flibs/./tests/sqlite
+Line: makefile
+file copy ../flibs/./tests/sqlite/makefile flibs/./tests/sqlite
+Line: mklib
+file copy ../flibs/./tests/sqlite/mklib flibs/./tests/sqlite
+Line: myfprog.f90
+file copy ../flibs/./tests/sqlite/myfprog.f90 flibs/./tests/sqlite
+Line: somedata.csv
+file copy ../flibs/./tests/sqlite/somedata.csv flibs/./tests/sqlite
+Line: 
+Line: ./tests/streams:
+Subdir: ./tests/streams
+Line: test_binstream.inp
+file copy ../flibs/./tests/streams/test_binstream.inp flibs/./tests/streams
+Line: test_binstreams.f90
+file copy ../flibs/./tests/streams/test_binstreams.f90 flibs/./tests/streams
+Line: test_textstream.inp
+file copy ../flibs/./tests/streams/test_textstream.inp flibs/./tests/streams
+Line: test_textstreams.f90
+file copy ../flibs/./tests/streams/test_textstreams.f90 flibs/./tests/streams
+Line: 
+Line: ./tests/strings:
+Subdir: ./tests/strings
+Line: csv_tst.f90
+file copy ../flibs/./tests/strings/csv_tst.f90 flibs/./tests/strings
+Line: filedir_tst.f90
+file copy ../flibs/./tests/strings/filedir_tst.f90 flibs/./tests/strings
+Line: test_m_vstring.f90
+file copy ../flibs/./tests/strings/test_m_vstring.f90 flibs/./tests/strings
+Line: test_m_vstring.log
+file copy ../flibs/./tests/strings/test_m_vstring.log flibs/./tests/strings
+Line: test_m_vstringformat.f90
+file copy ../flibs/./tests/strings/test_m_vstringformat.f90 flibs/./tests/strings
+Line: test_m_vstringlist.f90
+file copy ../flibs/./tests/strings/test_m_vstringlist.f90 flibs/./tests/strings
+Line: test_manip.f90
+file copy ../flibs/./tests/strings/test_manip.f90 flibs/./tests/strings
+Line: test_token.f90
+file copy ../flibs/./tests/strings/test_token.f90 flibs/./tests/strings
+Line: text_tst.f90
+file copy ../flibs/./tests/strings/text_tst.f90 flibs/./tests/strings
+Line: 
+Line: ./tests/support:
+Subdir: ./tests/support
+Line: CVS
+file mkdir flibs/./tests/support/CVS
+Line: test_support.f90
+file copy ../flibs/./tests/support/test_support.f90 flibs/./tests/support
+Line: 
+Line: ./tests/tools:
+Subdir: ./tests/tools
+Line: CVS
+file mkdir flibs/./tests/tools/CVS
+Line: check_reals.f90
+file copy ../flibs/./tests/tools/check_reals.f90 flibs/./tests/tools
+Line: editcode.inp
+file copy ../flibs/./tests/tools/editcode.inp flibs/./tests/tools
+Line: editcode.rep
+file copy ../flibs/./tests/tools/editcode.rep flibs/./tests/tools
+Line: in
+file mkdir flibs/./tests/tools/in
+Line: out
+file mkdir flibs/./tests/tools/out
+Line: readme
+file copy ../flibs/./tests/tools/readme flibs/./tests/tools
+Line: 
+Line: ./tests/tools/in:
+Subdir: ./tests/tools/in
+Line: check_init.f90
+file copy ../flibs/./tests/tools/in/check_init.f90 flibs/./tests/tools/in
+Line: example.f90
+file copy ../flibs/./tests/tools/in/example.f90 flibs/./tests/tools/in
+Line: 
+Line: ./tests/tools/out:
+Subdir: ./tests/tools/out
+Line: _check_init.f90
+file copy ../flibs/./tests/tools/out/_check_init.f90 flibs/./tests/tools/out
+Line: _example.f90
+file copy ../flibs/./tests/tools/out/_example.f90 flibs/./tests/tools/out
+Line: mk
+file copy ../flibs/./tests/tools/out/mk flibs/./tests/tools/out
+Line: 
+Line: ./workbench:
+Subdir: ./workbench
+Line: m_format.f90
+file copy ../flibs/./workbench/m_format.f90 flibs/./workbench

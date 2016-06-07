@@ -1,0 +1,152 @@
+! genreader.code --
+!     Code fragments for the genreader program
+MODULENAME := init_code
+!
+interface_plain :=
+subroutine read_data( lun, recno )
+    use tokenize
+    integer, intent(in)      :: lun
+    integer, intent(inout)   :: recno
+!
+required_declarations :=
+    character(len=80)        :: line
+    character(len=80)        :: field
+    integer                  :: field_length
+    integer                  :: fieldno
+    integer                  :: ierr_
+    logical                  :: error
+    logical                  :: report_errors
+
+    integer                  :: i_value
+    real                     :: r_value
+    real(kind=kind(1.0d0))   :: d_value
+    logical                  :: l_value
+    complex                  :: c_value
+    character(len=len(line)) :: s_value
+
+    type(tokenizer)          :: token
+!
+initialise :=
+    call set_tokenizer( token, " ", "", '"' )
+
+    report_errors = REPORT_ERRORS
+!
+before_loop :=
+!
+begin_loop :=
+    do
+        read( lun, '(a)', iostat = ierr_ ) line
+        if ( ierr_ /= 0 ) exit
+
+        recno   = recno + 1
+        error   = .false.
+        fieldno = 1
+        field = first_token( token, line, field_length )
+!
+before_case :=
+        do while ( field_length >= 0 )
+
+            select case ( fieldno )
+!
+begin_integer_field :=
+                    read( field, *, iostat = ierr_ ) i_value
+                    if ( ierr_ /= 0 ) then
+                        error = .true.
+                        if ( report_errors ) then
+                            write( *, * ) 'Field "',field(1:field_length),'" is &
+                                &  not a valid integer number - record: ', recno
+                        endif
+
+                    else
+                        data%a = r_value
+!
+end_integer_field :=
+                    endif
+!
+begin_string_field :=
+                    read( field, '(a)', iostat = ierr_ ) s_value
+                    if ( ierr_ /= 0 ) then
+                        error = .true.
+                        if ( report_errors ) then
+                            write( *, * ) 'Fields"',field(1:field_length),'" is &
+                                &  not a valid string - record: ', recno
+                        endif
+                    else
+!
+end_string_field :=
+                    endif
+!
+begin_real_field :=
+                    read( field, *, iostat = ierr_ ) r_value
+                    if ( ierr_ /= 0 ) then
+                        error = .true.
+                        if ( report_errors ) then
+                            write( *, * ) 'Fields"',field(1:field_length),'" is &
+                                &  not a valid real - record: ', recno
+                        endif
+                    else
+!
+end_real_field :=
+                    endif
+!
+begin_double_field :=
+                    read( field, *, iostat = ierr_ ) d_value
+                    if ( ierr_ /= 0 ) then
+                        error = .true.
+                        if ( report_errors ) then
+                            write( *, * ) 'Fields"',field(1:field_length),'" is &
+                                &  not a valid real - record: ', recno
+                        endif
+                    else
+!
+end_double_field :=
+                    endif
+!
+begin_logical_field :=
+                    read( field, *, iostat = ierr_ ) l_value
+                    if ( ierr_ /= 0 ) then
+                        error = .true.
+                        if ( report_errors ) then
+                            write( *, * ) 'Fields"',field(1:field_length),'" is &
+                                &  not a valid logical value - record: ', recno
+                        endif
+                    else
+!
+end_logical_field :=
+                    endif
+!
+begin_complex_field :=
+                    read( field, *, iostat = ierr_ ) c_value
+                    if ( ierr_ /= 0 ) then
+                        error = .true.
+                        if ( report_errors ) then
+                            write( *, * ) 'Fields"',field(1:field_length),'" is &
+                                &  not a valid complex value - record: ', recno
+                        endif
+                    else
+!
+end_complex_field :=
+                    endif
+!
+default_case :=
+                case default
+                    if ( report_errors ) then
+                        write( *, * ) 'Record ',recno, ' has more fields than expected'
+                    endif
+            end select
+!
+end_loop_case :=
+            field = next_token( token, line, field_length )
+            fieldno = fieldno + 1
+        end do
+        if ( fieldno <= 4 ) then
+            if ( report_errors ) then
+                write( *, * ) 'Record ',recno, ' has less fields than expected'
+            endif
+        endif
+!
+after_loop :=
+    end do
+!
+end_of_routine :=
+end subroutine

@@ -1,0 +1,21 @@
+TestMake: version 1.0, january 2002
+-----------------------------------
+
+Notes:
+- Directory structure introduced
+- Tuned for Java as host language (no "HostLanguage" command yet)
+- Code-fragments for Fortran 90 and C as well as support libraries
+  available.
+
+The directory examples contains a small example (Java):
+
+- Run the command "tclsh ../bin/testmake.tcl JJ" to create the
+  code for the JJ module in that example.
+
+- Copy the two auxiliary JAva source files into the directory and make the
+  program.
+
+For more information: see the HTML file in the doc directory and the
+article (PostScript and Pdf) in the same directory.
+
+

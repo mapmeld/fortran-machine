@@ -1,0 +1,11 @@
+! Example of input for the reader generator program
+!
+ROUTINENAME := read_data
+INTEGER :=
+    data%x = i_value
+STRING:=
+    data%x = i_value
+REAL:=
+    data%x = r_value
+REAL:=
+    data%x = s_value

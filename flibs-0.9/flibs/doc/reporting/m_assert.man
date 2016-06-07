@@ -1,0 +1,60 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/m_vfile n 1.0]
+[copyright {2008 Michael Baudin michael.baudin@gmail.com}]
+[copyright {2008 Arjen Markus arjenmarkus@sourceforge.net}]
+[moddesc flibs]
+[titledesc {Manage assertions}]
+
+[description]
+
+   This module provides an interface to check for assertions and 
+   generate corresponding errors.
+
+
+[section OVERVIEW]
+
+   This component is based on the m_exception module.
+   The main service of the component is the subroutine "assert_assert"
+   which check that the given logical variable is true. The following
+   is a sample use. If the condition is not .true., then an exception
+   of error type is raised by the m_exception module.
+   
+[example {
+      use m_assert, only : assert_assert
+      integer :: x , y
+      x = 2
+      y = x**2
+      call assert_assert ( y == 4 , "Wrong power value." )
+}]
+
+   The user can choose a more specific type of exception raised
+   by choosing the correspondant assert_failure, assert_fatalError, 
+   assert_error, assert_warning or assert_information service.
+
+[para]
+   The component can influence performances because of the 
+   internal computation performed to check the assertions, which may be 
+   undesirable in optimized mode. 
+   Therefore, the assertions are checked only if the pre-processing
+   macro _ASSERT_ENABLE is defined. If it is undefined, there is no 
+   impact on performances.
+
+[para]
+   The component can be dynamically enabled or disabled with  
+   assert_setenabled ; one can see if the component is currently 
+   enabled with assert_getenabled.
+
+[para]
+   The user can check the number of assertions that were successful
+   and the number of assertions which failed with assert_getcounters,
+   and reset the internal counters with assert_initcounters.
+
+[para]
+   To control more precisely the behaviour of the m_assert component
+   when an exception occurs, the user can directly configure m_exception.
+
+
+
+[section TODO]
+
+[manpage_end]

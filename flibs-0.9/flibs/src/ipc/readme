@@ -1,0 +1,9 @@
+TODO:
+
+- Function/subroutine to set the preferred directory
+- If not set, use c:\tmp, c:\temp or /tmp (not in that order, by the way)
+- Use the paradigm of a buffer that gets filled, so the user does not
+  directly write to file
+- Add a buffer size element to the interface
+- Alternative module: memory-mapped files
+- Alternatives needed for sleep() - now via DFLIB

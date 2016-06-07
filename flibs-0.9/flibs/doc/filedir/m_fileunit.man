@@ -1,0 +1,129 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/m_fileunit n 1.0]
+[copyright {2008 Michael Baudin michael.baudin@gmail.com}]
+[moddesc flibs]
+[titledesc {Manage file units}]
+
+[description]
+
+The component [strong m_fileunit] provides services to manage fortran file units.
+
+[section OVERVIEW]
+
+The function fileunit_getfreeunit returns an integer representing
+a fortran unit which is available for opening a file.
+The typical use of this function is to manage the files dynamically,
+without any database of file units in the library/software.
+In the following example, one opens a file with a dynamical
+file unit.
+
+[example {
+    integer :: fileunit
+    fileunit = fileunit_getfreeunit ()
+    open ( unit = fileunit , file = "data.txt" )
+    [lb]etc...[rb]
+}]
+
+If several files are to be opened, the "fileunit_getfreeunit"
+method has to be inserted between the "open" statements.
+This is because two consecutive calls to "fileunit_getfreeunit"
+will return the same integer, as expected : if a unit is available
+the first time, it will also be available the second time.
+In the following example, several files are opened and connected
+to several files.
+
+[example {
+    integer :: fileunit1
+    integer :: fileunit2
+    fileunit1 = fileunit_getfreeunit ()
+    open ( unit = fileunit1 , file = "data.txt" )
+    fileunit2 = fileunit_getfreeunit ()
+    open ( unit = fileunit2 , file = "data2.txt" )
+    [lb]etc...[rb]
+}]
+
+In a large fortran software, it may be difficult to see if some
+bug has been introduced in the file management, especially
+when the software is the composition of several libraries.
+The subroutines fileunit_getallopen , fileunit_closeallopen ,
+fileunit_report , fileunit_displayopen allow to manage for
+the units currently used in the software.
+The fileunit_getallopen returns an array of integers which
+contains all the currently opened units. The fileunit_closeallopen
+subroutine close all currently opened units. The fileunit_report
+displays a full report about a given unit number by using the
+"inquire" fortran intrinsic statement.
+
+[section ROUTINES]
+
+[list_begin definitions]
+
+[call [method "fileunit_getallopen"] ( [arg nbunits] [arg ", units"] )]
+[list_begin arg]
+[arg_def [type "integer, intent ( out ) ::"] nbunits]
+[arg_def [type "integer , dimension(:) , pointer ::"] units]
+[list_end]
+Computes an array of integers made of all currently opened units.
+On output, [arg nbunits] is the number of opened units and 
+[arg "units ( iunit )"] is the unit number for the opened unit #iunit 
+with 1<= iunit <= nbunits.
+
+
+[call [method "fileunit_displayopen"] ( [arg reportunitnumber] )]
+[list_begin arg]
+[arg_def [type "integer, intent ( in ) ::"] reportunitnumber]
+[list_end]
+Writes on unit [arg unitnumber] the full list of opened units and their associated 
+filenames.
+
+
+
+[call [method "fileunit_report"] ( [arg reportunitnumber] [arg iunit])]
+[list_begin arg]
+[arg_def [type "integer, intent ( in ) ::"] reportunitnumber]
+[arg_def [type "integer, intent ( in ) ::"] iunit]
+[list_end]
+Compute report about logical unit [arg iunit] and write it on
+unit [arg unitnumber]. Note : All possible features of the "inquire" intrinsic are used.
+
+
+
+[call [method "fileunit_closeallopen"] ( )]
+Close all currently opened units.
+
+
+
+[call [method "fileunit_getfreeunit"] ( ) result ( freeunit )]
+[list_begin arg]
+[arg_def [type "integer ::"] freeunit]
+[list_end]
+Returns a free fortran unit [arg freeunit] as an integer between 1 and FILEUNIT_MAX_UNIT_NUMBER,
+representing a free FORTRAN logical unit.
+If no free unit can be found, generates an error.
+Note that fileunit_getfreeunit assumes that units 5 and 6
+are special, and will never return those values.
+Original Author : John Burkardt
+
+
+[call [method "fileunit_set_stoponerror"] ( [arg stoponerror])]
+[list_begin arg]
+[arg_def [type "integer ::"] freeunit]
+[list_end]
+Configure the behaviour of the component whenever an 
+error is met.
+If [arg stoponerror] is true, then the execution stops if an error is encountered.
+If [arg stoponerror] is false, then the execution continues if an error is encountered.
+In both cases, a message is displayed on standard output.
+
+  
+
+[list_end]
+
+[section TODO]
+[list_begin bullet]
+[bullet] allow to "lock" a collection of logical units, so that an
+ external library which may use constant units can be linked.
+[bullet] allow to "unlock" one unit, or all units at once.
+[list_end]
+
+[manpage_end]

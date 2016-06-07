@@ -1,0 +1,453 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin flibs/m_vstringlist n 1.0]
+[copyright {2008 Michael Baudin michael.baudin@gmail.com}]
+[moddesc flibs]
+[titledesc {Processing string list}]
+
+[description]
+
+   This module provides OO services to manage lists of 
+   vstrings.
+
+[section OVERVIEW]
+
+   A list of strings can be created with vstrlist_new and 
+   several kinds of input arguments. With no additionnal arguments,
+   the vstrlist_new method creates a list with no items :
+   
+[example {
+      call vstrlist_new ( list )
+}]
+
+   If one gives one string, the list is created with 1 element.
+   One can also give an array of strings to the vstrlist_new method.
+   The list is destroyed with vstrlist_free.
+   The number of elements in the list can be computed with 
+   vstrlist_length while vstrlist_exists allows to known 
+   if a list has been created.
+
+   Several methods are provided to acces to the elements of one list 
+   of strings, for example vstrlist_index, vstrlist_range and vstrlist_set.
+   The vstrlist_set method allows to set the element at a given index.
+   The strindex-th item of the list can be accessed with vstrlist_index :
+
+[example {
+     string1 = vstrlist_index ( list , 2 )
+}]
+
+   The vstrlist_range method returns a new list made of the elements
+   which index is between two given integers :
+
+[example {
+     list2 = vstrlist_range ( list , 2 , 3 )
+}]
+
+   To add items to a list, one can use vstrlist_append, vstrlist_concat 
+   or vstrlist_insert.
+   The vstrlist_concat and vstrlist_insert methods return a new list 
+   while vstrlist_append add one item to an existing list (therefore 
+   increasing the number of elements in the list). In the following 
+   example, a new list made of 3 items is created :
+
+[example {
+     call vstrlist_new ( list )
+     call vstrlist_append ( list , "fortran 77" )
+     call vstrlist_append ( list , "fortran 90" )
+     call vstrlist_append ( list , "fortran 95" )
+     call vstrlist_append ( list , "fortran 2003" )
+     call vstrlist_free ( list )
+}]
+
+   The vstrlist_split method allows to split a vstring into an list  
+   of vstrings each time one character is found in a vstring. 
+   The vstrlist_join method concatenates an list of vstrings,
+   using a vstring as the join between the components.
+   In the following example, the string is split at each dot 
+   and the number of components is 3 :
+
+[example {
+     call vstring_new ( string1 , "comp.lang.fortran" )
+     strlist = vstrlist_split ( string1 , "." )
+}]
+
+   One can search for a pattern in a list. The vstrlist_search
+   returns the index of the found string while vstrlist_lsearch
+   returns the list of matching strings. These methods 
+   are based on vstring_match and therefore are powerfull 
+   tools to process strings.
+   In the following example, one searches for all fortran
+   compilers from the 90s (based on the previous sample list):
+
+[example {
+     list2 = vstrlist_search ( list , "fortran 9*" )
+}]
+
+[subsection Design]
+
+   This component has been designed with OO principles in mind.
+   This is why the first argument of every method is named "this",
+   which is the current object.
+   If another string is required as a second argument, it may be either 
+   of type dynamic or as a character(len=*) type, to improve
+   usability.
+   This component is meant to evolve following the fortran 2003 standard 
+   and OO type-bound procedures.
+
+[subsection Preprocessing]
+The following preprocessing macro must be considered :
+[list_begin bullet]
+[bullet] _VSTRINGLIST_ALLOCATABLE or _VSTRINGLIST_POINTER : see the section
+"Allocatable or pointer" in the documentation of the m_vstring module.
+[list_end]
+
+
+
+[section METHODS]
+
+In the following definitions, the [arg this] argument has, 
+depending on the method, one of the the following definitions :
+[list_begin arg]
+[arg_def "type ( t_vstringlist ) , intent(inout) ::" this]
+[list_end]
+[list_begin arg]
+[arg_def "type ( t_vstringlist ) , intent(in) ::" this]
+[list_end]
+The "intent(in)" or "intent(inout)" declaration depends on the 
+method and is what it is expected to be (if not, it is a bug).
+
+[list_begin definitions]
+
+[call [method "vstrlist_new"] ([arg this] [opt args])]
+
+Generic constructor. Creates the new string list "this".
+
+[call [method "vstrlist_new"] ([arg "this"])]
+Creates a new empty string list with 0 string.
+
+[call [method "vstrlist_new"] ([arg this] [arg string])]
+[list_begin arg]
+[arg_def "type ( t_vstring ) , intent(in) ::" string]
+[list_end]
+Creates a new string list with one element : the string [arg string].
+
+[call [method "vstrlist_new"] ([arg this] [arg char_string])]
+[list_begin arg]
+[arg_def "character(LEN=*), intent(in) ::" char_string]
+[list_end]
+Creates a new string list with one element : the character(len=*) string [arg string].
+
+[call [method "vstrlist_new"] ([arg this] [arg array])]
+[list_begin arg]
+[arg_def "type ( t_vstring ) , dimension (:), intent(in) ::" array]
+[list_end]
+Creates a new string list with the strings of the array [arg array].
+The number of elements in the new string list is the length of the array.
+
+[call [method "vstrlist_new"] ([arg this] [arg list])]
+[list_begin arg]
+[arg_def "type ( t_vstringlist ), intent(in) ::" list]
+[list_end]
+Creates a new string list with from the existing list of strings [arg list].
+This implements the copy of a list of strings.
+
+[call [method "vstrlist_new"] ([arg this] [arg length])]
+[list_begin arg]
+[arg_def "integer , intent(in) ::" length]
+[list_end]
+Creates a new string list made of [arg length] empty strings.
+
+[call [method "vstrlist_free"] ([arg "this"])]
+Destructor.
+[nl]
+     The use of the destructor is OPTIONAL.
+     See the thread " New ISO_VARYING_STRING implementation 
+     (without memory leaks)" on comp.lang.fortran :
+     "On most systems, memory is memory :-).  However, there is a
+     difference between how ALLOCATABLE variables and POINTER
+     variables are handled.  ALLOCATABLE variables are always
+     deallocated automatically when thay go out of scope (unless
+     they have the SAVE attribute).  POINTER variables usually
+     are not.  The reason is that the program may have associated
+     additional pointers, that aren't going out of scope, with the
+     same target as the one that is."
+
+[call [method "vstrlist_length"] ([arg "this"])]
+Returns the length, that is, the number of strings, in the current 
+list of strings.
+
+
+[call [method "vstrlist_exists"] ([arg "this"])]
+Returns .true. if the string list has allready been created.
+
+[call [method "vstrlist_index"] ([arg "this"] [arg ", icomponent"])]
+[list_begin arg]
+[arg_def "integer , intent(in) ::" icomponent]
+[list_end]
+Returns a new vstring by getting the vstring at the given index [arg icomponent]
+in the list.
+Generates an error if the given index [arg icomponent] does not exist, that is,
+is lower than 1 or greater than the number of strings in the list.
+
+[call [method "vstrlist_append"] ([arg "this"] [arg ", string"])]
+[list_begin arg]
+[arg_def "type ( t_vstring ) , intent(in) ::" string]
+[list_end]
+Add the given vstring at the end of the current list.
+
+[call [method "vstrlist_append"] ([arg "this"] [arg ", string"])]
+[list_begin arg]
+[arg_def "character(len=*) , intent(in) ::" string]
+[list_end]
+Add the given character(len=*) string at the end of the current list.
+
+[call [method "vstrlist_append"] ([arg "this"] [arg ", list"])]
+[list_begin arg]
+[arg_def "type ( t_vstringlist ) , intent(in) ::" list]
+[list_end]
+Add the given [arg list] at the end of the current list.
+
+
+[call [method "vstrlist_concat"] ([arg "this"] [arg ", string"])]
+[list_begin arg]
+[arg_def "type ( t_vstring ) , intent(in) ::" string]
+[list_end]
+Returns a new list by concatenating the current list to the given [arg string].
+
+
+[call [method "vstrlist_concat"] ([arg "this"] [arg ", string"])]
+[list_begin arg]
+[arg_def "character (len=*), intent(in) ::" string]
+[list_end]
+Returns a new list by concatenating the current list to the given character(len=*) [arg string].
+
+
+[call [method "vstrlist_concat"] ([arg "this"] [arg ", list"])]
+[list_begin arg]
+[arg_def "type ( t_vstringlist ) , intent(in) ::" list]
+[list_end]
+Returns a new list by concatenating the current list to the given [arg list].
+
+
+[call [method "vstrlist_insert"] ([arg "this"] [arg ", strindex"] [arg ", string"])]
+[list_begin arg]
+[arg_def "integer , intent (in) ::" strindex]
+[arg_def "type ( t_vstring ) , intent(in) ::" string]
+[list_end]
+Creates a new list by inserting the given [arg string] into the current list just 
+before the given index [arg strindex].
+
+
+[call [method "vstrlist_insert"] ([arg "this"] [arg ", strindex"] [arg ", string"])]
+[list_begin arg]
+[arg_def "integer , intent (in) ::" strindex]
+[arg_def "character (len=*), intent(in) ::" string]
+[list_end]
+Creates a new list by inserting the given character (len=*) [arg string] into the current list just 
+before the given index [arg strindex].
+
+
+[call [method "vstrlist_range"] ([arg "this"] [arg ", first"] [arg ", last"])]
+[list_begin arg]
+[arg_def "integer , intent (in) ::" first]
+[arg_def "integer , intent (in) ::" last]
+[list_end]
+Returns a new list by extracting items of index  
+from [arg first] and [arg last] (included).
+
+
+[call [method "vstrlist_range"] ([arg "this"] [arg ", first"] [arg ", last"])]
+[list_begin arg]
+[arg_def "integer , intent (in) ::" first]
+[arg_def "integer , intent (in) ::" last]
+[list_end]
+Returns a new list by extracting items of index  
+from [arg first] and [arg last] (included).
+
+
+[call [method "vstrlist_set"] ([arg "this"] [arg ", strindex"] [arg ", string"])]
+[list_begin arg]
+[arg_def "integer , intent (in) ::" strindex]
+[arg_def "type ( t_vstring ), intent(in) ::" string]
+[list_end]
+Set the vstring [arg string] at the given [arg strindex] in the list,
+replacing the existing vstring by the new one.
+
+[call [method "vstrlist_set"] ([arg "this"] [arg ", strindex"] [arg ", string"])]
+[list_begin arg]
+[arg_def "integer , intent (in) ::" strindex]
+[arg_def "character (len=*), intent(in) ::" string]
+[list_end]
+Set the character(len=*) [arg string] at the given [arg strindex] in the list,
+replacing the existing vstring by the new one.
+
+
+
+[call [method "vstrlist_split"] ([arg "this"] [opt ", splitChars"])]
+[list_begin arg]
+[arg_def "type ( t_vstring ), intent(in), optional ::" splitChars]
+[list_end]
+Returns an list of vstrings whose elements are the components in the current string.
+Returns a list of vstrings created by splitting string at each character that is in
+the [arg splitChars] argument. Each element of the result array will consist of
+the characters from string that lie between instances of the characters in
+[arg splitChars]. The number of components is zero if string contains adjacent
+characters in [arg splitChars]. If [arg splitChars] is an empty string then each character of string
+becomes a separate element of the result list. [arg SplitChars] defaults to the
+standard white-space characters (space, newline, carriage return and tab).
+
+
+[call [method "vstrlist_split"] ([arg "this"] [opt ", splitChars"])]
+[list_begin arg]
+[arg_def "character(len=*), intent(in), optional ::" splitChars]
+[list_end]
+Same as previous but with character(len=*) [arg splitChars].
+
+
+[call [method "vstrlist_join"] ([arg "this"] [opt ", joinString"])]
+[list_begin arg]
+[arg_def "type ( t_vstring ), intent(in), optional ::" joinString]
+[list_end]
+Returns the string formed by joining all
+of the elements of list together with [arg joinString] separating
+each adjacent pair of elements.
+The [arg joinString] argument defaults to a space character.
+
+
+[call [method "vstrlist_join"] ([arg "this"] [opt ", joinString"])]
+[list_begin arg]
+[arg_def "character(len=*), intent(in), optional ::" joinString]
+[list_end]
+Same as previous but with character(len=*) [arg joinString].
+
+
+
+
+[call [method "vstrlist_search"] ([arg "this"] [arg pattern] [opt ", first"] [opt ", notmatch"] [opt ", exact"])]
+[list_begin arg]
+[arg_def "type ( t_vstring ) , intent(in) ::" pattern] 
+[arg_def "integer , intent(in), optional ::" first]
+[arg_def "logical , intent(in), optional ::" notmatch]
+[arg_def "logical , intent(in), optional ::" exact]
+[list_end]
+This command searches the elements of list to see if one of them matches
+[arg pattern]. If so, the command returns the index of the first matching element.
+If not, the command returns 0.
+If the optional argument [arg first] is provided, then the list is searched
+starting at position [arg first].
+Default value of [arg first] is 1
+If the optional argument [arg notmatch] is provided, this negates the sense 
+of the match, returning the index of the first non-matching value in the list.
+Default value of [arg notmatch] is .false.
+Set [arg exact] to .true. so that the list element must contain exactly the same string as pattern.
+Default value of [arg exact] is .false.
+
+
+[call [method "vstrlist_search"] ([arg "this"] [arg pattern] [opt ", first"] [opt ", notmatch"] [opt ", exact"])]
+[list_begin arg]
+[arg_def "character (len=*) , intent(in) ::" pattern] 
+[arg_def "integer , intent(in), optional ::" first]
+[arg_def "logical , intent(in), optional ::" notmatch]
+[arg_def "logical , intent(in), optional ::" exact]
+[list_end]
+Same as previous with character (len=*) [arg pattern].
+
+
+
+[call [method "vstrlist_lsearch"] ([arg "this"] [arg pattern] [opt ", first"] [opt ", notmatch"] [opt ", exact"])]
+[list_begin arg]
+[arg_def "type ( t_vstring ) , intent(in) ::" pattern] 
+[arg_def "integer , intent(in), optional ::" first]
+[arg_def "logical , intent(in), optional ::" notmatch]
+[arg_def "logical , intent(in), optional ::" exact]
+[arg_def "logical , intent(in), optional ::" allitems]
+[list_end]
+This command searches the elements of list to see if one of them matches
+pattern. If so, the command returns the list of the first matching element.
+If not, the command returns an empty list.
+If the optional argument [arg first] is provided, then the list is searched
+starting at position [arg first].
+Default value of [arg first] is 1
+If the optional argument [arg notmatch] is provided, this negates the sense 
+of the match, returning the index of the first non-matching value in the list.
+Default value of [arg notmatch] is .false.
+Set [arg exact] to .true. so that the list element must contain exactly the same string as pattern.
+Default value of [arg exact] is .false.
+If [arg allitems] is provided and true, returns the list of all matching elements.
+Default value of [arg allitems] is .false.
+
+
+[call [method "vstrlist_lsearch"] ([arg "this"] [arg pattern] [opt ", first"] [opt ", notmatch"] [opt ", exact"])]
+[list_begin arg]
+[arg_def "character (len=*) , intent(in) ::" pattern] 
+[arg_def "integer , intent(in), optional ::" first]
+[arg_def "logical , intent(in), optional ::" notmatch]
+[arg_def "logical , intent(in), optional ::" exact]
+[arg_def "logical , intent(in), optional ::" allitems]
+[list_end]
+Same as previous with character (len=*) [arg pattern].
+
+
+
+[call [method "vstrlist_sort"] ([arg "this"] [opt ", increasing"] [opt ", classtype"] [opt ", unique"])]
+[list_begin arg]
+[arg_def "logical , intent(in), optional ::" increasing] 
+[arg_def "character(len=*), intent(in), optional ::" classtype]
+[arg_def "logical , intent(in), optional ::" unique]
+[list_end]
+This command sorts the elements of list and returns a new list in sorted order.
+If [arg increasing] is provided and true or not provided, sort the list in increasing order
+(``smallest'' items first).
+If [arg increasing] is provided and false, sort the list in decreasing order (``largest'' items first).
+Default value of [arg increasing] is true.
+If [arg classtype] is provided, converts the items of the list into that class of data before comparing
+the items. The possible values of [arg classtype] are :
+[list_begin bullet]
+[bullet] "ascii" : compare items as strings ( default )
+[bullet] "integer" : convert strings into integer before comparing items
+[bullet] "real" : convert strings into real before comparing items
+[bullet] "dictionnary" : use dictionary-style comparison.
+This is the same as "ascii" except case is ignored.
+[list_end]
+If [arg classtype] is not provided, the default value is "ascii".
+If [arg unique] is provided and true, then only the last set of duplicate
+elements found in the list will be retained. Note that duplicates are
+determined relative to the comparison used in the sort.
+Two items are considered the same if the comparison command returns 0.
+
+
+
+
+[call [method "vstrlist_sort"] ([arg "this"] [arg ", command"] [opt ", unique"])]
+[list_begin arg]
+[arg_def {integer function} command] 
+[arg_def "logical , intent(in), optional ::" unique]
+[list_end]
+This command sorts the elements of list and returns a new list in sorted order.
+The [arg command] is a function used as a comparison operator.
+The [arg command] is expected to return -1, 0, or 1, depending on whether 
+string_a is lexicographically less than, equal to, or greater than string_b.
+It is expected that the command has the following interface :
+[example {
+    interface
+       integer function command ( string_a , string_b )
+         use m_vstring, only : t_vstring
+         type(t_vstring), intent(in) :: string_a
+         type(t_vstring), intent(in) :: string_b
+       end function command 
+    end interface
+}]
+If [arg unique] is provided and true, then only the last set of duplicate
+elements found in the list will be retained. Note that duplicates are
+determined relative to the comparison used in the sort.
+Two items are considered the same if the comparison command returns 0.
+
+
+[list_end]
+
+[section TODO]
+Refactor the component and use datastructures/vectors.f90
+
+
+
+
+[manpage_end]

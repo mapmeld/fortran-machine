@@ -1,0 +1,13 @@
+Compiling the Fortran interface to the Sqlite3 library
+------------------------------------------------------
+
+The makefile in this directory contains an explanation
+of how to build a library from the sources. This 
+explanation is geared to:
+- UNIX/Linux type platforms (includes Cygwin and MingW
+  under Windows and OSX)
+- It explains the creation of a static library only
+
+Some of this information is useful for compiling under 
+MS Windows as well, but the file names are typical for
+the UNIX-type platform.

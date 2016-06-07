@@ -1,0 +1,49 @@
+TODO list
+---------
+
+dd. 16 december 2008
+Add a simple module to interpret commands - Fibonaci-like
+
+dd. 8 september 2008
+Document the extensions to the automatic differentiation module
+
+dd. 4 may 2008
+Change the messages.f90 file: the definitions must be separated out,
+like with the "finite state" module
+Correct the documentation and interface for the ipc_file module - LUN
+
+dd. 29 april 2008
+Idea for exception handling - via a simple preprocessing
+program (this can be used for preconditions and postconditions as well)
+Done
+
+dd. 21 april 2008
+Add COPYRIGHT file
+
+dd. 20 april 2008
+Add module for simulated annealing
+
+
+dd. 22 march 2008
+Add report facilities to CVS + logging
+
+
+dd. 1 february 2007
+Add "indexsets"
+Add utilities:
+    - find out the number of bytes for a record length unit
+    - find a list of files
+Add applications and checks:
+    - varying-length strings
+    - merge and the like: different string lengths
+    - very long source lines
+
+dd. 23 december 2005
+linkedlist.f90:
+    - Support for empty lists
+    - Support for derived type with pointer components
+
+globmatch.f90:
+    - Expand the test program with more cases
+
+

@@ -1,0 +1,182 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>text_streams - flibs </title>
+</head>
+<! -- Generated from file 'textstreams.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id$ text_streams.n
+   -->
+
+<body>
+<h1> text_streams(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> text_streams - Implement text streams
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#data_types_and_routines">DATA TYPES AND ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#implementation_notes">IMPLEMENTATION NOTES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use text_streams</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>type(TEXT_STREAM)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>call textstream_open( stream, lun, filename, error )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>call textstream_close( stream )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call textstream_read( stream, var, ierr )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>text_streams</em> module defines a set of subroutines
+that allow you to read an ordinary text file as if it were a &quot;stream&quot;
+of words, that is, after reading one item, you can read the next
+item from the same line, if there is one.
+
+<p>
+
+The module uses a buffer to store the lines in the file one by one and
+list-directed reading (that is: read(lun,*)) to get the individual
+items. This means that you can take advantage of (almost) all the
+facilities of list-directed input to read the file piece by piece.
+input
+
+<p>
+
+<em>Note:</em> In Fortran 2003, the notion of &quot;streams&quot; is formalised.
+This module will be superfluous with compilers supporting Fortran 2003.
+Also there are a number of issues that may or may not come into play on
+a particular system - see the section on <a href="#implementation_notes">IMPLEMENTATION NOTES</a>.
+
+
+<h2><a name="data_types_and_routines">DATA TYPES AND ROUTINES</a></h2>
+<p>
+The module defines a single data type, TEXT_STREAM, and several
+subroutines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use text_streams</b> </a><dd>
+
+The name of the module
+
+<br><br>
+<dt><a name="2"><b class='cmd'>type(TEXT_STREAM)</b> </a><dd>
+
+Files are opened and the necessary data are kept in variables of
+this type.
+
+
+<br><br>
+<dt><a name="3"><b class='cmd'>call textstream_open( stream, lun, filename, error )</b> </a><dd>
+
+Open the file &quot;filename&quot; using the LU-number &quot;lun&quot;. If some error
+occurs (for instance the file does not exist), the argument &quot;error&quot; is
+set to true.
+
+<br><br>
+<dl>
+
+<dt>type(text_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>lun</i><dd>
+The LU-number to connect the file to
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>filename</i><dd>
+The name of the file to open
+
+<br><br>
+<dt>logical, intent(out) <i class='arg'>error</i><dd>
+Argument indicating whether opening the file was successful or not.
+
+</dl>
+<br><br>
+
+
+<dt><a name="4"><b class='cmd'>call textstream_close( stream )</b> </a><dd>
+
+Close the file that was opened as a stream.
+
+<br><br>
+<dl>
+
+<dt>type(text_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+</dl>
+<br><br>
+
+<dt><a name="5"><b class='cmd'>call textstream_read( stream, var, ierr )</b> </a><dd>
+
+Read a variable &quot;var&quot; from the current position in the file.
+
+<br><br>
+<dl>
+
+<dt>type(text_stream) <i class='arg'>stream</i><dd>
+The variable by which to reference the file
+
+<br><br>
+<dt>(...), intent(out) <i class='arg'>var</i><dd>
+The variable to be read. It can be either a character string, a
+(default) integer, a (default) real, a (default) logical or a
+double-precision real. Also one- and two-dimensional arrays of these
+types are supported.
+
+<br><br>
+<dt>integer, intent(out) <i class='arg'>ierr</i><dd>
+Error code (0 means no error, &gt; 0 some reading error, &lt; 0 end of file)
+
+</dl>
+<br><br>
+
+</dl>
+
+<h2><a name="implementation_notes">IMPLEMENTATION NOTES</a></h2>
+<p>
+The module is a simple implementation of stream-based I/O. As a
+consequence, it has a number of limitations:
+<ul>
+<li>
+The file is read using non-advancing I/O and the data are stored in a
+buffer. When an item is to be read, it is read from this buffer, not
+directly from the file.
+
+<br><br>
+<li>
+One practical consequence is that items longer than 80 characters
+(the size of the buffer) can not be read properly (well, it may be
+possible, because the actual buffer is twice as long, but no guarantee
+is given). Increase the parameter MAXBUF if this does not suit your
+needs.
+
+<br><br>
+<li>
+List-directed I/O distinguishes a number of special characters -
+these are not always passed on to the caller: spaces,
+apostrophes (') and quotation marks (&quot;), as well as commas and numbers
+followed by an asterisk (the string 4*1 is interpreted as four times a
+string or number 1). One character in particular that may cause
+practical problems is the slash (/). This signifies the end of the input
+but it may interfere with the end-of-line detection built into the
+module.
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

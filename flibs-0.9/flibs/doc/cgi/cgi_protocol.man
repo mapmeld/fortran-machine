@@ -1,0 +1,191 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin cgi_protocol n 1.0]
+[copyright {2008 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Module for supporting the Internet CGI protocol}]
+
+[description]
+
+When you want to create web applications, the CGI (common gateway
+interface) is one of the means to integrate your underlying programs
+with the web server. The protocol itself is, at least superficially,
+simple enough, but you need to take care of a number of details.
+It is these details that the [emph cgi_protocol] module seeks to take
+care of.
+
+[para]
+The global structure of a program that uses this module to
+communicate with the web server is basically:
+
+[list_begin bullet]
+[bullet]
+Get the data from the web server, via [emph cgi_begin]
+[bullet]
+Handle these input data and write the corresponding HTML-file
+[bullet]
+Notify the web server the result is available and stop
+[list_end]
+
+[section "DATA TYPES AND ROUTINES"]
+The module defines the following data types:
+
+[list_begin definitions]
+
+[call [cmd "dict_struct"]]
+A derived type holding a list of keyword-value pairs. Each value is of the
+type "dict_data" (see below). The routine [emph cgi_begin] fills such a
+structure to hold all form variables and their values.
+
+[call [cmd "dict_data"]]
+The derived type whose contents is the string value of a particular form
+variable. It has one component: value, a string of 200 characters long
+(the actual length is set via the parameter "dict_value_length", so you
+can easily change it if this should prove necessary).
+
+[list_end]
+
+The module defines the following routines:
+
+[list_begin definitions]
+
+[call [cmd "call cgi_begin( html, dict, luout )"]]
+Routine to start the interaction with the web server. It
+automatically determines the protocol to be used and fills the
+"dictionary" dict with the values of the form variables for easy
+retrieval. The last parameter, luout, should be used to write the
+results to the web server.
+
+[list_begin arg]
+
+[arg_def "integer, intent(in)" html]
+Type of output that will be written. Should be one of the following
+parameters:
+[list_begin bullet]
+[bullet]
+output_html - the output will be HTML text (the corresponding CGI header
+is written by this routine)
+[bullet]
+output_text - the output will be plain ASCII text (the corresponding CGI
+header is written by this routine)
+[bullet]
+output_no_header - it is not known yet what the output type will be -
+you can decide this on the basis of the form input. Use [emph cgi_header]
+to write the appropriate header later.
+[bullet]
+output_html_delayed, output_text_delayed - (not implemented yet)
+indicate that the computation will take a while, so that a simple
+message is written first.
+[list_end]
+
+[arg_def "type(dict_struct), pointer" dict]
+Variable to hold alll the form variables and their values. You pass
+this variable to [emph cgi_get()] to retrieve these values. You can also
+store new variables and values, if this is useful (via the plain
+dictionary routines).
+[nl]
+[emph Note:]
+Initialise it to "null()" before calling the routine.
+
+[arg_def "integer, intent(out)" luout]
+LU-number for writing output to the web server. Always use this
+LU-number, not "*" to write the output.
+[nl]
+[emph Note:]
+If "standard output" is used in the protocol, then this LU-number is
+set to 6 - this is not completely portable of course.
+
+[list_end]
+
+
+[call [cmd "call cgi_header( type )"]]
+Write the CGI header information
+
+[list_begin arg]
+[arg_def "integer, intent(in)" type]
+Type of output that will be written. See above
+[list_end]
+
+
+[call [cmd "call cgi_end"]]
+Indicate to the server that we are done. The routine stops the program.
+[nl]
+[emph Note:]
+If the run-time library produces extra output as a consequence
+of finishing the program, then you may want to use compile options to
+suppress that output. The [emph g95] compiler for instance reports any
+memory that has not been freed. Such output may end up in your HTML
+output!
+
+
+[call [cmd "call cgi_error( msg, template )"]]
+Report a fatal error in the form of HTML text
+
+[list_begin arg]
+[arg_def "character(len=*), intent(in)" msg]
+Message to be written
+
+[arg_def "character(len=*), intent(in), optional" template]
+Name of a file to be used as a template. If not given, a simple page
+will be written instead. The string "MSG" in that template is replaced
+by the contents of the variable msg.
+
+[list_end]
+
+
+[call [cmd "call cgi_get_session( dict, value )"]]
+Get the value of the "sessionid" variable. This variable is
+already present in the form or it is set by this routine to a (more or
+less) unique value.
+[nl]
+To use it as a session identifier (if your application requires a
+continued conversation with the user), make sure each subsequent HTML
+reply contains a line like:
+[example {
+    <input type="hidden" name="sessionid" value="(contents of the string)">
+}]
+
+[list_begin arg]
+[arg_def "character(len=*), intent(out)" value]
+The unique session ID
+[list_end]
+
+
+[call [cmd "call cgi_get( dict, varname, value )"]]
+Get the value of a variable defined in the HTML form. If the variable is
+not actually present, the value is left unchanged.
+[nl]
+If you want to check if a form variable by the name of [term varname]
+actually exists, you can use the [term dict_has_key] function, defined
+by the [term dictionary] module.
+[list_begin arg]
+[arg_def "type(DICT_STRUCT), pointer" dict]
+The dictionary as returned originally by [term cgi_begin] (you may want
+to add new values and variables yourself for easy reference).
+[arg_def "character(len=*), intent(in)" varname]
+The name of the variable to retrieve
+[arg_def "character(len=*)|real|integer|logical, intent(inout)" value]
+The value (if the variable exists) - it can be a string, (single
+precision) real, integer or logical.
+[list_end]
+
+[list_end]
+
+
+[section NOTES]
+The current implementation assumes that the compiler supports the new
+intrinsic routine [emph get_environment_variable]. If this is not the
+case, then it is possible to mimick this routine (with a bit of
+trickery), but that has not been implemented yet in this version.
+
+[para]
+There is no support as yet for a delayed response. The idea is that the
+program sends a short note to the web server, to inform the user that
+the final result takes a few minutes (or longer) and that he/she can
+find it at such and such a location.
+
+[para]
+The [emph cgi_protocol] module uses the dictionary module underneath.
+For convenience the source code for that module is contained within the
+source directory for the [emph cgi_protocol].
+
+[manpage_end]

@@ -1,0 +1,187 @@
+
+<html><head>
+<title>flibs/strings - flibs </title>
+</head>
+<! -- Generated from file 'tokenize.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: tokenize.html,v 1.1 2008/06/13 10:24:58 relaxmike Exp $ flibs/strings.n
+   -->
+
+<body>
+<h1> flibs/strings(n) 1.1  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/strings - Tokenizing strings
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#interface">INTERFACE</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>use tokenize</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>call set_tokenizer( token, gaps, separators, delimiters )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>part = first_token( token, string, length)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>part = next_token( token, string, length)</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>tokenize</em> module provides a method to split a string
+into parts according to some simple rules:
+<ul>
+<li>
+A string can be split into &quot;words&quot; by considering spaces and commas and
+such as separating the words. Two or more such characters are treated as
+a single such separator. In the terminology of the module they represent
+gaps of varying width. As a consequence there are no zero-length words.
+
+<br><br>
+<li>
+A string can be split into &quot;words&quot; by considering each individual comma
+as a separator. A string like &quot;One,,two&quot; would then be split into three
+fields: &quot;One&quot;, an empty field and &quot;two&quot;.
+
+<br><br>
+<li>
+Just like Fortran's list-directed input, the module handles strings with
+delimiters: &quot;Just say 'Hello, world!'&quot; would be split in &quot;Just&quot;, &quot;say&quot;
+and &quot;Hello, world!&quot;.
+
+</ul>
+
+The module is meant to help analyse input data where list-directed
+input can not be used: for instance because the data are not separated
+by the standard characters or you need a finer control over the handling
+of the data.
+
+
+<h2><a name="interface">INTERFACE</a></h2>
+<p>
+The module contains three routines and it defines a single derived type
+and a few convenient parameters.
+
+<p>
+The data type is <em>type(tokenizer)</em>, a derived type that holds all
+the information needed for parsing the string. It is initialised via the
+<em>set_tokenizer</em> subroutine and it is meant for the string passed to
+the <em>first_token()</em> function. If you want to reuse it for a
+different string, but the same definition, simply use
+<em>first_token()</em> on the new string.
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>use tokenize</b> </a><dd>
+
+To import the definitions, use this module.
+
+<br><br>
+<dt><a name="2"><b class='cmd'>call set_tokenizer( token, gaps, separators, delimiters )</b> </a><dd>
+
+Initialise the tokenizer &quot;token&quot; with various sets of characters
+controlling the splitting process.
+otherwise.
+
+<br><br>
+<dl>
+
+<dt>type(tokenizer) <i class='arg'>token</i><dd>
+The tokenizer to be initialised
+
+<br><br>
+<dt>character(len=*) <i class='arg'>gaps</i><dd>
+The string of characters that are to be treated as &quot;gaps&quot;. They take
+precedence over the &quot;separators&quot;. Use &quot;token_empty&quot; if there are none.
+
+<br><br>
+<dt>character(len=*) <i class='arg'>separators</i><dd>
+The string of characters that are to be treated as &quot;separators&quot;.
+Use &quot;token_empty&quot; if there are none.
+
+<br><br>
+<dt>character(len=*) <i class='arg'>delimiters</i><dd>
+The string of characters that are to be treated as
+&quot;delimiters&quot;. Use &quot;token_empty&quot; if there are none.
+
+</dl>
+
+
+<dt><a name="3"><b class='cmd'>part = first_token( token, string, length)</b> </a><dd>
+
+Find the first token of the string (also initialises the tokenisation
+for this string). Returns a string of the same length as the original
+one.
+
+<br><br>
+<dl>
+
+<dt>type(tokenizer) <i class='arg'>token</i><dd>
+The tokenizer to be used
+
+<br><br>
+<dt>character(len=*) <i class='arg'>string</i><dd>
+The string to be split into tokens.
+
+<br><br>
+<dt>integer, intent(out) <i class='arg'>length</i><dd>
+The length of the token. If the length is -1, no token was found.
+
+</dl>
+
+
+<dt><a name="4"><b class='cmd'>part = next_token( token, string, length)</b> </a><dd>
+
+Find the first token of the string (also initialises the tokenisation
+for this string). Returns a string of the same length as the original
+one.
+
+<br><br>
+<dl>
+
+<dt>type(tokenizer) <i class='arg'>token</i><dd>
+The tokenizer to be used
+
+<br><br>
+<dt>character(len=*) <i class='arg'>string</i><dd>
+The string to be split into tokens.
+
+<br><br>
+<dt>integer, intent(out) <i class='arg'>length</i><dd>
+The length of the token. If the length is -1, no token was found.
+
+</dl>
+
+
+</dl>
+
+Convenient parameters:
+<ul>
+<li>
+<em>token_whitespace</em> - whitespace (a single character)
+<br><br>
+<li>
+<em>token_tsv</em> - tab, useful for tab-separated values files
+<br><br>
+<li>
+<em>token_csv</em> - comma, useful for comma-separated values files
+<br><br>
+<li>
+<em>token_quotes</em> - single and double quotes, commonly used delimiters
+<br><br>
+<li>
+<em>token_empty</em> - empty string, useful to suppress any of the
+arguments in the <em>set_tokenizer</em> routine.
+
+</ul>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

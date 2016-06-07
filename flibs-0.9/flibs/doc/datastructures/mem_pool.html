@@ -1,0 +1,111 @@
+
+<html><head>
+<title>mem_pool - flibs </title>
+</head>
+<! -- Generated from file 'mem_pool.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id: mem_pool.html,v 1.1 2008/06/13 10:33:28 relaxmike Exp $ mem_pool.n
+   -->
+
+<body>
+<h1> mem_pool(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> mem_pool - Implement a straightforward memory pool
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#data_types_and_routines">DATA TYPES AND ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#implementation_notes">IMPLEMENTATION NOTES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>call pool_acquire( pdata )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>call pool_release( pdata )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The <em>mem_pool.f90</em> source file defines a set of subroutines
+that allow you to acquire and release memory of a particular derived
+type, thereby reducing the number of allocations and deallocations.
+Such a memory pool is useful for instance when you need temporary memory
+of fixed size.
+
+<h2><a name="data_types_and_routines">DATA TYPES AND ROUTINES</a></h2>
+<p>
+The source code expects a data type, POOL_DATA, that contains an integer
+field &quot;pool_index&quot; for private use by the subroutines. All other fields
+can be used by the application itself:
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+module MYDATA_POOL
+
+type POOLDATA
+    integer :: pool_index          ! For private use by pool_acquire/pool_release
+    real, dimension(100) :: work   ! The actual work space
+end type
+
+include &quot;mem_pool.f90&quot;
+
+end module MYDATA_POOL
+</pre></td></tr></table></p>
+
+The code defines the following routines:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>call pool_acquire( pdata )</b> </a><dd>
+
+Get a pointer to available data in the memory pool. The memory pool is
+expanded automatically, by allocating an array of 100 items. If there
+is an error (no more memory can be allocated), the pointer will not be
+associated.
+
+<br><br>
+<dl>
+
+<dt>type(pool_data), pointer <i class='arg'>pdata</i><dd>
+The pointer variable that will be associated with valid memory
+
+</dl>
+<br><br>
+
+<dt><a name="2"><b class='cmd'>call pool_release( pdata )</b> </a><dd>
+
+Release the data pointed to by pdata to the memory pool. This data will
+become available again for further acquiring.
+
+<br><br>
+<dl>
+
+<dt>type(pool_data), pointer <i class='arg'>pdata</i><dd>
+The pointer variable pointing to data to be released into the pool
+
+</dl>
+
+</dl>
+
+(Note: two more subroutines are envisioned: setting two parameters that
+control the allocation and deallocation of memory, and a routine to
+print statistical information. These have not been implemented yet.)
+
+<h2><a name="implementation_notes">IMPLEMENTATION NOTES</a></h2>
+<p>
+The subroutines do not change the fields of the POOL_DATA structure
+(except for pool_index). This means that allocatable (pointer)
+components in this structure are not influenced. You could use this to
+store dynamically sized arrays in the memory pool. It is especially
+useful if all such arrays have the same size.
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2006 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>

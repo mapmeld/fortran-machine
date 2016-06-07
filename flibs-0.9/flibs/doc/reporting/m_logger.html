@@ -1,0 +1,327 @@
+
+<html><head>
+<title>flibs/m_vfile - flibs </title>
+</head>
+<! -- Generated from file 'reporting/m_logger.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com   -- Copyright &copy; 2008 Arjen Markus arjenmarkus@sourceforge.net
+   -->
+<! -- CVS: $Id: m_logger.html,v 1.1 2008/06/18 08:59:01 relaxmike Exp $ flibs/m_vfile.n
+   -->
+
+<body>
+<h1> flibs/m_vfile(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/m_vfile - Manage log files
+
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#overview">OVERVIEW</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#static_methods">STATIC METHODS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#todo">TODO</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><strong>log_startup</strong> ( <i class='arg'>log_file</i> ?, append? )</a></td></tr>
+<tr valign=top ><td ><a href="#2"><strong>log_shutdown</strong> ( )</a></td></tr>
+<tr valign=top ><td ><a href="#3"><strong>log_msg</strong> ( <i class='arg'>msg</i> )</a></td></tr>
+<tr valign=top ><td ><a href="#4"><strong>log_delimiter</strong> ( ?level? )</a></td></tr>
+<tr valign=top ><td ><a href="#5"><strong>log_isinitialized</strong> ( ) result ( isinitialized )</a></td></tr>
+<tr valign=top ><td ><a href="#6"><strong>log_configure</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#7"><strong>log_configure</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#8"><strong>log_configure</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#9"><strong>log_cget</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#10"><strong>log_cget</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a></td></tr>
+<tr valign=top ><td ><a href="#11"><strong>log_cget</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The module <em>m_logger</em> provides static methods to manage a log file,
+which is an execution report of the program.
+
+<h2><a name="overview">OVERVIEW</a></h2>
+<p>
+
+The goal of this component is to provide a way to write messages
+both on standard output and on a log file, so that a trace
+of the execution can be read by the user after the execution.
+The module m_logger therefore provides static methods to
+<ul>
+<li> connect a file to the logger,
+<br><br>
+<li> configure the logging process, for example disable the standard
+output messages,
+<br><br>
+<li> log messages.
+</ul>
+
+The logger must be started up with &quot;log_startup()&quot; and shut down
+with &quot;log_shutdown()&quot;.
+The static method &quot;log_startup&quot; takes the log file name as first argument :
+it main purpose is to connect the logger to the file.
+The messages are sent to the logger with the static method &quot;log_msg&quot;.
+
+In the following example, extracted from the unit tests of m_logger
+provided with the project, one connects the file &quot;test_m_logger.log&quot; to the
+logger, send several messages and shut down the logging system.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      call log_startup ( 'test_m_logger.log' )
+      call log_msg ( 'First message' )
+      call log_msg ( 'Second message' )
+      call log_shutdown ()
+</pre></td></tr></table></p>
+
+By default, the logging is done both on file and on standard output.
+The user may want to configure the behaviour of the logger so that message
+are not written on standard output.
+The static method &quot;log_configure(option,value)&quot; is the central point to configure the
+logger. It takes a character &quot;option&quot; string and a &quot;value&quot; as arguments.
+In the following example, one selectively writes
+messages on standard output or on file, or both.
+
+<p><table><tr><td bgcolor=black>&nbsp;</td><td><pre class='sample'>
+      call log_startup ( 'test_m_logger.log' )
+      call log_configure ( &quot;writeonstdout&quot; , .false. )
+      call log_msg( 'This message is written only on file' )
+      call log_configure ( &quot;writeonlogfile&quot; , .false. )
+      call log_msg( 'This message is written nowhere' )
+      call log_configure ( &quot;writeonstdout&quot; , .true. )
+      call log_msg( 'This message is written only on screen' )
+      call log_configure ( &quot;writeonlogfile&quot; , .true. )
+      call log_msg( 'This message is written both on screen and on file' )
+      call log_shutdown ()
+</pre></td></tr></table></p>
+
+
+
+
+
+<h2><a name="static_methods">STATIC METHODS</a></h2>
+<p>
+
+
+<dl>
+
+
+
+<dt><a name="1"><strong>log_startup</strong> ( <i class='arg'>log_file</i> ?, append? )</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(in) ::</strong> <i class='arg'>log_file</i><dd>
+<dt><strong>logical, intent(in), optional ::</strong> <i class='arg'>append</i><dd>
+</dl>
+Initialises the logging management and connect it to the 
+given <i class='arg'>filename</i>.
+If <i class='arg'>append</i> is present and true, then the logger appends the messages
+to the end of the log file.
+If <i class='arg'>append</i> is present and false, then the initialization of the
+logger overwrites the messages of the previous logging session.
+If <i class='arg'>append</i> is not provided, the default value is append=.true.
+
+
+<br><br>
+<dt><a name="2"><strong>log_shutdown</strong> ( )</a><dd>
+
+Shutdown the logging management.
+
+
+
+<br><br>
+<dt><a name="3"><strong>log_msg</strong> ( <i class='arg'>msg</i> )</a><dd>
+
+<dl>
+<dt><strong>character(len=*), intent(in) ::</strong> <i class='arg'>msg</i><dd>
+</dl>
+Log the given character string <i class='arg'>msg</i> to the logging units.
+If the logging to standard output is enabled, writes the message 
+on standard output.
+If the logging to the log file is enabled, writes the message 
+into the log file.
+Before outputting directly the message string, the string is
+trimmed, that is to say that all trailing blanks are removed from
+the string.
+If the time stamp option is enabled, a time stamp with 
+format &quot;year-month-day hh:mm:ss&quot; is inserted before the message.
+
+
+<br><br>
+<dt><a name="4"><strong>log_delimiter</strong> ( ?level? )</a><dd>
+
+<dl>
+<dt><strong>integer , intent(in), optional ::</strong> <i class='arg'>level</i><dd>
+</dl>
+Log a delimiter of given level.
+Available values for level are : LOG_LEVEL_VOLUME,
+LOG_LEVEL_CHAPTER, LOG_LEVEL_SECTION, LOG_LEVEL_SUBSECTION
+If level is not provided, the default value for level is LOG_LEVEL_VOLUME.
+
+
+
+
+<br><br>
+<dt><a name="5"><strong>log_isinitialized</strong> ( ) result ( isinitialized )</a><dd>
+
+<dl>
+<dt><strong>logical ::</strong> <i class='arg'>isinitialized</i><dd>
+</dl>
+Returns true if the logger is allready initialized.
+Note: that method may be useful in the case where several components
+use the logger and both contain a call to log_startup.
+
+
+<br><br>
+<dt><a name="6"><strong>log_configure</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a><dd>
+
+<dl>
+<dt><strong>character ( len = * ) , intent(in) ::</strong> <i class='arg'>option</i><dd>
+<dt><strong>logical, intent(in) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Set the logical static <i class='arg'>option</i> of the component to <i class='arg'>value</i>.
+The <i class='arg'>option</i> may be one of the following.
+<br><br>
+<ul>
+<li> <i class='arg'>option</i> = &quot;timestamp&quot; :
+Disable or enable the insertion of time stamps.
+If the time stamp option is enabled, a time stamp with
+format &quot;year-month-day hh:mm:ss&quot; is inserted before the message.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;writeonstdout&quot; :
+Disable or enable the writing on standard output.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;writeonlogfile&quot; :
+Disable or enable the writing on log file.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;stoponerror&quot; :
+Configure the behaviour of the component whenever an
+error is met.
+If stoponerror is true, then the execution stops if an error is encountered.
+If stoponerror is false, then the execution continues if an error is encountered.
+In both cases, a message is displayed on standard output.
+</ul>
+
+
+<dt><a name="7"><strong>log_configure</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a><dd>
+
+<dl>
+<dt><strong>character ( len = * ) , intent(in) ::</strong> <i class='arg'>option</i><dd>
+<dt><strong>integer, intent(in) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Configure the integer static option of the component.
+The <i class='arg'>option</i> may be one of the following.
+<br><br>
+<ul>
+<li> <i class='arg'>option</i> = &quot;logfileunit&quot; :
+Force the logical unit for logging to be <i class='arg'>value</i>.
+Use this feature with caution, since the original
+logical unit is lost.
+</ul>
+
+
+<dt><a name="8"><strong>log_configure</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a><dd>
+
+<dl>
+<dt><strong>character ( len = * ) , intent(in) ::</strong> <i class='arg'>option</i><dd>
+<dt><strong>character ( len = * ) , intent(in) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Set the character static &quot;option&quot; of the component to &quot;value&quot;.
+The &quot;option&quot; may be one of the following.
+<br><br>
+<ul>
+<li> <i class='arg'>option</i> = &quot;level_string_volume&quot;
+Set the string used for volume delimiter.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;level_string_chapter&quot;
+Set the string used for chapter delimiter.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;level_string_section&quot;
+Set the string used for section delimiter.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;level_string_subsection&quot;
+Set the string used for subsection delimiter.
+</ul>
+
+
+
+<dt><a name="9"><strong>log_cget</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a><dd>
+
+<dl>
+<dt><strong>character ( len = * ) , intent(in) ::</strong> <i class='arg'>option</i><dd>
+<dt><strong>logical, intent(in) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Get the logical static &quot;option&quot; of the component.
+The <i class='arg'>option</i> may be one of the following.
+<br><br>
+<ul>
+<li> <i class='arg'>option</i> = &quot;timestamp&quot; :
+Current value of the option to enable / disable insertion of time stamps.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;writeonstdout&quot; :
+Current value of the option to enable / disable writing on standard output.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;writeonlogfile&quot; :
+Current value of the option to enable / disable writing on log file.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;stoponerror&quot; :
+Current value of the option to enable / disable stopping when an error is met.
+</ul>
+
+
+<dt><a name="10"><strong>log_cget</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a><dd>
+
+<dl>
+<dt><strong>character ( len = * ) , intent(in) ::</strong> <i class='arg'>option</i><dd>
+<dt><strong>integer, intent(in) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Get the integer static &quot;option&quot; of the component.
+<br><br>
+<ul>
+<li> <i class='arg'>option</i> = &quot;logfileunit&quot; :
+Current logical unit connected to the logging system.
+</ul>
+
+
+
+<dt><a name="11"><strong>log_cget</strong> ( <i class='arg'>option</i> <i class='arg'>, value</i>)</a><dd>
+
+<dl>
+<dt><strong>character ( len = * ) , intent(in) ::</strong> <i class='arg'>option</i><dd>
+<dt><strong>character ( len = * ) , intent(out) ::</strong> <i class='arg'>value</i><dd>
+</dl>
+Get the character static &quot;option&quot; of the component.
+The &quot;option&quot; may be one of the following.
+<br><br>
+<ul>
+<li> <i class='arg'>option</i> = &quot;level_string_volume&quot;
+Get the string used for volume delimiter.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;level_string_chapter&quot;
+Get the string used for chapter delimiter.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;level_string_section&quot;
+Get the string used for section delimiter.
+<br><br>
+<li> <i class='arg'>option</i> = &quot;level_string_subsection&quot;
+Get the string used for subsection delimiter.
+</ul>
+
+
+</dl>
+
+
+<h2><a name="todo">TODO</a></h2>
+<p>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2008 Michael Baudin michael.baudin@gmail.com<br>
+Copyright &copy; 2008 Arjen Markus arjenmarkus@sourceforge.net<br>
+</body></html>

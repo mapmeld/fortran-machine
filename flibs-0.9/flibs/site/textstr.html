@@ -1,0 +1,473 @@
+<! -- -*- flibs -*- doctools manpage
+   -->
+<html><head>
+<title>flibs/strings - flibs </title>
+</head>
+<! -- Generated from file 'textstr.man' by tcllib/doctools with format 'html'
+   -->
+<! -- Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;
+   -->
+<! -- CVS: $Id$ flibs/strings.n
+   -->
+
+<body>
+<h1> flibs/strings(n) 1.0  &quot;flibs&quot;</h1>
+<h2><a name="name">NAME</a></h2>
+<p>
+<p> flibs/strings - Manipulate and store strings
+
+
+
+
+<h2><a name="table_of_contents">TABLE OF CONTENTS</a></h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#table_of_contents">TABLE OF CONTENTS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#synopsis">SYNOPSIS</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#description">DESCRIPTION</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#data_types">DATA TYPES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#routines">ROUTINES</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#copyright">COPYRIGHT</a><br>
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+<p>
+<table border=1 width=100% cellspacing=0 cellpadding=0><tr            bgcolor=lightyellow><td bgcolor=lightyellow><table 0 width=100% cellspacing=0 cellpadding=0><tr valign=top ><td ><a href="#1"><b class='cmd'>type(TEXT_STRING)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#2"><b class='cmd'>type(MULITLINE_TEXT)</b> </a></td></tr>
+<tr valign=top ><td ><a href="#3"><b class='cmd'>use edit_text</b> </a></td></tr>
+<tr valign=top ><td ><a href="#4"><b class='cmd'>call edit_delete( string, pos, length )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#5"><b class='cmd'>call edit_insert( string, pos, substring )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#6"><b class='cmd'>use singleline_text</b> </a></td></tr>
+<tr valign=top ><td ><a href="#7"><b class='cmd'>length = txt_length( text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#8"><b class='cmd'>call txt_cleanup( text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#9"><b class='cmd'>pos = txt_index( text, substring, back )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#10"><b class='cmd'>call txt_from_string( text, string )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#11"><b class='cmd'>call txt_from_string( text, string )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#12"><b class='cmd'>call txt_read_from_file( lun, text, eof )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#13"><b class='cmd'>call txt_write_to_file( lun, text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#14"><b class='cmd'>call txt_delete( text, pos, length )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#15"><b class='cmd'>call txt_insert( text, pos, substring )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#16"><b class='cmd'>use multiline_text</b> </a></td></tr>
+<tr valign=top ><td ><a href="#17"><b class='cmd'>length = mltxt_length( text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#18"><b class='cmd'>length = mltxt_number( text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#19"><b class='cmd'>call mltxt_cleanup( text )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#20"><b class='cmd'>call mltxt_insert( text, pos, line )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#21"><b class='cmd'>call mltxt_delete( text, pos )</b> </a></td></tr>
+<tr valign=top ><td ><a href="#22"><b class='cmd'>call mltxt_get( text, pos, line )</b> </a></td></tr>
+</table></td></tr></table>
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>
+
+The file <em>textstr.f90</em> contains three fairly small modules,
+designed for simple text manipulation and storage:
+
+<ul>
+<li>
+<em>edit_text</em> for simple editing of text strings.
+
+<br><br>
+<li>
+<em>singleline_text</em> for storing a string of arbitrary length.
+
+<br><br>
+<li>
+<em>multiline_text</em> for storing a set of strings of arbitrary
+length, for instance a text file.
+
+</ul>
+
+The facilities offered by these modules are geared to storage and
+some basic manipulations. They are not meant to be a complete module for
+arbitrary-length strings.
+hence the module.
+
+
+<h2><a name="data_types">DATA TYPES</a></h2>
+<p>
+The modules <em>singleline_text</em> and <em>multiline_text</em>
+each a suitable derived type:
+
+<dl>
+
+<dt><a name="1"><b class='cmd'>type(TEXT_STRING)</b> </a><dd>
+
+Type to hold a string of arbitrary length.
+
+<br><br>
+<dt><a name="2"><b class='cmd'>type(MULITLINE_TEXT)</b> </a><dd>
+
+Type to hold a set of strings of arbitrary length.
+
+</dl>
+
+<h2><a name="routines">ROUTINES</a></h2>
+<p>
+The module <em>edit_text</em> contains the following routines:
+
+<dl>
+
+<dt><a name="3"><b class='cmd'>use edit_text</b> </a><dd>
+
+To import the subroutines, use this module.
+
+
+<br><br>
+<dt><a name="4"><b class='cmd'>call edit_delete( string, pos, length )</b> </a><dd>
+
+Delete a substring from a string.
+
+<br><br>
+<dl>
+
+<dt>character(len=*), intent(inout) <i class='arg'>string</i><dd>
+String to be modified
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>pos</i><dd>
+Position of the first character to be deleted
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>length</i><dd>
+Length of the substring to be deleted
+
+</dl>
+<br><br>
+
+
+<dt><a name="5"><b class='cmd'>call edit_insert( string, pos, substring )</b> </a><dd>
+
+Insert a substring into a string.
+
+<br><br>
+<dl>
+
+<dt>character(len=*), intent(inout) <i class='arg'>string</i><dd>
+String to be modified
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>pos</i><dd>
+Position after which to insert the substring (use 0
+to insert it before the string)
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>substring</i><dd>
+Subtring to be inserted
+
+</dl>
+<br><br>
+
+</dl>
+
+
+The module <em>singleline_text</em> contains the following routines:
+
+<dl>
+
+<dt><a name="6"><b class='cmd'>use singleline_text</b> </a><dd>
+
+To import the subroutines, use this module.
+
+
+<br><br>
+<dt><a name="7"><b class='cmd'>length = txt_length( text )</b> </a><dd>
+
+Return the length of the text. As this is a <em>pure</em> function, you
+cna use it to define temporary strings of the correct length.
+
+<br><br>
+<dl>
+
+<dt>type(TEXT_STRING), intent(in) <i class='arg'>text</i><dd>
+Text string to be examined
+
+</dl>
+<br><br>
+
+
+<dt><a name="8"><b class='cmd'>call txt_cleanup( text )</b> </a><dd>
+
+Clean up the storage for a previous text string.
+The result is an empty string.
+
+<br><br>
+<dl>
+
+<dt>type(TEXT_STRING), intent(inout) <i class='arg'>text</i><dd>
+Text string to be examined
+
+</dl>
+<br><br>
+
+
+<dt><a name="9"><b class='cmd'>pos = txt_index( text, substring, back )</b> </a><dd>
+
+Return the index (position) of a substring in the text.
+
+<br><br>
+<dl>
+
+<dt>type(TEXT_STRING), intent(in) <i class='arg'>text</i><dd>
+Text string to be examined
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>substring</i><dd>
+Substring to be found
+
+<br><br>
+<dt>logical, optional, intent(in) <i class='arg'>back</i><dd>
+Search from the start (.false.) or from the back (.true.)
+
+</dl>
+<br><br>
+
+
+<dt><a name="10"><b class='cmd'>call txt_from_string( text, string )</b> </a><dd>
+
+Store a string in a text_string type. Trailing blanks
+in the original string are explicitly stored.
+
+<br><br>
+<dl>
+
+<dt>type(TEXT_STRING), intent(inout) <i class='arg'>text</i><dd>
+Text string to be created/filled
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>string</i><dd>
+Ordinary string to be copied into the text string
+
+</dl>
+<br><br>
+
+
+<dt><a name="11"><b class='cmd'>call txt_from_string( text, string )</b> </a><dd>
+
+Store the contents of a text_string type in an ordinary string.
+If the string is too short, the result will be a truncated string.
+
+<br><br>
+<dl>
+
+<dt>type(TEXT_STRING), intent(in) <i class='arg'>text</i><dd>
+Text string to be copied
+
+<br><br>
+<dt>character(len=*), intent(out) <i class='arg'>string</i><dd>
+Ordinary string to be filled
+
+</dl>
+<br><br>
+
+
+<dt><a name="12"><b class='cmd'>call txt_read_from_file( lun, text, eof )</b> </a><dd>
+
+Read a text string from a file (one complete line).
+
+<br><br>
+<dl>
+
+<dt>integer, intent(in) <i class='arg'>lun</i><dd>
+The LU-number of the file
+
+<br><br>
+<dt>type(TEXT_STRING), intent(out) <i class='arg'>text</i><dd>
+Text string to be created/filled
+
+<br><br>
+<dt>logical, intent(out) <i class='arg'>eof</i><dd>
+Indicates whether end-of-file was reached or not
+
+</dl>
+<br><br>
+
+
+<dt><a name="13"><b class='cmd'>call txt_write_to_file( lun, text )</b> </a><dd>
+
+Write a text string to a file (as one complete line).
+If the LU-number is smaller/equal 0, it is written to
+the screen.
+
+<br><br>
+<dl>
+
+<dt>integer, intent(in) <i class='arg'>lun</i><dd>
+The LU-number of the file
+
+<br><br>
+<dt>type(TEXT_STRING), intent(in) <i class='arg'>text</i><dd>
+Text string to be written
+
+</dl>
+<br><br>
+
+
+<dt><a name="14"><b class='cmd'>call txt_delete( text, pos, length )</b> </a><dd>
+
+Delete a substring from a text string.
+
+<br><br>
+<dl>
+
+<dt>type(TEXT_STRING), intent(inout) <i class='arg'>text</i><dd>
+Text string to be modified
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>pos</i><dd>
+Position of the first character to be deleted
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>length</i><dd>
+Length of the substring to be deleted
+
+</dl>
+<br><br>
+
+
+<dt><a name="15"><b class='cmd'>call txt_insert( text, pos, substring )</b> </a><dd>
+
+Insert a substring into a string.
+
+<br><br>
+<dl>
+
+<dt>type(TEXT_STRING), intent(inout) <i class='arg'>text</i><dd>
+String to be modified
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>pos</i><dd>
+Position after which to insert the substring (use 0
+to insert it before the string)
+
+<br><br>
+<dt>character(len=*), intent(in) <i class='arg'>substring</i><dd>
+Subtring to be inserted
+
+</dl>
+<br><br>
+
+</dl>
+
+
+The module <em>multiline_text</em> contains the following routines:
+
+<dl>
+
+<dt><a name="16"><b class='cmd'>use multiline_text</b> </a><dd>
+
+To import the subroutines, use this module.
+
+
+<br><br>
+<dt><a name="17"><b class='cmd'>length = mltxt_length( text )</b> </a><dd>
+
+Return the maximum length of all text strings stored. Useful to define
+temporary strings.
+
+<br><br>
+<dl>
+
+<dt>type(MULTILINE_TEXT), intent(in) <i class='arg'>text</i><dd>
+Multiline text to be examined
+
+</dl>
+<br><br>
+
+
+<dt><a name="18"><b class='cmd'>length = mltxt_number( text )</b> </a><dd>
+
+Return the number of text strings stored.
+
+<br><br>
+<dl>
+
+<dt>type(MULTILINE_TEXT), intent(in) <i class='arg'>text</i><dd>
+Multiline text to be examined
+
+</dl>
+<br><br>
+
+
+<dt><a name="19"><b class='cmd'>call mltxt_cleanup( text )</b> </a><dd>
+
+Cleans up a multiline text - all text strings are deleted
+temporary strings.
+
+<br><br>
+<dl>
+
+<dt>type(MULTILINE_TEXT), intent(in) <i class='arg'>text</i><dd>
+Multiline text to be cleaned up
+
+</dl>
+<br><br>
+
+
+<dt><a name="20"><b class='cmd'>call mltxt_insert( text, pos, line )</b> </a><dd>
+
+Inserts a text string or an ordinary string as a new line of text after
+the given position.
+
+<br><br>
+<dl>
+
+<dt>type(MULTILINE_TEXT), intent(inout) <i class='arg'>text</i><dd>
+Multiline text to be modified
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>pos</i><dd>
+Position after which to insert the new line (use 0
+to make it the first line)
+
+<br><br>
+<dt>(...), intent(in) <i class='arg'>line</i><dd>
+Ordinary string or text_string variable holding the text that will be
+inserted.
+
+</dl>
+<br><br>
+
+
+<dt><a name="21"><b class='cmd'>call mltxt_delete( text, pos )</b> </a><dd>
+
+Delete the line at the given position.
+
+<br><br>
+<dl>
+
+<dt>type(MULTILINE_TEXT), intent(inout) <i class='arg'>text</i><dd>
+Multiline text to be modified
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>pos</i><dd>
+Position of the line to be removed.
+
+</dl>
+<br><br>
+
+
+<dt><a name="22"><b class='cmd'>call mltxt_get( text, pos, line )</b> </a><dd>
+
+Return a pointer (!) to the line at the given position.
+Note: no copy is made, but a pointer is returned. This means you can
+change the line of text via this pointer.
+
+<br><br>
+<dl>
+
+<dt>type(MULTILINE_TEXT), intent(inout) <i class='arg'>text</i><dd>
+Multiline text to be examined
+
+<br><br>
+<dt>integer, intent(in) <i class='arg'>pos</i><dd>
+Position of the line to be returned
+
+<br><br>
+<dt>type(TEXT_STRING), pointer <i class='arg'>line</i><dd>
+Variable that will <em>point</em> to the line of text
+
+</dl>
+
+
+</dl>
+
+<h2><a name="copyright">COPYRIGHT</a></h2>
+<p>
+Copyright &copy; 2005 Arjen Markus &lt;arjenmarkus@sourceforge.net&gt;<br>
+</body></html>
+

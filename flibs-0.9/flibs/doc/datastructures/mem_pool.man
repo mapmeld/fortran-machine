@@ -1,0 +1,75 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin mem_pool n 1.0]
+[copyright {2006 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Implement a straightforward memory pool}]
+
+[description]
+
+The [strong mem_pool.f90] source file defines a set of subroutines
+that allow you to acquire and release memory of a particular derived
+type, thereby reducing the number of allocations and deallocations.
+Such a memory pool is useful for instance when you need temporary memory
+of fixed size.
+
+[section "DATA TYPES AND ROUTINES"]
+The source code expects a data type, POOL_DATA, that contains an integer
+field "pool_index" for private use by the subroutines. All other fields
+can be used by the application itself:
+
+[example {
+module MYDATA_POOL
+
+type POOLDATA
+    integer :: pool_index          ! For private use by pool_acquire/pool_release
+    real, dimension(100) :: work   ! The actual work space
+end type
+
+include "mem_pool.f90"
+
+end module MYDATA_POOL
+}]
+
+The code defines the following routines:
+
+[list_begin definitions]
+
+[call [cmd "call pool_acquire( pdata )"]]
+Get a pointer to available data in the memory pool. The memory pool is
+expanded automatically, by allocating an array of 100 items. If there
+is an error (no more memory can be allocated), the pointer will not be
+associated.
+
+[list_begin arg]
+
+[arg_def "type(pool_data), pointer" pdata]
+The pointer variable that will be associated with valid memory
+
+[list_end]
+[nl]
+
+[call [cmd "call pool_release( pdata )"]]
+Release the data pointed to by pdata to the memory pool. This data will
+become available again for further acquiring.
+
+[list_begin arg]
+
+[arg_def "type(pool_data), pointer" pdata]
+The pointer variable pointing to data to be released into the pool
+
+[list_end]
+
+[list_end]
+
+(Note: two more subroutines are envisioned: setting two parameters that
+control the allocation and deallocation of memory, and a routine to
+print statistical information. These have not been implemented yet.)
+
+[section "IMPLEMENTATION NOTES"]
+The subroutines do not change the fields of the POOL_DATA structure
+(except for pool_index). This means that allocatable (pointer)
+components in this structure are not influenced. You could use this to
+store dynamically sized arrays in the memory pool. It is especially
+useful if all such arrays have the same size.
+
+[manpage_end]

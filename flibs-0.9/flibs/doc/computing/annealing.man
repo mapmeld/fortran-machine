@@ -1,0 +1,260 @@
+[comment {-*- flibs -*- doctools manpage}]
+[manpage_begin simulated_annealing n 1.0]
+[copyright {2008 Arjen Markus <arjenmarkus@sourceforge.net>}]
+[moddesc flibs]
+[titledesc {Implement a "simulated annealing" algorithm}]
+
+[description]
+
+The [strong simulated_annealing] module allows you to find the minimum
+of an arbitrary function of N variables using a straightforward
+simulated annealing algorithm.
+
+[para]
+The idea is that the variables can vary independently each within a
+given interval. For each set of values generated in this way, the
+function that is to be minimized is evaluated. The new set of values is
+accepted as the new estimate of the minimum in two situations:
+
+[list_begin bullet]
+[bullet]
+The value of the function is lower than the current minimum
+
+[bullet]
+A generated random number is low enough, that is the expression
+[example {
+    r < exp(-(new value - old value)/scaled temperature)
+}]
+is true.
+[list_end]
+
+The "temperature" is reduced by a constant factor after a given number
+of iterations, thus making the second case more and more improbable. If
+there are no new estimates, the iteration stops.
+
+[para]
+Theoretically, [emph "simulated annealing"] is able to find the global
+minimum of a function, but it would require infinite time to actually
+achieve it.
+
+[para]
+The module implements the basic technique and if the interface to the
+function is more complex than the subroutine [term find_minimum]
+assumes, then you can use the code for that routine as a template for a
+customised version (see below for some ideas regarding such more
+general functionality).
+
+
+[section "DATA TYPES AND ROUTINES"]
+The module defines a single data type, ANNEALING_PARAMETERS and several
+subroutines:
+
+[list_begin definitions]
+
+[call [cmd "use simulated_annealing"]]
+The name of the module. The module itself uses the module
+[term select_precision] to select single or double precision reals.
+
+[call [cmd "type(ANNEALING_PARAMETERS)"]]
+The type holds the parameters and state variables needed for the
+iteration. You can set the fields via the subroutine
+[term set_parameters].
+
+[call [cmd "call set_parameters( params, update, initial_temp, \
+temp_reduction, number_iterations, scale_factor, automatic_scaling, verbose)"]]
+
+Subroutine to set the individual parameters for the algorithm. (All
+arguments are optional, except [term params] and [term update])
+
+[list_begin arg]
+
+[arg_def "type(ANNEALING_PARAMETERS)" params]
+Derived type holding all parameters (and internal state variables) for
+the iteration.
+
+[arg_def "logical" update]
+If true, only the arguments that are present in the call are used to
+update the fields in [term params]. Otherwise the structure is first
+initialised.
+[nl]
+Note: this is probably not a very useful feature.
+
+[arg_def "real(wp)" initial_temp]
+Initial "temperature" (defaults to 1). A larger value means it will be
+easier for the vector representing the estimated minimum to wander
+about.
+
+[arg_def "real(wp)" temp_reduction]
+Factor by which to reduce the temperature (defaults to 0.95). A smaller
+value means the iteration will settle quicker, but possibly misses the
+global minimum. A value closer to 1 means the process will take longer,
+but the result will be more accurate.
+
+[arg_def "integer" number_iterations]
+Number of estimates to be examined before reducing the "temperature"
+(defaults to 100).
+
+[arg_def "real(wp)" scale_factor]
+Factor by which to scale the value before. The idea is that with a well
+chose scale factor the simulation is more or less independent from the
+actual values (defaults to 1).
+
+[arg_def "logical" automatic_scaling]
+Whether to first automatically determine a reasonable scale factor or
+not.
+
+[arg_def "logical" verbose]
+Whether to print the intermediate results before reducing the
+temperature or not.
+
+[list_end]
+[nl]
+
+
+[call [cmd "call get_next_step( params, range, x, value, task"]]
+Low-level routine that exmaines the function value and decides what the
+next step will be.
+
+[list_begin arg]
+
+[arg_def "type(ANNEALING_PARAMETERS)" params]
+Derived type holding all parameters (and internal state variables) for
+the iteration.
+
+[arg_def "real(wp), dimension(2,:)" range]
+The minimum and maximum value for each independent variable.
+
+[arg_def "real(wp), dimension(:)" x]
+Current estimate of each independent variable where the minimum is
+attained.
+
+[arg_def "real(wp)" value]
+Value of the function at x.
+
+[arg_def "integer" task]
+Task to be performed: anneal_init, anneal_print, anneal_value or
+anneal_done.
+
+[list_end]
+
+[call [cmd "call find_minimum( params, range, x, func, value )"]]
+Routine implementing the procedure to find the minimum.
+
+[list_begin arg]
+
+[arg_def "type(ANNEALING_PARAMETERS)" params]
+Derived type holding all parameters (and internal state variables) for
+the iteration.
+
+[arg_def "real(wp), dimension(2,:)" range]
+The minimum and maximum value for each independent variable.
+
+[arg_def "real(wp), dimension(:)" x]
+Upon return, estimate of each independent variable where the minimum is
+attained.
+
+[arg_def "real(wp)" value]
+Estimate of the minimum value of the function (the value at x).
+
+[arg_def "real(wp) function" func(x)]
+The function must have the interface:
+[example {
+    interface
+        function f(x)
+            use select_precision
+            real(wp), dimension(:), intent(in) :: x
+            real(wp)                           :: func
+        end function
+    end interface
+}]
+
+[list_end]
+
+
+[list_end]
+
+
+[section "INTERFACE ISSUES"]
+The interface to the function to be minimized is fixed. This is an
+unfortunate limitation of Fortran 95. But there are at least two ways
+around it:
+
+[list_begin bullet]
+[bullet]
+If the function requires one or more parameters, or a set of
+measured data, then it can be useful to store these first as module
+variables and then call [term find_minimum] with as argument a function
+in that module that can access the data:
+[example {
+    module measured_data
+        use select_precision
+        real(wp), dimension(:), allocatable, save :: data
+    contains
+
+    subroutine store_data( array )
+        real(wp), dimension(:) :: data
+        ... copy the data
+    end subroutine store_data
+
+    real(wp) function f(x)
+        real(wp), dimension(:) :: x
+        ... use x and data to determine the value of f
+    end function f
+    end module
+}]
+
+[bullet]
+Use the code for [term find_minimum] to implement the evaluation of the
+function in the way required. The code is fairly straightforward:
+
+{exampe {
+subroutine find_minimum( params, range, x, func, value )
+    type(ANNEALING_PARAMETERS), intent(inout) :: params
+    real(wp), dimension(:,:), intent(in)      :: range
+    real(wp), dimension(:), intent(inout)     :: x
+    real(wp), intent(out)                     :: value
+
+    interface
+        function func( x )
+            use select_precision
+            real(wp), dimension(:), intent(in) :: x
+            real(wp)                           :: func
+        end function
+    end interface
+
+    integer :: task
+
+    task = annealing_init
+
+    do
+        call get_next_step( params, range, x, value, task )
+
+        select case ( task )
+            case ( annealing_value )
+                !
+                ! Fill in the evaluation of the function
+                !
+                ! You can put the customised code here
+                !
+                value = func(x)
+
+            case ( annealing_report )
+                !
+                ! Fill in the reporting code
+                !
+                write(*,'(a,e12.4)')      'Value so far: ', value
+                write(*,'(a,(5e12.4),/)') '    Vector:   ', x
+                write(*,'(2(a,i5))')     '    Accepted: ', &
+                    params%accepted, ' from ', params%number_iterations
+
+            case ( annealing_done )
+                exit
+        end select
+    enddo
+
+end subroutine find_minimum
+}]
+
+[list_end]
+
+[manpage_end]

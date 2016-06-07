@@ -1,0 +1,21 @@
+! oscommands.dos --
+!     OS commands DOS-style
+!
+!     To be included in the OS utils module for Windows systems
+!
+character(len=10), parameter          :: system_type   = "windows"
+character(len=1),  parameter          :: dir_separator = "\"
+
+character(len=20), parameter, private :: copy          = "copy /y"
+character(len=20), parameter, private :: rename        = "ren"
+character(len=20), parameter, private :: remove        = "del /q"   ! No questions
+character(len=20), parameter, private :: bg_cmd_prefix = "start /nowait"
+character(len=20), parameter, private :: bg_cmd_suffix = ""
+character(len=20), parameter, private :: filelist      = "dir /b"   ! Only file names!
+character(len=20), parameter, private :: mkdir         = "md"
+character(len=20), parameter, private :: rmdir         = "rd"
+character(len=20), parameter, private :: redirect      = ">"
+character(len=20), parameter, private :: suppress_msg  = "2>nul"
+character(len=20), parameter, private :: tempdir       = "c:\tmp\"
+logical,           parameter, private :: add_dir       = .true.
+

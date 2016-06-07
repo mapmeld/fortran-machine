@@ -1,0 +1,221 @@
+Note on array-valued functions
+
+One feature of Fortran that deserves more attention in my opinion
+is the use of _array-valued functions_. In particular this feature
+can be used to achieve a high-level programming style, much like what
+John Backus advocated in his ACM speech (Backus, ...). Many of the
+intrinsic functions do and Fortran's array operations are further,
+be it implicit, examples. Here is a simple case of what I am talking
+about:
+
+Suppose you have an array of data and you want to print only those values
+that are larger than some threshold. One way of doing that is:
+
+    do i = 1,size(data)
+        if ( data(i) > threshold ) then
+            write( *, '(f10.4)' ) data(i)
+        endif
+    enddo
+
+If you use te _pack_ intrinsic function, this can be written more
+compactly:
+
+    write( *, '(f10.4)' ) pack( data, data > threshold )
+
+We can also pass the result of _pack_ to another function or subroutine,
+for instance one that determines basic statistical properties:
+
+    write( *, '(a,f10.4)') 'Mean of values above mean:', &
+        mean( pack( data, data > mean(data) ) )
+
+with _mean_ looking like:
+
+    real function mean( data )
+        real, dimension(:) :: data
+
+        mean = sum(data)/max(1,size(data))
+
+    end function mean
+
+Compare this to an approach with work arrays (so that we can
+reuse the _mean_ function):
+
+    meanv = mean(data)
+    count = 0
+
+    do i = 1,size(data)
+        if ( data(i) > meanv ) then
+            count = count + 1
+            work(count) = data(i)
+        endif
+    enddo
+
+    write( *, '(a,f10.4)') 'Mean of values above mean:', &
+        mean( work(1:count) )
+
+
+Or, bypassing the _mean_ function, because it is so simple:
+
+    meanv = mean(data)  ! We do need to determine the threshold
+
+    sumv  = 0.0
+    count = 0
+    do i = 1,size(data)
+        if ( data(i) > meanv ) then
+            count = count + 1
+            sumv  = sumv  + data(i)
+        endif
+    enddo
+
+    write( *, '(a,f10.4)') 'Mean of values above mean:', &
+        sumv/max(1,count)
+
+So, using such functions can lead to more compact, and, in
+many cases, clearer code. But they do have drawbacks:
+
+- You can not access individual elements directly, for instance,
+  to determine the second largest element of an array, you
+  need to store the result of a sort function to a proper
+  array first.
+- Similarly, if you need the result in more than one place,
+  you have to copy them to an actual array or pass them
+  to a function or subroutine.
+- The functions produce intermediate arrays that need to be
+  allocated and deallocated at appropriate times. This may
+  influence the performance of the program.
+
+The next two examples are more elaborate: a number-theoretical
+problem and a compact implementation of the QuickSort algorithm.
+
+The first requires a bit of explanation: it is a number-theoretical
+problem regarding the spacing of irrational numbers (book...). The
+numbers considered are: n alpha mod 1, n = 1 .. N. If we sort these
+numbers, the spacing between successive numbers can take only one
+of three distinct values (here the interval [0,1) is wrapped, so
+that 0.9 and 0.1 are 0.2 apart, not 0.8). The program below
+demonstrates this:
+
+It constructs an array of these numbers, sorts them (using a
+simple algorithm):
+
+program nneighbours
+    implicit none
+    integer :: i
+
+    write(*,'(f10.4)') cdiff( sort( (/ (mod(i**2*sqrt(2.0),1.0) ,i=1,20) /) ) )
+
+contains
+
+function cdiff( array )
+    real, dimension(:) :: array
+    real, dimension(size(array)) :: cdiff
+
+    cdiff = abs( array - cshift(array,1) )
+    cdiff = min( cdiff, 1.0 - cdiff )
+end function
+
+function sort( array )
+    real, dimension(:) :: array
+    real, dimension(size(array)) :: sort
+
+    real    :: temp
+    integer :: i, j
+
+    sort = array
+    do i = 1,size(sort)
+        do j = i+1,size(sort)
+            if ( sort(i) > sort(j) ) then
+                temp = sort(i)
+                sort(i) = sort(j)
+                sort(j) = temp
+            endif
+        enddo
+    enddo
+end function
+end program
+
+A more traditional program would look like this:
+
+program nneighbours
+    implicit none
+    integer :: i
+    integer, parameter :: n = 20
+    real, dimension(n) :: data
+    real, dimension(n) :: data
+
+    do i = 1,n
+        data(i) = mod(i*sqrt(2.0),1.0)
+    enddo
+
+    call sort( data )
+    call cdiff( data )
+
+    write(*,'(f10.4)') data
+
+contains
+
+subroutine cdiff( array )
+    real, dimension(:) :: array
+    real, dimension(size(array)) :: work
+    integer :: i
+
+    do i = 2,size(array)
+        work(i) = array(i) - array(i-1)
+    enddo
+    work(1) = arrry(1) - array(size(array)
+
+    do i = 1,size(array)
+        array(i) = min( abs(work(i)), abs(1.0-work(i))
+    enddo
+end subroutine
+
+subroutine sort( array )
+    real, dimension(:) :: array
+
+    real    :: temp
+    integer :: i, j
+
+    do i = 1,size(array)
+        do j = i+1,size(array)
+            if ( array(i) > array(j) ) then
+                temp = sort(i)
+                array(i) = array(j)
+                array(j) = temp
+            endif
+        enddo
+    enddo
+end function
+end program
+
+With array constructors we can do even more surprising things. This
+implementation of the well-known QuickSort algorithm may not be fast
+(and it consumes more memory than necessary), but it is rather
+compact:
+
+recursive function qsort_reals( data ) result( sorted )
+    real, dimension(:), intent(in) :: data
+    real, dimension(1:size(data))  :: sorted
+
+    if ( size(data) > 1 ) then
+        sorted = (/ qsort_reals( pack( data(2:), data(2:) > data(1) ) ), &
+                    data(1),                                             &
+                    qsort_reals( pack( data(2:), data(2:) <= data(1) ) ) /)
+    else
+        sorted = data
+    endif
+end function
+
+I leave the construction of a more traditional version as an exercise.
+You can also experiment with a more robust version that has better
+worse-case behaviour.
+
+This style of programming is not always the best way to solve a
+problem: the QuickSort routine above creates multiple copies of the
+array during the recursion, but if used carefully, it helps create
+programs that are easy to understand and easily seen to be correct.
+
+Literature
+
+J. Backus
+
+Number-theory book

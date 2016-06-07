@@ -1,0 +1,33 @@
+Details of what needs to be done still:
+---------------------------------------
+
+dd. 26 february 2008
+
+- typedef struct sqlite3 sqlite3;
+  So: opaque structures
+- typedef int MyInt, *MyInt;
+  So: multiple type names
+- Fill in the type definitions in the generated code
+
+
+dd. 12 february 2008
+
+- Expressions like "1<<2" in macros
+- Macros representing strings should be directly distinguished: translate "
+- User-defined types (typedef) - simple ones already treated
+- Extensive analysis of the arguments to the prototype
+- Function arguments (!)
+- Composite types: short int, long int, long long int, unsigned long int,
+  unsigned long, unsigned short, unsigned int, unsigned char, ...
+- Primitive types: short, unsigned (?)
+- Macros instead of typedefs? Macros like CONST or VOID?
+- _ANSI_ARGS_(...)
+- Conversion to and from C strings
+- Solve the ambiguity problem
+- Solve issues like:
+      #define TCL_ALL_EVENTS (~TCL_DONT_WAIT)
+- #include
+- Decorations like WINAPI, _cdecl, ...
+- int y[]
+
+Analyse the list of arguments: this is more involved than now assumed!

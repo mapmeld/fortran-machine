@@ -1,0 +1,465 @@
+[Arjen Markus] (8 february 2008) Interfacing between Fortran and C is easy to do,
+if you follow a couple of rules. One major obstacle is that naming conventions and calling
+conventions differ per platform. This can be solved by using a small wrapper routine that
+effectively takes care of these issues.
+
+Writing these wrapper routines is an - almost - mechanical process. So, why not automate it?
+[SWIG] is one such program or program suite that does this (but not out-of-the-box it seems
+for Fortran). Others exist as well, like f2py.
+
+I found it interesting to try and do it in Tcl and this page contains the humble beginnings.
+One motive (apart from my affections for both Fortran and Tcl) is that you could use it to
+enhance the data types supported by [Critcl] with C structs.
+
+Mind you there are problems with such an automatic conversion. It has to rely on the syntax
+of the C API, but it would be better if we knew the semantics. For instance, this little
+header file contains two functions with the same syntactical interface, but one would probably
+take a pointer to a float and the other an array (but that is based on an interpretation of the
+names):
+
+======
+/* example.h --
+       Example of a C header file - used to test the wrapper generator
+*/
+
+#define A 1
+#define B 2
+
+#ifdef X
+#define C "as is"
+#else
+#define C "as something else"
+#endif
+
+/* A structure */
+typedef struct
+{
+    int x;
+    int y;
+}
+values_t;
+
+/* Prototypes */
+
+/* Note: ambiguity! */
+void getElement( float *value, int idx );
+void zeroArray( float *value, int size );
+
+/* More to follow */
+======
+
+Anyhow, the wrapper below produces this set of C wrappers:
+
+======
+/* Wrapper derived from example
+*/
+#include "example"
+
+#ifdef WIN32
+#define STDCALL stdcall__
+#else
+#define STDCALL
+#endif
+
+
+#ifdef FTN_ALLCAPS
+#define getelement_ GETELEMENT
+#endif
+
+void STDCALL getelement_ (
+    float* value,
+    int* idx ) {
+    getElement ( value, *idx );
+    return;
+}
+
+#ifdef FTN_ALLCAPS
+#define zeroarray_ ZEROARRAY
+#endif
+
+void STDCALL zeroarray_ (
+    float* value,
+    int* size ) {
+    zeroArray ( value, *size );
+    return;
+}
+======
+
+and for good measure, this Fortran module to make sure there is a known interface
+(this plays the same role as a C header file):
+======
+! Interfaces for wrapper routines (derived from example)
+!
+module example
+
+interface
+    ! Ambiguous interface: scalars or arrays?
+    subroutine getelement ( value, idx )
+        real, dimension(*) :: value
+        integer :: idx
+    end subroutine getelement
+    ! Ambiguous interface: scalars or arrays?
+    subroutine zeroarray ( value, size )
+        real, dimension(*) :: value
+        integer :: size
+    end subroutine zeroarray
+end interface
+
+end module
+======
+
+The technique that is used to interpret the C code is surprisingly simple:
+Via a number of substitutions the C code is turned into Tcl code (see the procedure translateToTcl).
+Then we let Tcl itself do the hard work of parsing the file and generating the wrapper routines.
+
+Here it is:
+
+======
+# cwrap.tcl --
+#     Program to generate a set of wrapper functions from C header files
+#     so that the functions can be used in a Fortran program
+#
+
+# ftype --
+#     Translation of C types to corresponding Fortran types
+#
+array set ftype {int     "integer"
+                 int*    "integer, dimension(*)"
+                 long    "integer"
+                 long*   "integer, dimension(*)"
+                 float   "real"
+                 float*  "real, dimension(*)"
+                 double  "real(kind=kind(1.0d0))"
+                 double* "real(kind=kind(1.0d0)), dimension(*)"
+                 char    "character(len=*)"
+                 char*   "character(len=*)"}
+
+# cwrap --
+#     Generate the actual C code and the Fortran interface (if possible)
+#
+# Arguments:
+#     type        Return type of the function
+#     name        Name of the function
+#     arglist     List of arguments (type and name)
+#     args        All other arguments (mainly a consequence of the transformation)
+#
+# Result:
+#     None
+#
+# Note:
+#     Unknown types cause the procedure to write an error message
+#     C functions whose interface is ambiguous are left out of the
+#     Fortran interface module
+#
+proc cwrap {type name arglist args} {
+    global cout
+    global ftnout
+    global error
+
+    set error ""
+    set fname [string tolower "${name}_"]
+
+    set ftnargs [transformArgList $arglist]
+    set body    [setUpBody $type $name $arglist]
+
+    puts $cout "
+#ifdef FTN_ALLCAPS
+#define $fname [string toupper $name]
+#endif
+
+$type STDCALL $fname ( \n    [join $ftnargs ,\n\ \ \ \ ] ) {
+$body
+}"
+
+    if { $error != "" } {
+        puts "Function/routine: $name"
+        puts "$error
+    }
+
+    set interface [setUpInterface $type [string tolower $name] $arglist]
+    puts $ftnout $interface
+}
+
+# transformToTcl --
+#     Transform the C code to a set of Tcl commands for easy processing
+#
+# Arguments:
+#     code          Contents of the C header file
+#
+# Result:
+#     Tcl code that can be evaluated directly
+#
+proc transformToTcl {code} {
+
+    set code [string map {( " \{"
+                          ) "\} \\ "
+                          "/*" ";comment \{"
+                          "*/" "\}\n"
+                          "typedef" "comment"
+                          "#ifdef" "comment \{"
+                          "#endif" "\}"
+                          "#if"    "# if \{" } $code]
+    regsub -all {([a-zA-Z_0-9\}]) *\n} $code "\\1 " code
+    regsub -all { *\*} $code "* " code
+
+    return $code
+}
+
+# transformArgList --
+#     Transform the C argument list for the wrapper
+#
+# Arguments:
+#     arglist       String containing the types and names
+#
+# Result:
+#     Argument list for the wrapper
+#
+proc transformArgList {arglist} {
+    global error
+
+    puts "Arglist: $arglist"
+
+    set wraplist {}
+    set end      {}
+    foreach arg [split $arglist ,] {
+        set name [lindex $arg end]
+        set type [lindex $arg end-1]
+
+        switch -- $type {
+            "int"    -
+            "long"   -
+            "float"  -
+            "double" {
+                lappend wraplist "$type* $name"
+            }
+            "int*"    -
+            "long*"   -
+            "float*"  -
+            "double*" {
+                lappend wraplist "$type $name"
+            }
+            "char"    -
+            "char*"   {
+                lappend wraplist "$type $name"
+                lappend end      "int len__$name"
+            }
+            default {
+                append error "\n    $arg: conversion to/from Fortran not supported"
+            }
+        }
+
+    }
+
+    puts "[join $wraplist :]"
+
+    return [concat $wraplist $end]
+}
+
+# setUpBody --
+#     Construct the body of the wrapper
+#
+# Arguments:
+#     type          Type of value to be returned
+#     name          Name of the original function
+#     arglist       String containing the types and names
+#
+# Result:
+#     Body for the wrapper
+#
+proc setUpBody {type name arglist} {
+    global error
+
+    if { $type != "void" } {
+        set body   "    $type result__;\n"
+        set call   "    result__ = $name ("
+        set return "    return result__;"
+    } else {
+        set body   ""
+        set call   "    $name ("
+        set return "    return;"
+    }
+    set wraplist {}
+    foreach arg [split $arglist ,] {
+        set name [lindex $arg end]
+        set type [lindex $arg end-1]
+
+        switch -- $type {
+            "char"   -
+            "int"    -
+            "long"   -
+            "float"  -
+            "double" {
+                lappend wraplist "*$name"
+            }
+            "char*"   -
+            "int*"    -
+            "long*"   -
+            "float*"  -
+            "double*" {
+                lappend wraplist "$name"
+            }
+            default {
+                # Nothing!
+            }
+        }
+
+        set body "$call [join $wraplist ,\ ] );\n$return"
+    }
+
+    return $body
+}
+
+# setUpInterface --
+#     Construct the bodyof the wrapper
+#
+# Arguments:
+#     type          Type of value to be returned
+#     fname         Name as known to Fortran
+#     arglist       String containing the types and names
+#
+# Result:
+#     Body for the wrapper
+#
+proc setUpInterface {type fname arglist} {
+    global error
+    global ftype
+
+    if { $type != "void" } {
+        set body   "    $ftype($type) function $fname ("
+        set end    "    end function $fname"
+    } else {
+        set body   "    subroutine $fname ("
+        set end    "    end subroutine $fname"
+    }
+    set wraplist  {}
+    set ftnargs   {}
+    set ambiguous 0
+    foreach arg [split $arglist ,] {
+        set name [lindex $arg end]
+        set type [lindex $arg end-1]
+
+        switch -- $type {
+            "char"   -
+            "int"    -
+            "long"   -
+            "float"  -
+            "double" {
+                lappend wraplist "$ftype($type) :: $name"
+                lappend ftnargs  "$name"
+            }
+            "char*"   -
+            "int*"    -
+            "long*"   -
+            "float*"  -
+            "double*" {
+                set ambiguous 1
+                lappend wraplist "$ftype($type) :: $name"
+                lappend ftnargs  "$name"
+            }
+            default {
+                # Nothing!
+            }
+        }
+
+    }
+
+    if { $ambiguous } {
+        set body "    ! Ambiguous interface: scalars or arrays?\n$body"
+    }
+    set body "$body [join $ftnargs ,\ ] )\n        [join $wraplist \n\ \ \ \ \ \ \ \ ]\n$end"
+
+    return $body
+}
+
+# prologue --
+#     Write the prologue code for the wrapper
+#
+# Arguments:
+#     filename      Name of the header file
+#
+# Result:
+#     None
+#
+proc prologue {filename} {
+    global cout
+    global ftnout
+
+    puts $cout \
+"/* Wrapper derived from $filename
+*/
+#include \"$filename\"
+
+#ifdef WIN32
+#define STDCALL stdcall__
+#else
+#define STDCALL
+#endif
+"
+
+    regsub -all {[^a-z0-9]} [file root $filename] "" module
+
+    puts $ftnout \
+"! Interfaces for wrapper routines (derived from $filename)
+!
+module $module
+
+interface"
+}
+
+# epilogue --
+#     Write the epilogue code for the wrapper
+#
+# Arguments:
+#     None
+#
+# Result:
+#     None
+#
+proc epilogue {} {
+    global cout
+    global ftnout
+
+    puts $ftnout \
+"end interface
+
+end module"
+}
+
+# comment, void, ... --
+#     Auxiliary procedures
+#
+proc comment {args} {
+    # No op to handle comments and other constructs we do not handle (yet)
+}
+
+foreach type {char int long float double void} {
+    proc $type {name arglist dummy} [string map [list TYPE $type] {
+        cwrap TYPE $name $arglist
+    }]
+}
+
+proc unknown {cmdname args} {
+    puts "Unknown type: $cmdname"
+    puts "Prototype:   $args"
+    return
+}
+
+# main --
+#     Get the program going
+#
+set filename [lindex $argv 0]
+set rootname [file root $filename]
+set infile [open $filename r]
+set contents [read $infile]
+close $infile
+
+set cout   [open "${rootname}_wrap.c" w]
+set ftnout [open "${rootname}_mod.f90" w]
+
+prologue $rootname
+puts [transformToTcl $contents]
+eval [transformToTcl $contents]
+epilogue
+
+======
+
