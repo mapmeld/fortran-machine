@@ -1,6 +1,5 @@
 All credit to:
 
-- authors of FORTRAN
 - authors of FLIB (cgi protocol for Fortran)
 - this tutorial: http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
 
@@ -22,7 +21,7 @@ In your user home:
 
 ```
 # clone the repo
-git clone git://github.com/mapmeld/fortran-machine.git
+git clone https://github.com/mapmeld/fortran-machine.git
 
 # enter the directory
 cd fortran-machine
@@ -31,8 +30,9 @@ cd fortran-machine
 wget http://heanet.dl.sourceforge.net/project/flibs/flibs/flibs-0.9/flibs-0.9.zip
 unzip flibs-0.9.zip
 
-# compile the cgi_protocol module
+# compile the cgi_protocol and fcgi_protocol modules
 gfortran -c flibs-0.9/flibs/src/cgi/cgi.f90
+gfortran -c flibs-0.9/flibs/src/cgi/fgi_protocol.f90
 
 # compile the test server
 gfortran -o fortran_fcgi fortran_fcgi.F90 -lfcgi -Wl,--rpath -Wl,/usr/local/lib
@@ -67,7 +67,7 @@ Now change nginx config /etc/nginx/sites-available/default
 location / {
 	root /root/fortran-machine;
 	fastcgi_pass 127.0.0.1:9000;
-	fastchi_index index.html;
+	fastcgi_index index.html;
 	include fastcgi_params;
 }
 ```
