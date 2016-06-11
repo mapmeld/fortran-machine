@@ -67,7 +67,7 @@ contains
         character(len=80)  :: scriptName
         character(len=200) :: inputLine
 
-        integer                           :: templater
+        integer                           :: templater, io
         logical                           :: okInputs
 
         ! start of response
@@ -89,10 +89,11 @@ contains
           case ('/')
             open(newunit=templater, file="template/index.jade")
             do
-              read(templater, *) inputLine
+              read(templater, *, IOSTAT=io) inputLine
+              if (io < 0) exit
               write(unitNo, AFORMAT) inputLine
             end do
-            close()
+            close(templater)
           case DEFAULT
             write(unitNo,AFORMAT) 'Page not found!'
         end select
