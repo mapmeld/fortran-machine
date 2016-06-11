@@ -74,7 +74,6 @@ module fcgi_protocol
 
 contains
 
-
     subroutine fcgip_make_dictionary( dict, unitNo )
         ! Retrieve FastCGI environment variables into dictionary 'dict'
         ! Invoked after FCGI_Accept()/fcgip_accept_environment_variable() has completed
@@ -109,7 +108,7 @@ contains
             content = 'DOCUMENT_URI=/'
         endif
         iLen = len_trim(content)
-        ! call cgi_store_dict( dict, content(:iLen) )
+        call cgi_store_dict( dict, content(:iLen) )
         write(unitNo, AFORMAT) '%REMARK% added to dictionary: '//content(:iLen)
 
         ! QUERY_STRING (request method was GET) ?
@@ -117,7 +116,7 @@ contains
         if ( iStat == 0 ) then
             write(unitNo, AFORMAT) '%REMARK% QUERY_STRING='//trim(content)
             if ( iLen > 0 ) then
-                    ! call cgi_store_dict( dict, content(:iLen) )
+                    call cgi_store_dict( dict, content(:iLen) )
                     write(unitNo, AFORMAT) '%REMARK% added to dictionary: QUERY_STRING='//content(:iLen)
             end if
         endif
@@ -134,7 +133,7 @@ contains
                     content( i:i ) = ch
                 end do
                 content( iLen+1: ) = ' '
-                ! call cgi_store_dict( dict, content(:iLen) )
+                call cgi_store_dict( dict, content(:iLen) )
                 write(unitNo, AFORMAT) '%REMARK% added to dictionary: CONTENT='//content(:iLen)
             end if
         endif

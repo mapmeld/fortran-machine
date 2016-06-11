@@ -101,6 +101,12 @@ contains
             '<body>', &
             '<h1>Fortran FastCGI</h1>'
 
+        ! retrieve script name (key=DOCUMENT_URI) from dictionary
+        call cgi_get( dict, "DOCUMENT_URI", scriptName )
+
+        if ( trim(scriptName) /= '/' ) & ! a script was requested
+            write(unitNo,AFORMAT) 'Script is : '//trim(scriptName)
+
         ! end of response
         write(unitNo,AFORMAT) '</body>', '</html>', &
             '%REMARK% respond() completed ...'

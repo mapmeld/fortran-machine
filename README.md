@@ -12,7 +12,7 @@ Log in and install dependencies
 sudo apt-get update
 sudo apt-get upgrade -y
 
-sudo apt-get install nginx gfortran spawn-fcgi git unzip
+sudo apt-get install nginx gfortran spawn-fcgi git libfcgi-dev
 ```
 
 Go to your IP address - you should see the "Welcome to nginx!" page
@@ -27,11 +27,11 @@ git clone https://github.com/mapmeld/fortran-machine.git
 cd fortran-machine
 
 # compile the cgi_protocol and fcgi_protocol modules
-gfortran -c flibs-0.9/flibs/src/cgi/cgi.f90
+gfortran -c flibs-0.9/flibs/src/cgi/cgi_protocol.f90
 gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
 
 # compile the test server
-gfortran -o fortran_fcgi fortran_fcgi.F90 cgi.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
+gfortran -o fortran_fcgi fortran_fcgi.F90 cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
 ```
 
 Change the location in /etc/nginx/sites-available/default :
