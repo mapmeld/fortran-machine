@@ -64,10 +64,10 @@ contains
         !character(len=1), parameter :: NUL = achar(0)
 
         ! the script name
-        character(len=80)  :: scriptName
-        character(len=200) :: inputLine
+        character(len=80)  :: scriptName, spaceless
+        character(len=200) :: inputLine, outputLine
 
-        integer                           :: templater, io
+        integer                           :: templater, io, spaceCount
         logical                           :: okInputs
 
         ! start of response
@@ -91,7 +91,20 @@ contains
             do
               read(templater, *, IOSTAT=io) inputLine
               if (io < 0) exit
-              write(unitNo, AFORMAT) inputLine
+
+              spaceless = trim(inputLine) // '  '
+              spaceCount = index(inputLine, trim(spaceless))
+              if (spaceless(1:1) == '.') then
+                outputLine = '<div class="'//spaceless(1: index(spaceless, ' '))//'">'//spaceless(index(spaceless, ' ') + 1:ubound(spaceless)//'</div>'
+              else
+                if (spaceless(1:1) == '#') then
+                  outputLine = '<div id="'//spaceless(1: index(spaceless, ' '))//'">'//spaceless(index(spaceless, ' ') + 1:ubound(spaceless))//'</div>'
+                else
+                  outputLine = '<' // spaceless(1: index(spaceless, ' ')) // '>' // spaceless(index(spaceless, ' ') + 1:ubound(spaceless)) // '</' spaceless(1: index(spaceless, ' ')) // '>'
+                endif
+              endif
+
+              write(unitNo, AFORMAT) outputLine
             end do
             close(templater)
           case DEFAULT
