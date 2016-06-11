@@ -92,19 +92,33 @@ contains
               read(templater, *, IOSTAT=io) inputLine
               if (io < 0) exit
 
-              spaceless = trim(inputLine) // '  '
+              spaceless = trim(inputLine) // '   '
               spaceCount = index(inputLine, trim(spaceless))
               if (spaceless(1:1) == '.') then
-                outputLine = '<div class="'//spaceless(1: index(spaceless, ' '))//'">'//spaceless(index(spaceless, ' ') + 1:ubound(spaceless)//'</div>'
+                outputLine = '<div class="'//&
+			spaceless(2: index(spaceless, ' ') - 1)//&
+			'">'//&
+			spaceless(index(spaceless, ' ') + 1:150)//&
+			'</div>'
               else
                 if (spaceless(1:1) == '#') then
-                  outputLine = '<div id="'//spaceless(1: index(spaceless, ' '))//'">'//spaceless(index(spaceless, ' ') + 1:ubound(spaceless))//'</div>'
+                  outputLine = '<div id="'//&
+			spaceless(2: index(spaceless, ' ') - 1)//&
+			'">'//&
+			spaceless(index(spaceless, ' '):150)//&
+			'</div>'
                 else
-                  outputLine = '<' // spaceless(1: index(spaceless, ' ')) // '>' // spaceless(index(spaceless, ' ') + 1:ubound(spaceless)) // '</' spaceless(1: index(spaceless, ' ')) // '>'
+                  outputLine = '<' //&
+			spaceless(1: index(spaceless, ' ') - 1) //&
+			'>' //&
+			spaceless(index(spaceless, ' '):150) //&
+			'</' //&
+			spaceless(1: index(spaceless, ' ')) //&
+			'>'
                 endif
               endif
 
-              write(unitNo, AFORMAT) outputLine
+              write(unitNo, '(A)') outputLine
             end do
             close(templater)
           case DEFAULT
