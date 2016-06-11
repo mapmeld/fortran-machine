@@ -32,7 +32,7 @@ unzip flibs-0.9.zip
 
 # compile the cgi_protocol and fcgi_protocol modules
 gfortran -c flibs-0.9/flibs/src/cgi/cgi.f90
-gfortran -c flibs-0.9/flibs/src/cgi/fgi_protocol.f90
+gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
 
 # compile the test server
 gfortran -o fortran_fcgi fortran_fcgi.F90 -lfcgi -Wl,--rpath -Wl,/usr/local/lib

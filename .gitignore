@@ -1,0 +1,4 @@
+*.o
+*.mod
+.DS_Store
+fortran_fcgi
