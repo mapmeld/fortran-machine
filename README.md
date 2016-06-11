@@ -1,10 +1,14 @@
-All credit to:
+# Fortran-Machine
+
+A web stack written in Fortran
+
+Credit to:
 
 - authors of FLIB (cgi protocol for Fortran)
-- this tutorial: http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
+- Ricolindo Carino and Arjen Markus's Fortran FastCGI program:  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
 
 
-Create Ubuntu server / droplet.
+## Create an Ubuntu server
 
 Log in and install dependencies
 
@@ -22,16 +26,6 @@ In your user home:
 ```
 # clone the repo
 git clone https://github.com/mapmeld/fortran-machine.git
-
-# enter the directory
-cd fortran-machine
-
-# compile the cgi_protocol and fcgi_protocol modules
-gfortran -c flibs-0.9/flibs/src/cgi/cgi_protocol.f90
-gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
-
-# compile the test server
-gfortran -o fortran_fcgi fortran_fcgi.F90 cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
 ```
 
 Change the location in /etc/nginx/sites-available/default :
@@ -58,6 +52,22 @@ You should now see the test page on your IP address.
 Test doc
 ```
 
+## Use Fortran CGI script
+
+Let's go from test page to Fortran script:
+
+```
+# enter the directory
+cd fortran-machine
+
+# compile the cgi_protocol and fcgi_protocol modules
+gfortran -c flibs-0.9/flibs/src/cgi/cgi_protocol.f90
+gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
+
+# compile the test server
+gfortran -o fortran_fcgi fortran_fcgi.F90 cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
+```
+
 Now change nginx config /etc/nginx/sites-available/default
 
 ```
@@ -72,7 +82,37 @@ location / {
 Then run ```sudo service nginx restart```
 
 ```
-# spawn the test server
+# spawn the server
 spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
+```
+
+### Restarting the script
+
+After changing the source code, you can recompile and restart your server with:
 
 ```
+ps aux | grep fcgi
+# returns process ID of running server, if it's running
+
+kill -9 _process_id_of_running_server
+
+# recompile
+gfortran -o fortran_fcgi fortran_fcgi.F90 cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
+
+# respawn fcgi
+spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
+```
+
+## Add a static folder
+
+Add to nginx config /etc/nginx/sites-available/default
+
+```
+location /static {
+				root /root/fortran-machine;
+}
+```
+
+And restart nginx
+
+```sudo service nginx restart```

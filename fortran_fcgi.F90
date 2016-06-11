@@ -1,21 +1,11 @@
 !
-! Demonstration Fortran FastCGI program, to run with the nginx webserver
-! By Ricolindo.Carino@gmail.com and arjen.markus895@gmail.com
+! Fortran FastCGI stack
+! Based on Fortran FastCGI by Ricolindo.Carino@gmail.com and arjen.markus895@gmail.com
 !
 ! Requires:
 !    - the FLIBS modules cgi_protocol and fcgi_protocol
 !    - the FastCGI library
-! See 'readme' for setup instructions of the compiler, nignx, and FastCGI library
-!
-! See 'makefile' for compile and execute commands. In summary,
-!   To compile test_fcgi.f90      : make
-!   To execute as FastCGI process : spawn-fcgi -a 127.0.0.1 -p 9000 ./test_fcgi
-!      The "-a 127.0.0.1" and "-p 9000" options to spawn-fcgi must match the
-!          "fastcgi_pass   127.0.0.1:9000;" in nginx.conf
-!
-! Notes:
-!    1. Example 2 is from FLIBS test_cgi.f90
-!    2. Customize routine respond() for your own application
+! See 'readme' for setup instructions
 !
 
 program test_fcgi
@@ -75,21 +65,9 @@ contains
 
         ! the script name
         character(len=80)  :: scriptName
+        character(len=200) :: inputLine
 
-        ! variables for Example 1
-        character(len=80)  :: actionButton, username, password
-
-        ! variables for Example 2 (from test_cgi.f90 of FLIBS)
-        integer                           :: steps
-        real                              :: xmin
-        real                              :: xmax
-        character(len=20)                 :: fnName
-        character(len=20)                 :: output
-
-        real, dimension(:), allocatable   :: x
-        real, dimension(:), allocatable   :: y
-
-        integer                           :: i
+        integer                           :: templater
         logical                           :: okInputs
 
         ! start of response
@@ -97,18 +75,31 @@ contains
         write(unitNo, AFORMAT) &
             '%REMARK% respond() started ...', &
             '<html>', &
-            '<head><title>Fortran FastCGI</title></head>', &
-            '<body>', &
-            '<h1>Fortran FastCGI</h1>'
+            '<head>', &
+            '<meta charset="utf-8"/>', &
+            '<title>Fortran FastCGI</title>', &
+            '<link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css"/>', &
+            '</head>', &
+            '<body>'
 
         ! retrieve script name (key=DOCUMENT_URI) from dictionary
         call cgi_get( dict, "DOCUMENT_URI", scriptName )
 
-        if ( trim(scriptName) /= '/' ) & ! a script was requested
-            write(unitNo,AFORMAT) 'Script is : '//trim(scriptName)
+        select case (trim(scriptName))
+          case ('/')
+            open(newunit=templater, file="template/index.jade")
+            do
+              read(templater, *) inputLine
+              write(unitNo, AFORMAT) inputLine
+            end do
+            close()
+          case DEFAULT
+            write(unitNo,AFORMAT) 'Page not found!'
+        end select
 
         ! end of response
-        write(unitNo,AFORMAT) '</body>', '</html>', &
+        write(unitNo,AFORMAT) '</body>', &
+            '</html>', &
             '%REMARK% respond() completed ...'
 
         return
