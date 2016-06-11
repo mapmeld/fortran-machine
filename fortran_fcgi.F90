@@ -64,8 +64,8 @@ contains
         !character(len=1), parameter :: NUL = achar(0)
 
         ! the script name
-        character(len=80)  :: scriptName, spaceless
-        character(len=200) :: inputLine, outputLine
+        character(len=80)  :: scriptName, spaceless, tag
+        character(len=200) :: inputLine, outputLine, innerContent
 
         integer                           :: templater, io, spaceCount
         logical                           :: okInputs
@@ -94,31 +94,34 @@ contains
 
               spaceless = trim(inputLine) // '   '
               spaceCount = index(inputLine, trim(spaceless))
+              innerContent = trim(spaceless(index(spaceless, ' ') + 1:150))
+
               if (spaceless(1:1) == '.') then
-                outputLine = '<div class="'//&
-			spaceless(2: index(spaceless, ' ') - 1)//&
-			'">'//&
-			spaceless(index(spaceless, ' ') + 1:150)//&
-			'</div>'
+                outputLine = '<div class="' // &
+                  spaceless(2: index(spaceless, ' ') - 1) // &
+                  '">' // &
+                  innerContent // &
+                  '</div>'
               else
                 if (spaceless(1:1) == '#') then
-                  outputLine = '<div id="'//&
-			spaceless(2: index(spaceless, ' ') - 1)//&
-			'">'//&
-			spaceless(index(spaceless, ' '):150)//&
-			'</div>'
+                  outputLine = '<div id="' // &
+                    spaceless(2: index(spaceless, ' ') - 1) // &
+                    '">' // &
+                    innerContent // &
+                    '</div>'
                 else
-                  outputLine = '<' //&
-			spaceless(1: index(spaceless, ' ') - 1) //&
-			'>' //&
-			spaceless(index(spaceless, ' '):150) //&
-			'</' //&
-			spaceless(1: index(spaceless, ' ')) //&
-			'>'
+                  tag = spaceless(1: index(spaceless, ' ') - 1)
+                  outputLine = '<' // &
+                    tag // &
+                    '>' // &
+                    innerContent // &
+                    '</' // &
+                    tag // &
+                    '>'
                 endif
               endif
 
-              write(unitNo, '(A)') outputLine
+              write(unitNo, '(a)') outputLine
             end do
             close(templater)
           case DEFAULT
