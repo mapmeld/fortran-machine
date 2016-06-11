@@ -51,42 +51,42 @@ program test_fcgi
 
 contains
 
-subroutine string_insert( string, pos, second )
-    character(len=*), intent(inout) :: string
-    integer, intent(in)             :: pos
-    character(len=*), intent(in)    :: second
+    subroutine string_insert( string, pos, second )
+        character(len=*), intent(inout) :: string
+        integer, intent(in)             :: pos
+        character(len=*), intent(in)    :: second
 
-    integer                         :: length
+        integer                         :: length
 
-    length = len( second )
-    string(pos+length:)      = string(pos:)
-    string(pos:pos+length-1) = second
+        length = len( second )
+        string(pos+length:)      = string(pos:)
+        string(pos:pos+length-1) = second
 
-end subroutine string_insert
+    end subroutine string_insert
 
-subroutine string_delete( string, pos, length )
-    character(len=*), intent(inout) :: string
-    integer, intent(in)             :: pos
-    integer, intent(in)             :: length
+    subroutine string_delete( string, pos, length )
+        character(len=*), intent(inout) :: string
+        integer, intent(in)             :: pos
+        integer, intent(in)             :: length
 
-    string(pos:)             = string(pos+length:)
+        string(pos:)             = string(pos+length:)
 
-end subroutine string_delete
+    end subroutine string_delete
 
-subroutine string_replace( string, substr, replace )
-    character(len=*), intent(inout) :: string
-    character(len=*), intent(in)    :: substr
-    character(len=*), intent(in)    :: replace
+    subroutine string_replace( string, substr, replace )
+        character(len=*), intent(inout) :: string
+        character(len=*), intent(in)    :: substr
+        character(len=*), intent(in)    :: replace
 
-    integer                         :: k
+        integer                         :: k
 
-    k = index( string, substr )
-    if ( k > 0 ) then
-        call string_delete( string, k, len(substr) )
-        call string_insert( string, k, replace )
-    endif
+        k = index( string, substr )
+        if ( k > 0 ) then
+            call string_delete( string, k, len(substr) )
+            call string_insert( string, k, replace )
+        endif
 
-end subroutine string_replace
+    end subroutine string_replace
 
     subroutine respond ( dict, unitNo, stopped )
 
@@ -128,7 +128,7 @@ end subroutine string_replace
               read(templater, '(A)', IOSTAT=io) inputLine
               if (io < 0) exit
 
-call string_replace(inputLine, "\t", " ")
+              call string_replace(inputLine, "  ", " ")
               spaceless = trim(inputLine) // '   '
               spaceCount = index(inputLine, trim(spaceless))
               innerContent = spaceless(index(spaceless, ' '): 150)
