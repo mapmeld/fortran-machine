@@ -50,32 +50,38 @@ program test_fcgi
 
 
 contains
-    subroutine removesp(str)
-      ! Removes spaces, tabs, and control characters in string str
+    subroutine compact(str)
+      ! Converts multiple spaces and tabs to single spaces; deletes control characters;
+      ! removes initial spaces.
+
       character(len=*):: str
       character(len=1):: ch
-      character(len=len_trim(str))::outstr
-
+      character(len=len_trim(str)):: outstr
+      integer::isp,k,ich
+      
       str=adjustl(str)
       lenstr=len_trim(str)
       outstr=' '
+      isp=0
       k=0
-
       do i=1,lenstr
         ch=str(i:i)
         ich=iachar(ch)
         select case(ich)
-          case(0:32)  ! space, tab, or control character
-               cycle
-          case(33:)
+          case(9,32)     ! space or tab character
+            if(isp==0) then
+              k=k+1
+              outstr(k:k)=' '
+            end if
+            isp=1
+          case(33:)      ! not a space, quote, or control character
             k=k+1
             outstr(k:k)=ch
+            isp=0
         end select
       end do
-
       str=adjustl(outstr)
-
-    end subroutine removesp
+    end subroutine compact
 
     subroutine respond ( dict, unitNo, stopped )
 
@@ -118,7 +124,7 @@ contains
               if (io < 0) exit
 
               spaceless = trim(inputLine)
-              call removesp(spaceless)
+              call compact(spaceless)
               spaceless = trim(spaceless) // '   '
               spaceCount = index(inputLine, trim(spaceless))
               innerContent = spaceless(index(spaceless, ' '): 150)
