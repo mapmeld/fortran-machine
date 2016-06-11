@@ -51,6 +51,42 @@ program test_fcgi
 
 contains
 
+subroutine string_insert( string, pos, second )
+    character(len=*), intent(inout) :: string
+    integer, intent(in)             :: pos
+    character(len=*), intent(in)    :: second
+
+    integer                         :: length
+
+    length = len( second )
+    string(pos+length:)      = string(pos:)
+    string(pos:pos+length-1) = second
+
+end subroutine string_insert
+
+subroutine string_delete( string, pos, length )
+    character(len=*), intent(inout) :: string
+    integer, intent(in)             :: pos
+    integer, intent(in)             :: length
+
+    string(pos:)             = string(pos+length:)
+
+end subroutine string_delete
+
+subroutine string_replace( string, substr, replace )
+    character(len=*), intent(inout) :: string
+    character(len=*), intent(in)    :: substr
+    character(len=*), intent(in)    :: replace
+
+    integer                         :: k
+
+    k = index( string, substr )
+    if ( k > 0 ) then
+        call string_delete( string, k, len(substr) )
+        call string_insert( string, k, replace )
+    endif
+
+end subroutine string_replace
 
     subroutine respond ( dict, unitNo, stopped )
 
@@ -89,39 +125,40 @@ contains
           case ('/')
             open(newunit=templater, file="template/index.jade")
             do
-              read(templater, *, IOSTAT=io) inputLine
+              read(templater, '(A)', IOSTAT=io) inputLine
               if (io < 0) exit
 
+call string_replace(inputLine, "\t", " ")
               spaceless = trim(inputLine) // '   '
               spaceCount = index(inputLine, trim(spaceless))
-              innerContent = trim(spaceless(index(spaceless, ' ') + 1:150))
+              innerContent = spaceless(index(spaceless, ' '): 150)
 
               if (spaceless(1:1) == '.') then
                 outputLine = '<div class="' // &
                   spaceless(2: index(spaceless, ' ') - 1) // &
                   '">' // &
-                  innerContent // &
+                  trim(innerContent) // &
                   '</div>'
               else
                 if (spaceless(1:1) == '#') then
                   outputLine = '<div id="' // &
                     spaceless(2: index(spaceless, ' ') - 1) // &
                     '">' // &
-                    innerContent // &
+                    trim(innerContent) // &
                     '</div>'
                 else
                   tag = spaceless(1: index(spaceless, ' ') - 1)
                   outputLine = '<' // &
-                    tag // &
+                    trim(tag) // &
                     '>' // &
-                    innerContent // &
+                    trim(innerContent) // &
                     '</' // &
-                    tag // &
+                    trim(tag) // &
                     '>'
                 endif
               endif
 
-              write(unitNo, '(a)') outputLine
+              write(unitNo, AFORMAT) outputLine
             end do
             close(templater)
           case DEFAULT
