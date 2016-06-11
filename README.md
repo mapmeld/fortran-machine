@@ -26,17 +26,12 @@ git clone https://github.com/mapmeld/fortran-machine.git
 # enter the directory
 cd fortran-machine
 
-# download FLIBS Fortran library (if not already present)
-wget http://heanet.dl.sourceforge.net/project/flibs/flibs/flibs-0.9/flibs-0.9.zip
-unzip flibs-0.9.zip
-
 # compile the cgi_protocol and fcgi_protocol modules
 gfortran -c flibs-0.9/flibs/src/cgi/cgi.f90
 gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
 
 # compile the test server
-gfortran -o fortran_fcgi fortran_fcgi.F90 -lfcgi -Wl,--rpath -Wl,/usr/local/lib
-
+gfortran -o fortran_fcgi fortran_fcgi.F90 cgi.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
 ```
 
 Change the location in /etc/nginx/sites-available/default :
@@ -59,7 +54,9 @@ sudo service nginx restart
 
 You should now see the test page on your IP address.
 
----
+```
+Test doc
+```
 
 Now change nginx config /etc/nginx/sites-available/default
 
