@@ -50,43 +50,32 @@ program test_fcgi
 
 
 contains
+    subroutine removesp(str)
+      ! Removes spaces, tabs, and control characters in string str
+      character(len=*):: str
+      character(len=1):: ch
+      character(len=len_trim(str))::outstr
 
-    subroutine string_insert( string, pos, second )
-        character(len=*), intent(inout) :: string
-        integer, intent(in)             :: pos
-        character(len=*), intent(in)    :: second
+      str=adjustl(str)
+      lenstr=len_trim(str)
+      outstr=' '
+      k=0
 
-        integer                         :: length
+      do i=1,lenstr
+        ch=str(i:i)
+        ich=iachar(ch)
+        select case(ich)
+          case(0:32)  ! space, tab, or control character
+               cycle
+          case(33:)
+            k=k+1
+            outstr(k:k)=ch
+        end select
+      end do
 
-        length = len( second )
-        string(pos+length:)      = string(pos:)
-        string(pos:pos+length-1) = second
+      str=adjustl(outstr)
 
-    end subroutine string_insert
-
-    subroutine string_delete( string, pos, length )
-        character(len=*), intent(inout) :: string
-        integer, intent(in)             :: pos
-        integer, intent(in)             :: length
-
-        string(pos:)             = string(pos+length:)
-
-    end subroutine string_delete
-
-    subroutine string_replace( string, substr, replace )
-        character(len=*), intent(inout) :: string
-        character(len=*), intent(in)    :: substr
-        character(len=*), intent(in)    :: replace
-
-        integer                         :: k
-
-        k = index( string, substr )
-        if ( k > 0 ) then
-            call string_delete( string, k, len(substr) )
-            call string_insert( string, k, replace )
-        endif
-
-    end subroutine string_replace
+    end subroutine removesp
 
     subroutine respond ( dict, unitNo, stopped )
 
@@ -128,8 +117,9 @@ contains
               read(templater, '(A)', IOSTAT=io) inputLine
               if (io < 0) exit
 
-              call string_replace(inputLine, "  ", " ")
-              spaceless = trim(inputLine) // '   '
+              spaceless = trim(inputLine)
+              call removesp(spaceless)
+              spaceless = trim(spaceless) // '   '
               spaceCount = index(inputLine, trim(spaceless))
               innerContent = spaceless(index(spaceless, ' '): 150)
 

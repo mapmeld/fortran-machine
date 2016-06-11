@@ -6,6 +6,7 @@ Credit to:
 
 - authors of FLIB (cgi protocol for Fortran)
 - Ricolindo Carino and Arjen Markus's Fortran FastCGI program:  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
+- String utils by George Benthian http://www.gbenthien.net/strings/index.html
 
 
 ## Create an Ubuntu server
