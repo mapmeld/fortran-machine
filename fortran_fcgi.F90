@@ -57,8 +57,7 @@ contains
       character(len=*):: str
       character(len=1):: ch
       character(len=len_trim(str)):: outstr
-      integer::isp,k,ich
-
+      integer::isp,k,ich,lenstr,i
       str=adjustl(str)
       lenstr=len_trim(str)
       outstr=' '
@@ -164,9 +163,9 @@ contains
               call compact(spaceless)
               spaceless = trim(spaceless) // '   '
               spaceCount = index(inputLine, trim(spaceless))
-              innerContent = spaceless(index(spaceless, ' '): 150)
               className = ''
               elemID = ''
+              innerContent = spaceless(index(spaceless, ' '):)
 
               if (spaceless(1:1) == '.') then
                 ! starts with a class definition
