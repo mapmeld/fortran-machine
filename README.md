@@ -61,12 +61,14 @@ Let's go from test page to Fortran script:
 # enter the directory
 cd fortran-machine
 
-# compile the cgi_protocol and fcgi_protocol modules
+# compile the modules with your version of Fortran
 gfortran -c flibs-0.9/flibs/src/cgi/cgi_protocol.f90
 gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
+gfortran -c string_helpers.f90
+gfortran -c jade.f90
 
 # compile the test server
-gfortran -o fortran_fcgi fortran_fcgi.F90 jade.f90 string_helpers.f90 cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
+gfortran -o fortran_fcgi fortran_fcgi.F90 jade.o string_helpers.o cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
 ```
 
 Now change nginx config /etc/nginx/sites-available/default
