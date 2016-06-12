@@ -64,7 +64,7 @@ contains
 
         ! the script name
         character(len=80)  :: scriptName
-        character(len=*)   :: templatefile
+        character(len=10000) :: templatefile
 
         logical                           :: okInputs
 

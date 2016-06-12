@@ -6,11 +6,11 @@ module jade
   contains
 
   subroutine jadefile(templatefile)
-    character(len=*):: templatefile
+    character(len=*)  :: templatefile
     character(len=80)  :: spaceless, tag, closeTag, className, elemID
     character(len=200) :: inputLine, outputLine, innerContent
     integer            :: templater, io, spaceCount, unitNo, lastSpaceCount, lastIndent
-    character(len=3), parameter :: AFORMAT = '(a)'
+    character(len=3)   :: AFORMAT = '(a)'
     integer, dimension (0:30) :: spaceLevels
     character(len=80), dimension (0:30) :: tagLevels
 

@@ -25,7 +25,7 @@ module string_helpers
             k=k+1
             outstr(k:k)=' '
           end if
-          isp=1
+          ! isp=1
         case(33:)      ! not a space, quote, or control character
           k=k+1
           outstr(k:k)=ch
