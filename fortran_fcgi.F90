@@ -141,7 +141,8 @@ contains
         ! lines starting with %REMARK% are for debugging & will not be copied to webserver
         write(unitNo, AFORMAT) &
             '%REMARK% respond() started ...', &
-            '<html>', &
+            	'<!DOCTYPE html>', &
+		'<html>', &
             '<head>', &
             '<meta charset="utf-8"/>', &
             '<title>Fortran FastCGI</title>', &
@@ -165,7 +166,7 @@ contains
               spaceCount = index(inputLine, trim(spaceless))
               className = ''
               elemID = ''
-              innerContent = spaceless(index(spaceless, ' '):)
+              innerContent = spaceless(index(spaceless, ' ') + 1:)
 
               if (spaceless(1:1) == '.') then
                 ! starts with a class definition
@@ -186,14 +187,16 @@ contains
                   endif
                 else
                   if (spaceless(1:1) == '(') then
+			! starts with a div attributes
                     tag = 'div' // spaceless(1: index(spaceless, ' ') - 1)
                   else
+			! custom tag
                     tag = spaceless(1: index(spaceless, ' ') - 1)
-                    if (index(tag, '.') > 0) then
+                    if (index(tag, '.') > 0 .and. index(tag, '.') < index(tag, '(')) then
                       tag = tag(1: index(tag, '.') - 1)
                       className = spaceless(index(spaceless, '.') : index(spaceless, ' '))
                     endif
-                    if (index(tag, '#') > 0) then
+                    if (index(tag, '#') > 0 .and. index(tag, '#') < index(tag, '(')) then
                       tag = tag(1: index(tag, '#') - 1)
                       elemID = elemID(index(spaceless, '#') : index(spaceless, ' '))
                     endif
@@ -214,8 +217,8 @@ contains
 
               outputLine = '<' // &
                 trim(tag) // &
-                'id="' // trim(elemID) // '"' // &
-                'class="' // trim(className) // '"' // &
+                ' id="' // trim(elemID) // '"' // &
+                ' class="' // trim(className) // '"' // &
                 '>' // &
                 trim(innerContent)
 
