@@ -1,13 +1,19 @@
 module jade
   use string_helpers
 
+  implicit none
+
+  contains
+
   subroutine jadefile(templatefile)
     character(len=*):: templatefile
     character(len=80)  :: spaceless, tag, closeTag, className, elemID
     character(len=200) :: inputLine, outputLine, innerContent
-    integer            :: templater, io, spaceCount
+    integer            :: templater, io, spaceCount, unitNo
+    character(len=3), parameter :: AFORMAT = '(a)'
 
     open(newunit=templater, file=templatefile)
+    templatefile = ''
     do
       read(templater, '(A)', IOSTAT=io) inputLine
       if (io < 0) exit
@@ -90,7 +96,7 @@ module jade
           '>'
       endif
 
-      write(unitNo, AFORMAT) outputLine
+      templatefile = trim(templatefile) // outputLine
     end do
     close(templater)
   endsubroutine

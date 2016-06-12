@@ -1,4 +1,8 @@
 module string_helpers
+  implicit none
+
+  contains
+
   subroutine compact(str)
     ! Converts multiple spaces and tabs to single spaces; deletes control characters;
     ! removes initial spaces.
