@@ -116,4 +116,14 @@ location /static {
 
 And restart nginx
 
-```sudo service nginx restart```
+```
+sudo service nginx restart
+```
+
+
+## Features
+
+In the template folder, you can put Jade templates (similar to HAML) but only in the simplest
+syntax and templating. If you want to have a loop or other structure, it's better to create a Jade partial and run the loop in Fortran code.
+
+You can connect to a SQLite database... follow the example in /model

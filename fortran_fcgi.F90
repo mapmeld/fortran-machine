@@ -58,7 +58,7 @@ contains
       character(len=1):: ch
       character(len=len_trim(str)):: outstr
       integer::isp,k,ich
-      
+
       str=adjustl(str)
       lenstr=len_trim(str)
       outstr=' '
@@ -83,6 +83,43 @@ contains
       str=adjustl(outstr)
     end subroutine compact
 
+    subroutine string_insert( string, pos, second )
+        character(len=*), intent(inout) :: string
+        integer, intent(in)             :: pos
+        character(len=*), intent(in)    :: second
+
+        integer                         :: length
+
+        length = len( second )
+        string(pos+length:)      = string(pos:)
+        string(pos:pos+length-1) = second
+
+    end subroutine string_insert
+
+    subroutine string_delete( string, pos, length )
+        character(len=*), intent(inout) :: string
+        integer, intent(in)             :: pos
+        integer, intent(in)             :: length
+
+        string(pos:)             = string(pos+length:)
+
+    end subroutine string_delete
+
+    subroutine string_replace( string, substr, replace )
+        character(len=*), intent(inout) :: string
+        character(len=*), intent(in)    :: substr
+        character(len=*), intent(in)    :: replace
+
+        integer                         :: k
+
+        k = index( string, substr )
+        if ( k > 0 ) then
+            call string_delete( string, k, len(substr) )
+            call string_insert( string, k, replace )
+        endif
+
+    end subroutine string_replace
+
     subroutine respond ( dict, unitNo, stopped )
 
         type(DICT_STRUCT), pointer        :: dict
@@ -95,7 +132,7 @@ contains
         !character(len=1), parameter :: NUL = achar(0)
 
         ! the script name
-        character(len=80)  :: scriptName, spaceless, tag
+        character(len=80)  :: scriptName, spaceless, tag, closeTag, className, elemID
         character(len=200) :: inputLine, outputLine, innerContent
 
         integer                           :: templater, io, spaceCount
@@ -128,36 +165,82 @@ contains
               spaceless = trim(spaceless) // '   '
               spaceCount = index(inputLine, trim(spaceless))
               innerContent = spaceless(index(spaceless, ' '): 150)
+              className = ''
+              elemID = ''
 
               if (spaceless(1:1) == '.') then
-                outputLine = '<div class="' // &
-                  spaceless(2: index(spaceless, ' ') - 1) // &
-                  '">' // &
-                  trim(innerContent) // &
-                  '</div>'
-              else
-                if (spaceless(1:1) == '#') then
-                  outputLine = '<div id="' // &
-                    spaceless(2: index(spaceless, ' ') - 1) // &
-                    '">' // &
-                    trim(innerContent) // &
-                    '</div>'
-                else
-                  tag = spaceless(1: index(spaceless, ' ') - 1)
-                  outputLine = '<' // &
-                    trim(tag) // &
-                    '>' // &
-                    trim(innerContent) // &
-                    '</' // &
-                    trim(tag) // &
-                    '>'
+                ! starts with a class definition
+                tag = 'div'
+                className = spaceless(2: index(spaceless, ' ') - 1)
+                if (index(className, '#') > 0) then
+                  className = className(1 : index(className, '#') - 1)
+                  elemID = spaceless(index(spaceless, '#') : index(spaceless, ' '))
                 endif
+              else
+                ! starts with an ID definition
+                if (spaceless(1:1) == '#') then
+                  tag = 'div'
+                  elemID = spaceless(2: index(spaceless, ' ') - 1)
+                  if (index(elemID, '.') > 0) then
+                    elemID = elemID(1 : index(elemID, '.') - 1)
+                    className = spaceless(index(spaceless, '.') : index(spaceless, ' '))
+                  endif
+                else
+                  if (spaceless(1:1) == '(') then
+                    tag = 'div' // spaceless(1: index(spaceless, ' ') - 1)
+                  else
+                    tag = spaceless(1: index(spaceless, ' ') - 1)
+                    if (index(tag, '.') > 0) then
+                      tag = tag(1: index(tag, '.') - 1)
+                      className = spaceless(index(spaceless, '.') : index(spaceless, ' '))
+                    endif
+                    if (index(tag, '#') > 0) then
+                      tag = tag(1: index(tag, '#') - 1)
+                      elemID = elemID(index(spaceless, '#') : index(spaceless, ' '))
+                    endif
+                  endif
+                endif
+              endif
+
+              ! handle multiple classes
+              call string_replace(className, '.', ' ')
+              ! just make sure I don't have a # in the ID
+              call string_replace(elemID, '#', '')
+
+              if (index(tag, '(') > 0) then
+                ! todo: substitute values, handle multiple attributes
+                call string_replace(tag, '(', ' ')
+                call string_replace(tag, ')', ' ')
+              endif
+
+              outputLine = '<' // &
+                trim(tag) // &
+                'id="' // trim(elemID) // '"' // &
+                'class="' // trim(className) // '"' // &
+                '>' // &
+                trim(innerContent)
+
+              if (index(tag, 'img') == 1 .or. index(tag, 'link') == 1) then
+                ! single closing tag
+                outputLine = trim(outputLine) // &
+                  '/>'
+              else
+                ! add close tag
+                closeTag = tag
+                if (index(closeTag, '(') > 0) then
+                  closeTag = closeTag(1 : index(closeTag, '(') - 1)
+                endif
+                outputLine = trim(outputLine) // &
+                  '</' // &
+                  trim(closeTag) // &
+                  '>'
               endif
 
               write(unitNo, AFORMAT) outputLine
             end do
             close(templater)
           case DEFAULT
+            ! your 404 page
             write(unitNo,AFORMAT) 'Page not found!'
         end select
 
