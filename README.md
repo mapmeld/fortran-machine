@@ -4,8 +4,8 @@ A web stack written in Fortran
 
 Credit to:
 
-- authors of FLIB (cgi protocol for Fortran)
-- Ricolindo Carino and Arjen Markus's Fortran FastCGI program:  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
+- authors of <a href="http://fortranwiki.org/fortran/show/FLIBS">FLIBS</a> (Arjen Markus and Michael Baudin)
+- Ricolindo Carino and Arjen Markus's Fortran FastCGI program and tutorial - in many ways this is just an update to the commands in the tutorial :  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
 - String utils by George Benthian http://www.gbenthien.net/strings/index.html
 
 
@@ -121,9 +121,34 @@ sudo service nginx restart
 ```
 
 
-## Features
+## Jade Templates
 
 In the template folder, you can put Jade templates (similar to HAML) but only in the simplest
-syntax and templating. If you want to have a loop or other structure, it's better to create a Jade partial and run the loop in Fortran code.
+syntax. Template strings are not yet available.
 
-You can connect to a SQLite database... follow the example in /model
+If you want to have a loop or other structure, it's better to create a Jade partial and run the loop in Fortran code.
+
+```jade
+.container
+  .col-sm-6
+    h3 Hello World
+  .col-sm-6
+    h3 Link
+    a(href="http://example.com") A link
+```
+
+#### Todo
+
+Read in whitespace levels, test id and class together, test multiple ids and classes, templating
+
+## SQLite Database
+
+You can connect to a SQLite database... follow the example in flibs-0.9/flibs/src
+
+That's yet to be figured out.
+
+
+# License
+
+This library, like FLIBS which it's based on, is available under the BSD license
+
