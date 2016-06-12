@@ -141,7 +141,7 @@ If you want to have a loop or other structure, it's better to create a Jade part
 
 #### Todo
 
-Read in whitespace levels, test id and class together, test multiple ids and classes, templating
+Test id and class together, test multiple ids and classes, templating
 
 ## SQLite Database
 

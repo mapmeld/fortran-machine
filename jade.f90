@@ -77,28 +77,13 @@ module jade
         call string_replace(tag, ')', ' ')
       endif
 
-      outputLine = '<' // &
-        trim(tag) // &
-        ' id="' // trim(elemID) // '"' // &
-        ' class="' // trim(className) // '"'
-
-      !if (index(tag, 'img') == 1 .or. index(tag, 'link') == 1) then
-        ! single closing tag
-      !  outputLine = trim(outputLine) // &
-      !    '/>'
-      !else
-        ! complete opening tag and inner content
-      outputLine = trim(outputLine) // &
-        '>' // &
-        trim(innerContent)
-
-      !endif
-
       ! determine close tag, ahead of time
       closeTag = tag
       if (index(closeTag, '(') > 0) then
         closeTag = closeTag(1 : index(closeTag, '(') - 1)
       endif
+
+      outputLine = ''
 
       if (lastSpaceCount < spaceCount) then
         ! went up a level
@@ -131,6 +116,24 @@ module jade
           end do
         endif
       endif
+
+      outputLine = trim(outputLine) // '<' // &
+        trim(tag) // &
+        ' id="' // trim(elemID) // '"' // &
+        ' class="' // trim(className) // '"'
+
+      !if (index(tag, 'img') == 1 .or. index(tag, 'link') == 1) then
+        ! single closing tag
+      !  outputLine = trim(outputLine) // &
+      !    '/>'
+      !else
+        ! complete opening tag and inner content
+      outputLine = trim(outputLine) // &
+        '>' // &
+        trim(innerContent)
+
+      !endif
+
       lastSpaceCount = spaceCount
 
       templatefile = trim(templatefile) // outputLine
