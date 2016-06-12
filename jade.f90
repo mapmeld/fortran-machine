@@ -9,11 +9,15 @@ module jade
     character(len=*):: templatefile
     character(len=80)  :: spaceless, tag, closeTag, className, elemID
     character(len=200) :: inputLine, outputLine, innerContent
-    integer            :: templater, io, spaceCount, unitNo
+    integer            :: templater, io, spaceCount, unitNo, lastSpaceCount, lastIndent
     character(len=3), parameter :: AFORMAT = '(a)'
+    integer, dimension (0:30) :: spaceLevels
+    character(len=80), dimension (0:30) :: tagLevels
 
     open(newunit=templater, file=templatefile)
     templatefile = ''
+    lastSpaceCount = -1
+    lastIndent = 0
     do
       read(templater, '(A)', IOSTAT=io) inputLine
       if (io < 0) exit
@@ -76,25 +80,58 @@ module jade
       outputLine = '<' // &
         trim(tag) // &
         ' id="' // trim(elemID) // '"' // &
-        ' class="' // trim(className) // '"' // &
+        ' class="' // trim(className) // '"'
+
+      !if (index(tag, 'img') == 1 .or. index(tag, 'link') == 1) then
+        ! single closing tag
+      !  outputLine = trim(outputLine) // &
+      !    '/>'
+      !else
+        ! complete opening tag and inner content
+      outputLine = trim(outputLine) // &
         '>' // &
         trim(innerContent)
 
-      if (index(tag, 'img') == 1 .or. index(tag, 'link') == 1) then
-        ! single closing tag
-        outputLine = trim(outputLine) // &
-          '/>'
-      else
-        ! add close tag
-        closeTag = tag
-        if (index(closeTag, '(') > 0) then
-          closeTag = closeTag(1 : index(closeTag, '(') - 1)
-        endif
-        outputLine = trim(outputLine) // &
-          '</' // &
-          trim(closeTag) // &
-          '>'
+      !endif
+
+      ! determine close tag, ahead of time
+      closeTag = tag
+      if (index(closeTag, '(') > 0) then
+        closeTag = closeTag(1 : index(closeTag, '(') - 1)
       endif
+
+      if (lastSpaceCount < spaceCount) then
+        ! went up a level
+        lastIndent = lastIndent + 1
+        spaceLevels(lastIndent) = spaceCount
+        tagLevels(lastIndent) = closeTag
+      else
+        if (lastSpaceCount == spaceCount) then
+          ! same level; previous tag is closed; replace with this tag
+          outputLine = trim(outputLine) // &
+            '</' // &
+            trim(tagLevels(lastIndent)) // &
+            '>'
+          tagLevels(lastIndent) = closeTag
+        else
+          ! went down at least one level
+          do
+            if (spaceLevels(lastIndent) >= spaceCount) then
+              ! closed or sibling tag
+              outputLine = trim(outputLine) // &
+                '</' // &
+                trim(tagLevels(lastIndent)) // &
+                '>'
+              lastIndent = lastIndent - 1
+            else
+              ! bottomed out; open this tag
+              tagLevels(lastIndent) = closeTag
+              exit
+            endif
+          end do
+        endif
+      endif
+      lastSpaceCount = spaceCount
 
       templatefile = trim(templatefile) // outputLine
     end do
