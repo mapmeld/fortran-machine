@@ -11,6 +11,7 @@
 program test_fcgi
 
     use fcgi_protocol
+    use jade
 
     implicit none
 
@@ -50,75 +51,6 @@ program test_fcgi
 
 
 contains
-    subroutine compact(str)
-      ! Converts multiple spaces and tabs to single spaces; deletes control characters;
-      ! removes initial spaces.
-
-      character(len=*):: str
-      character(len=1):: ch
-      character(len=len_trim(str)):: outstr
-      integer::isp,k,ich,lenstr,i
-      str=adjustl(str)
-      lenstr=len_trim(str)
-      outstr=' '
-      isp=0
-      k=0
-      do i=1,lenstr
-        ch=str(i:i)
-        ich=iachar(ch)
-        select case(ich)
-          case(9,32)     ! space or tab character
-            if(isp==0) then
-              k=k+1
-              outstr(k:k)=' '
-            end if
-            isp=1
-          case(33:)      ! not a space, quote, or control character
-            k=k+1
-            outstr(k:k)=ch
-            isp=0
-        end select
-      end do
-      str=adjustl(outstr)
-    end subroutine compact
-
-    subroutine string_insert( string, pos, second )
-        character(len=*), intent(inout) :: string
-        integer, intent(in)             :: pos
-        character(len=*), intent(in)    :: second
-
-        integer                         :: length
-
-        length = len( second )
-        string(pos+length:)      = string(pos:)
-        string(pos:pos+length-1) = second
-
-    end subroutine string_insert
-
-    subroutine string_delete( string, pos, length )
-        character(len=*), intent(inout) :: string
-        integer, intent(in)             :: pos
-        integer, intent(in)             :: length
-
-        string(pos:)             = string(pos+length:)
-
-    end subroutine string_delete
-
-    subroutine string_replace( string, substr, replace )
-        character(len=*), intent(inout) :: string
-        character(len=*), intent(in)    :: substr
-        character(len=*), intent(in)    :: replace
-
-        integer                         :: k
-
-        k = index( string, substr )
-        if ( k > 0 ) then
-            call string_delete( string, k, len(substr) )
-            call string_insert( string, k, replace )
-        endif
-
-    end subroutine string_replace
-
     subroutine respond ( dict, unitNo, stopped )
 
         type(DICT_STRUCT), pointer        :: dict
@@ -131,10 +63,9 @@ contains
         !character(len=1), parameter :: NUL = achar(0)
 
         ! the script name
-        character(len=80)  :: scriptName, spaceless, tag, closeTag, className, elemID
-        character(len=200) :: inputLine, outputLine, innerContent
+        character(len=80)  :: scriptName
+        character(len=*)   :: templatefile
 
-        integer                           :: templater, io, spaceCount
         logical                           :: okInputs
 
         ! start of response
@@ -155,92 +86,9 @@ contains
 
         select case (trim(scriptName))
           case ('/')
-            open(newunit=templater, file="template/index.jade")
-            do
-              read(templater, '(A)', IOSTAT=io) inputLine
-              if (io < 0) exit
-
-              spaceless = trim(inputLine)
-              call compact(spaceless)
-              spaceless = trim(spaceless) // '   '
-              spaceCount = index(inputLine, trim(spaceless))
-              className = ''
-              elemID = ''
-              innerContent = spaceless(index(spaceless, ' ') + 1:)
-
-              if (spaceless(1:1) == '.') then
-                ! starts with a class definition
-                tag = 'div'
-                className = spaceless(2: index(spaceless, ' ') - 1)
-                if (index(className, '#') > 0) then
-                  className = className(1 : index(className, '#') - 1)
-                  elemID = spaceless(index(spaceless, '#') : index(spaceless, ' '))
-                endif
-              else
-                ! starts with an ID definition
-                if (spaceless(1:1) == '#') then
-                  tag = 'div'
-                  elemID = spaceless(2: index(spaceless, ' ') - 1)
-                  if (index(elemID, '.') > 0) then
-                    elemID = elemID(1 : index(elemID, '.') - 1)
-                    className = spaceless(index(spaceless, '.') : index(spaceless, ' '))
-                  endif
-                else
-                  if (spaceless(1:1) == '(') then
-			! starts with a div attributes
-                    tag = 'div' // spaceless(1: index(spaceless, ' ') - 1)
-                  else
-			! custom tag
-                    tag = spaceless(1: index(spaceless, ' ') - 1)
-                    if (index(tag, '.') > 0 .and. index(tag, '.') < index(tag, '(')) then
-                      tag = tag(1: index(tag, '.') - 1)
-                      className = spaceless(index(spaceless, '.') : index(spaceless, ' '))
-                    endif
-                    if (index(tag, '#') > 0 .and. index(tag, '#') < index(tag, '(')) then
-                      tag = tag(1: index(tag, '#') - 1)
-                      elemID = elemID(index(spaceless, '#') : index(spaceless, ' '))
-                    endif
-                  endif
-                endif
-              endif
-
-              ! handle multiple classes
-              call string_replace(className, '.', ' ')
-              ! just make sure I don't have a # in the ID
-              call string_replace(elemID, '#', '')
-
-              if (index(tag, '(') > 0) then
-                ! todo: substitute values, handle multiple attributes
-                call string_replace(tag, '(', ' ')
-                call string_replace(tag, ')', ' ')
-              endif
-
-              outputLine = '<' // &
-                trim(tag) // &
-                ' id="' // trim(elemID) // '"' // &
-                ' class="' // trim(className) // '"' // &
-                '>' // &
-                trim(innerContent)
-
-              if (index(tag, 'img') == 1 .or. index(tag, 'link') == 1) then
-                ! single closing tag
-                outputLine = trim(outputLine) // &
-                  '/>'
-              else
-                ! add close tag
-                closeTag = tag
-                if (index(closeTag, '(') > 0) then
-                  closeTag = closeTag(1 : index(closeTag, '(') - 1)
-                endif
-                outputLine = trim(outputLine) // &
-                  '</' // &
-                  trim(closeTag) // &
-                  '>'
-              endif
-
-              write(unitNo, AFORMAT) outputLine
-            end do
-            close(templater)
+            templatefile = 'template/index.jade'
+            call jadefile(templatefile)
+            write(unitNo,AFORMAT) templatefile
           case DEFAULT
             ! your 404 page
             write(unitNo,AFORMAT) 'Page not found!'
