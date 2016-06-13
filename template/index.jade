@@ -20,6 +20,18 @@
         li SQLite (coming soon)
         li Fortran skills
   .row
+    .col-sm-6
+      h3 Installing
+      p Fortran.io is like PHP: FastCGI runs a script which outputs HTML strings
+      h4 Using Ubuntu 14.04
+      code sudo apt-get install nginx gfortran spawn-fcgi git libfcgi-dev
+      br
+      code git clone https://github.com/mapmeld/fortran-machine.git
+      br
+      strong Use gfortran to compile flibs and other libraries, then:
+      br
+      code spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
+  .row
     .col-sm-12
       h4 About
       p This page is served by a Fortran server and uses a LetsEncrypt cert
@@ -27,5 +39,5 @@
         span Follow me&nbsp;
         a(href="https://twitter.com/mapmeld") on Twitter
         span &nbsp;and check out my other projects&nbsp;
-        a(href="https://github.com/mapmeld?tab=repositoris") on GitHub
+        a(href="https://github.com/mapmeld?tab=repositories") on GitHub
         span .
