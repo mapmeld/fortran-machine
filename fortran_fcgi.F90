@@ -64,7 +64,7 @@ contains
 
         ! the script name
         character(len=80)  :: scriptName
-        character(len=10000) :: templatefile
+        character(len=12000) :: templatefile
 
         logical                           :: okInputs
 
@@ -87,8 +87,7 @@ contains
         select case (trim(scriptName))
           case ('/')
             templatefile = 'template/index.jade'
-            call jadefile(templatefile)
-            write(unitNo,AFORMAT) templatefile
+            call jadefile(templatefile, unitNo)
           case DEFAULT
             ! your 404 page
             write(unitNo,AFORMAT) 'Page not found!'

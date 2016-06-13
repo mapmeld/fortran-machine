@@ -5,10 +5,10 @@ module jade
 
   contains
 
-  subroutine jadefile(templatefile)
-    character(len=*)  :: templatefile
+  subroutine jadefile(templatefile, unitNo)
+    character(len=10000)  :: templatefile
     character(len=80)  :: spaceless, tag, closeTag, className, elemID
-    character(len=200) :: inputLine, outputLine, innerContent
+    character(len=1000)   :: inputLine, outputLine, innerContent
     integer            :: templater, io, spaceCount, unitNo, lastSpaceCount, lastIndent
     character(len=3)   :: AFORMAT = '(a)'
     integer, dimension (0:30) :: spaceLevels
@@ -108,9 +108,11 @@ module jade
                 trim(tagLevels(lastIndent)) // &
                 '>'
               lastIndent = lastIndent - 1
-            else
+           else
               ! bottomed out; open this tag
+              lastIndent = lastIndent + 1
               tagLevels(lastIndent) = closeTag
+              spaceLevels(lastIndent) = spaceCount
               exit
             endif
           end do
@@ -136,7 +138,8 @@ module jade
 
       lastSpaceCount = spaceCount
 
-      templatefile = trim(templatefile) // outputLine
+      ! templatefile = trim(templatefile) // outputLine
+      write(unitNo, AFORMAT) outputLine
     end do
     close(templater)
   endsubroutine
