@@ -17,7 +17,7 @@ Log in and install dependencies
 sudo apt-get update
 sudo apt-get upgrade -y
 
-sudo apt-get install nginx gfortran spawn-fcgi git libfcgi-dev
+sudo apt-get install nginx gfortran spawn-fcgi git libfcgi-dev sqlite3
 ```
 
 Go to your IP address - you should see the "Welcome to nginx!" page

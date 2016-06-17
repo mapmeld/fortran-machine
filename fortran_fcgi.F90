@@ -63,6 +63,9 @@ contains
         !character(len=2), parameter :: CRLF = achar(13)//achar(10)
         !character(len=1), parameter :: NUL = achar(0)
 
+        ! column types
+        character(len=50) :: name, latinName, wikiLink, description
+
         ! the script name
         character(len=80)  :: scriptName
         character(len=12000) :: templatefile
@@ -101,8 +104,12 @@ contains
             templatefile = 'template/search.jade'
             call jadefile(templatefile, unitNo)
 
+            name = ''
+            latinName = ''
+            wikiLink = ''
+            description = ''
             call getOneMarsupial('koala', name, latinName, wikiLink, description)
-            write(unitNo, AFORMAT) name(0) // latinName(0)
+            write(unitNo, AFORMAT) name // latinName
 
             !do
               !if (sr > searchResultsLength) then
