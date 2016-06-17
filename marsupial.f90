@@ -3,6 +3,7 @@
 
 module marsupial
   use sqlite
+  use sqlite_types
 
   implicit none
 

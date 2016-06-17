@@ -43,11 +43,11 @@
       code spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
     .col-sm-6
       h3 Try a search
-      form(action="/search" method="GET")
+      form(action="/search")
         h4 Marsupial Search
         .form-group
-          input(name="q" placeholder="eg koala, kangaroo")
-          input(type="submit") Search
+          input(name="q"placeholder="eg&nbsp;koala,&nbsp;kangaroo")
+          input(type="submit"value="Search")
   .row
     .col-sm-12
       h3 About

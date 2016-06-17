@@ -1,13 +1,14 @@
-.row
-  .col-sm-12
-    .page-header
-      h1 FORTRAN.io
-        small finally, a Fortran Web Framework
-.row
-  .col-sm-6
-    h3 Try a search
-    form(action="/search" method="GET")
-      h4 Marsupial Search
-      .form-group
-        input(name="q" placeholder="eg koala, kangaroo")
-        input(type="submit") Search
+.t
+  .row
+    .col-sm-12
+      .page-header
+        h1 FORTRAN.io
+          small finally, a Fortran Web Framework
+  .row
+    .col-sm-6
+      h3 Try a search
+      form(action="/search")
+        h4 Marsupial Search
+        .form-group
+          input(name="q"placeholder="eg&nbsp;koala")
+          input(type="submit"value="Search")
