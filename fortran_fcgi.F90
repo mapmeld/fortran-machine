@@ -12,6 +12,7 @@ program test_fcgi
 
     use fcgi_protocol
     use jade
+    use marsupial
 
     implicit none
 
@@ -99,6 +100,9 @@ contains
             ! header
             templatefile = 'template/search.jade'
             call jadefile(templatefile, unitNo)
+
+            call getOneMarsupial('koala', name, latinName, wikiLink, description)
+            write(unitNo, AFORMAT) name(0) // latinName(0)
 
             !do
               !if (sr > searchResultsLength) then

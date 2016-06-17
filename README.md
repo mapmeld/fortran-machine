@@ -68,11 +68,13 @@ cd fortran-machine
 # compile the modules with your version of Fortran
 gfortran -c flibs-0.9/flibs/src/cgi/cgi_protocol.f90
 gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
+gfortran -c flibs-0.9/flibs/src/sqlite/fsqlite.f90
 gfortran -c string_helpers.f90
 gfortran -c jade.f90
+gfortran -c marsupial.f90
 
 # compile the test server
-gfortran -o fortran_fcgi fortran_fcgi.F90 jade.o string_helpers.o cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
+gfortran -o fortran_fcgi fortran_fcgi.F90 marsupial.f90 jade.o string_helpers.o fsqlite.o cgi_protocol.o fcgi_protocol.o -lfcgi -Wl,--rpath -Wl,/usr/local/lib
 ```
 
 Now change nginx config /etc/nginx/sites-available/default
@@ -126,6 +128,24 @@ And restart nginx
 sudo service nginx restart
 ```
 
+## Fortran controller
+
+The controller is written in Fortran in the fortran_fcgi.f90 file:
+
+```fortran
+case ('/')
+	! most pages look like this
+	templatefile = 'template/index.jade'
+	call jadefile(templatefile, unitNo)
+
+case ('/search')
+	write(unitNo,AFORMAT) '<div class="container">'
+
+	templatefile = 'template/search.jade'
+	call jadefile(templatefile, unitNo)
+
+	write(unitNo,AFORMAT) '</div>'
+```
 
 ## Jade Templates
 
@@ -153,6 +173,8 @@ Test id and class together, test multiple ids and classes, templating
 
 You can connect to a SQLite database. The example on <a href="https://fortran.io">Fortran.io</a>
 lets you search through marsupials!
+
+
 
 ## HTTPS Certificate
 
