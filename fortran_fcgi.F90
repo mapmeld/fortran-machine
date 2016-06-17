@@ -76,6 +76,7 @@ contains
 		'<html>', &
             '<head>', &
             '<meta charset="utf-8"/>', &
+            '<meta name="viewport" content="width=device-width, initial-scale=1"/>', &
             '<title>Fortran FastCGI</title>', &
             '<link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css"/>', &
             '</head>', &
