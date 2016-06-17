@@ -1,8 +1,8 @@
-# Fortran-Machine
+# Fortran.io
 
 A web stack written in Fortran
 
-Credit to:
+Major credit due to:
 
 - authors of <a href="http://fortranwiki.org/fortran/show/FLIBS">FLIBS</a> (Arjen Markus and Michael Baudin)
 - Ricolindo Carino and Arjen Markus's Fortran FastCGI program and tutorial - in many ways this is just an update to the commands in the tutorial :  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
@@ -22,9 +22,14 @@ sudo apt-get install nginx gfortran spawn-fcgi git libfcgi-dev
 
 Go to your IP address - you should see the "Welcome to nginx!" page
 
-In your user home:
-
 ```
+# create the user and home directory
+useradd fortran
+passwd fortran
+# set password
+mkdir /home/fortran
+cd /home/fortran
+
 # clone the repo
 git clone https://github.com/mapmeld/fortran-machine.git
 ```
@@ -35,15 +40,14 @@ Change the location in /etc/nginx/sites-available/default :
 server_name 101.101.101.101; <- your IP address
 
 location / {
-	root /root/fortran-machine;
+	root /home/fortran/fortran-machine;
 	index index.html;
 }
 ```
 
-Change permission on your home directory
+Restart nginx to make these settings for real:
 
 ```
-chmod 701 /root
 sudo service nginx restart
 ```
 
@@ -75,7 +79,7 @@ Now change nginx config /etc/nginx/sites-available/default
 
 ```
 location / {
-	root /root/fortran-machine;
+	root /home/fortran/fortran-machine;
 	fastcgi_pass 127.0.0.1:9000;
 	fastcgi_index index.html;
 	include fastcgi_params;
@@ -112,7 +116,7 @@ Add to nginx config /etc/nginx/sites-available/default
 
 ```
 location /static {
-				root /root/fortran-machine;
+    root /home/fortran/fortran-machine;
 }
 ```
 
@@ -149,6 +153,11 @@ You can connect to a SQLite database... follow the example in flibs-0.9/flibs/sr
 
 That's yet to be figured out.
 
+## HTTPS Certificate
+
+Don't forget to get a free HTTPS Certificate using LetsEncrypt!
+
+https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04
 
 # License
 
