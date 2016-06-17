@@ -77,7 +77,7 @@ contains
             '<head>', &
             '<meta charset="utf-8"/>', &
             '<meta name="viewport" content="width=device-width, initial-scale=1"/>', &
-            '<title>Fortran FastCGI</title>', &
+            '<title>FORTRAN.io</title>', &
             '<link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css"/>', &
             '</head>', &
             '<body>'
@@ -87,8 +87,26 @@ contains
 
         select case (trim(scriptName))
           case ('/')
+            ! most pages look like this
             templatefile = 'template/index.jade'
             call jadefile(templatefile, unitNo)
+
+          case ('/search')
+            ! tags which contain multiple templates must be written around them
+            ! in the fortran controller
+            write(unitNo,AFORMAT) '<div class="container">'
+
+            ! header
+            templatefile = 'template/search.jade'
+            call jadefile(templatefile, unitNo)
+
+            !do
+              !if (sr > searchResultsLength) then
+              !endif
+            !end do
+
+            ! close .container
+            write(unitNo,AFORMAT) '</div>'
           case DEFAULT
             ! your 404 page
             write(unitNo,AFORMAT) 'Page not found!'

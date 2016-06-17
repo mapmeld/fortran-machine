@@ -9,7 +9,6 @@
       h3 History
       p Fortran is foundational to languages we use today.
       p Fortran never left us... it runs our mainframes today.
-      p After years of obscurity, Fortran is coming back into fashion.
       p Ashes to ashes. Dust into dust. Fortran to JavaScript, back to Fortran
     .col-sm-4
       h3 An MVC Framework
@@ -42,13 +41,20 @@
       strong Use gfortran to compile flibs and other libraries, then:
       br
       code spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
+    .col-sm-6
+      h3 Try a search
+      form(action="/search" method="GET")
+        h4 Marsupial Search
+        .form-group
+          input(name="q" placeholder="eg koala, kangaroo")
+          input(type="submit") Search
   .row
     .col-sm-12
       h3 About
       p This page is served by a Fortran server and uses a LetsEncrypt cert
       p
-        span Follow me&nbsp;
+        span I'm Nick Doiron; I'm
         a(href="https://twitter.com/mapmeld") on Twitter
-        span &nbsp;and check out my other projects&nbsp;
-        a(href="https://github.com/mapmeld?tab=repositories") on GitHub
+        span and you can see my other projects
+        a(href="https://github.com/mapmeld") on GitHub
         span .

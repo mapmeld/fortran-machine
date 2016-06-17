@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>FORTRAN.io - Controller</title>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css"/>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="page-header">
+            <h1>
+              FORTRAN.io
+              <small>finally, a Fortran Web Framework</small>
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="navbar navbar-default">
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="/">Home</a>
+            </li>
+            <li>
+              <a href="/static/model.html">Model</a>
+            </li>
+            <li>
+              <a href="/static/view.html">View</a>
+            </li>
+            <li class="active">
+              <a href="/static/controller.html">Controller</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <p>The controller is written in Fortran itself:</p>
+        <p>Here is an example where you write HTML using multiline strings:</p>
+<pre>
+case ('/html')
+  ! HTML
+  write(unitNo,AFORMAT) '&lt;div class="container"&gt;' // &
+    '&lt;h1&gt;Hello World&lt;/h1&gt;' // &
+    '&lt;/div&gt;'
+</pre>
+        <p>Here is an example where you load a Jade template:</p>
+<pre>
+case ('/')
+  ! most pages look like this
+  templatefile = 'template/index.jade'
+  call jadefile(templatefile, unitNo)
+</pre>
+
+        TODO: rendering template strings
+
+        TODO: example using search results
+      </div>
+    </div>
+  </body>
+</html>

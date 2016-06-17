@@ -143,15 +143,16 @@ If you want to have a loop or other structure, it's better to create a Jade part
     a(href="http://example.com") A link
 ```
 
+Don't make blank lines in the middle of divs.
+
 #### Todo
 
 Test id and class together, test multiple ids and classes, templating
 
 ## SQLite Database
 
-You can connect to a SQLite database... follow the example in flibs-0.9/flibs/src
-
-That's yet to be figured out.
+You can connect to a SQLite database. The example on <a href="https://fortran.io">Fortran.io</a>
+lets you search through marsupials!
 
 ## HTTPS Certificate
 
