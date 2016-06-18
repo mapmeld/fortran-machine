@@ -64,7 +64,10 @@ contains
         !character(len=1), parameter :: NUL = achar(0)
 
         ! column types
-        character(len=50) :: name, latinName, wikiLink, description
+        character(len=50) :: name, latinName, wikiLink, description, query
+
+        ! for templating
+        character(len=50), dimension(10,2) :: pagevars
 
         ! the script name
         character(len=80)  :: scriptName
@@ -104,17 +107,21 @@ contains
             templatefile = 'template/search.jade'
             call jadefile(templatefile, unitNo)
 
-            name = ''
-            latinName = ''
-            wikiLink = ''
-            description = ''
-            call getOneMarsupial('koala', name, latinName, wikiLink, description)
-            write(unitNo, AFORMAT) name // latinName
+            pagevars(1,1) = 'name'
+            pagevars(2,1) = 'latinName'
+            pagevars(3,1) = 'wikiLink'
+            pagevars(4,1) = 'description'
+            query = ''
+            call cgi_get( dict, 'q', query)
+            call getOneMarsupial(query, pagevars(1,2), pagevars(2,2), pagevars(3,2), pagevars(4,2))
 
-            !do
-              !if (sr > searchResultsLength) then
-              !endif
-            !end do
+            if (len(trim(name)) == 0) then
+              write(unitNo,AFORMAT) '<p>No results in this database :-(</p>'
+            else
+              ! template with string
+              templatefile = 'template/result.jade'
+              call jadetemplate(templatefile, unitNo, pagevars)
+            endif
 
             ! close .container
             write(unitNo,AFORMAT) '</div>'

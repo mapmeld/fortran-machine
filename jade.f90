@@ -5,14 +5,35 @@ module jade
 
   contains
 
+  subroutine jadetemplate(templatefile, unitNo, replacements)
+    character(len=10000)         :: templatefile
+    integer                      :: unitNo, i
+    character(len=*), dimension(10,2)    :: replacements
+    character(len=3)   :: AFORMAT = '(a)'
+
+    call jadefile(templatefile, 0)
+
+    i = 1
+    do
+      if ((i > 10) .or. (replacements(i,1) == '')) then
+        exit
+      endif
+
+      call string_replace(templatefile, '#{' // trim(replacements(i, 1)) // '}', trim(replacements(i, 2)))
+
+      i = i + 1
+    enddo
+    write(unitNo, AFORMAT) templatefile
+  endsubroutine
+
   subroutine jadefile(templatefile, unitNo)
     character(len=10000)  :: templatefile
     character(len=80)  :: spaceless, tag, closeTag, className, elemID
     character(len=1000)   :: inputLine, outputLine, innerContent
     integer            :: templater, io, spaceCount, unitNo, lastSpaceCount, lastIndent
-    character(len=3)   :: AFORMAT = '(a)'
     integer, dimension (0:30) :: spaceLevels
     character(len=80), dimension (0:30) :: tagLevels
+    character(len=3)   :: AFORMAT = '(a)'
 
     open(newunit=templater, file=templatefile)
     templatefile = ''
@@ -138,8 +159,11 @@ module jade
 
       lastSpaceCount = spaceCount
 
-      ! templatefile = trim(templatefile) // outputLine
-      write(unitNo, AFORMAT) outputLine
+      if (unitNo == 0) then
+        templatefile = trim(templatefile) // outputLine
+      else
+        write(unitNo, AFORMAT) outputLine
+      endif
     end do
     close(templater)
   endsubroutine
