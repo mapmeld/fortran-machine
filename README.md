@@ -1,11 +1,11 @@
 # Fortran.io
 
-A web stack written in Fortran
+An MVC web stack written in Fortran 90 (so you get arrays, and it's not punchcards)
 
 Major credit due to:
 
 - authors of <a href="http://fortranwiki.org/fortran/show/FLIBS">FLIBS</a> (Arjen Markus and Michael Baudin)
-- Ricolindo Carino and Arjen Markus's Fortran FastCGI program and tutorial - in many ways this is just an update to the commands in the tutorial :  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
+- Ricolindo Carino and Arjen Markus's Fortran FastCGI program and tutorial - in many ways this started as an update to this tutorial :  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
 - String utils by George Benthian http://www.gbenthien.net/strings/index.html
 
 
@@ -171,10 +171,6 @@ If you want to have a loop or other structure, it's better to create a Jade part
 
 Don't make blank lines in the middle of divs.
 
-#### Todo
-
-Test id and class together, test multiple ids and classes, templating
-
 ## SQLite Database
 
 You can connect to a SQLite database. The example on <a href="https://fortran.io">Fortran.io</a>
@@ -184,7 +180,7 @@ You should have created the SQLite database already.
 
 ```fortran
 subroutine getOneMarsupial(query, name, latinName, wikiLink, description)
-	! parameters
+	! flexible parameter
 	character(len=*)		        :: query
 
 	! columns
