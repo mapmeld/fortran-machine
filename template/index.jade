@@ -43,11 +43,13 @@
       code spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
     .col-sm-6
       h3 Try a search
-      form(action="/search")
+      form(class="navbar-form"action="/search")
         h4 Search marsupials by name
         .form-group
-          input(name="q"placeholder="eg&nbsp;koala,&nbsp;kangaroo")
-          input(type="submit"value="Search")
+          input(class="form-control"name="q"placeholder="eg&nbsp;koala")
+        button(class="btn"class="btn-default"type="submit") Search
+        br
+        p This will run a query on a SQLite database.
   .row
     .col-sm-12
       h3 About
