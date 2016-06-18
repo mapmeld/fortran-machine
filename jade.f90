@@ -55,6 +55,9 @@ module jade
         ! starts with a class definition
         tag = 'div'
         className = spaceless(2: index(spaceless, ' ') - 1)
+        if (index(className, '(') > 0) then
+          className = className(1 : index(className, '#') - 1)
+        endif
         if (index(className, '#') > 0) then
           className = className(1 : index(className, '#') - 1)
           elemID = spaceless(index(spaceless, '#') : index(spaceless, ' '))
@@ -64,6 +67,9 @@ module jade
         if (spaceless(1:1) == '#') then
           tag = 'div'
           elemID = spaceless(2: index(spaceless, ' ') - 1)
+          if (index(elemID, '(') > 0) then
+            elemID = elemID(1 : index(elemID, '#') - 1)
+          endif
           if (index(elemID, '.') > 0) then
             elemID = elemID(1 : index(elemID, '.') - 1)
             className = spaceless(index(spaceless, '.') : index(spaceless, ' '))
@@ -71,7 +77,11 @@ module jade
         else
           if (spaceless(1:1) == '(') then
             ! starts with a div attributes
-            tag = 'div' // spaceless(1: index(spaceless, ' ') - 1)
+            if (index(spaceless, ')') > index(spaceless, ' ')) then
+              tag = 'div' // spaceless(1: index(spaceless, ')')
+            else
+              tag = 'div' // spaceless(1: index(spaceless, ' ') - 1)
+            endif
           else
             ! custom tag
             tag = spaceless(1: index(spaceless, ' ') - 1)
@@ -89,13 +99,13 @@ module jade
 
       ! handle multiple classes
       call string_replace(className, '.', ' ')
-      ! just make sure I don't have a # in the ID
+      ! just make sure I don't leave a # in the ID
       call string_replace(elemID, '#', '')
 
       if (index(tag, '(') > 0) then
-        ! todo: substitute values, handle multiple attributes
         call string_replace(tag, '(', ' ')
         call string_replace(tag, ')', ' ')
+        call string_replace(tag, ',', ' ')
       endif
 
       ! determine close tag, ahead of time

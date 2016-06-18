@@ -3,7 +3,7 @@
 
 module marsupial
   use sqlite
-  use sqlite_types
+  use string_helpers
 
   implicit none
 
@@ -15,21 +15,21 @@ module marsupial
 
   contains
 
-  subroutine insert(name, latinName, wikiLink, description)
+  ! subroutine insert(name, latinName, wikiLink, description)
     ! columns
-    character(len=50)             :: name, latinName, wikiLink, description
+    ! character(len=50)             :: name, latinName, wikiLink, description
 
-    allocate( column(4) )
-    call sqlite3_set_column( column(1), name )
-    call sqlite3_set_column( column(2), latinName )
-    call sqlite3_set_column( column(3), wikiLink )
-    call sqlite3_set_column( column(4), description )
-    call sqlite3_insert( db, 'marsupials', column )
-  endsubroutine
+    ! allocate( column(4) )
+    ! call sqlite3_set_column( column(1), name )
+    ! call sqlite3_set_column( column(2), latinName )
+    ! call sqlite3_set_column( column(3), wikiLink )
+    ! call sqlite3_set_column( column(4), description )
+    ! call sqlite3_insert( db, 'marsupials', column )
+  ! endsubroutine
 
   subroutine getOneMarsupial(query, name, latinName, wikiLink, description)
     ! columns
-    character(len=*)		        :: query
+    character(len=*)		  :: query
     character(len=50)			:: name, latinName, wikiLink, description
 
     call sqlite3_open('marsupials.sqlite3', db)
@@ -40,7 +40,8 @@ module marsupial
     call sqlite3_column_query( column(3), 'wikiLink', SQLITE_CHAR )
     call sqlite3_column_query( column(4), 'description', SQLITE_CHAR )
 
-    call sqlite3_prepare_select( db, 'marsupials', column, stmt, "WHERE name = '" // trim(query) // "' LIMIT 4")
+    call string_replace(query, "'", "_")
+    call sqlite3_prepare_select( db, 'marsupials', column, stmt, "WHERE LOWER(name) LIKE '%" // trim(query) // "%' LIMIT 4")
 
     i = 1
     do

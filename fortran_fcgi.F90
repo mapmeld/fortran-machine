@@ -63,10 +63,7 @@ contains
         !character(len=2), parameter :: CRLF = achar(13)//achar(10)
         !character(len=1), parameter :: NUL = achar(0)
 
-        ! column types
-        character(len=50) :: name, latinName, wikiLink, description, query
-
-        ! for templating
+        ! retrieve params from model and pass them to view
         character(len=50), dimension(10,2) :: pagevars
 
         ! the script name
@@ -97,7 +94,9 @@ contains
             ! most pages look like this
             templatefile = 'template/index.jade'
             call jadefile(templatefile, unitNo)
-
+          case ('/test')
+            templatefile = 'template/test.jade'
+            call jadefile(templatefile, unitNo)
           case ('/search')
             ! tags which contain multiple templates must be written around them
             ! in the fortran controller
