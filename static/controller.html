@@ -12,7 +12,7 @@
         <div class="col-sm-12">
           <div class="page-header">
             <h1>
-              FORTRAN.io
+              <a href="/">FORTRAN.io</a>
               <small>finally, a Fortran Web Framework</small>
             </h1>
           </div>
@@ -53,10 +53,36 @@ case ('/')
   templatefile = 'template/index.jade'
   call jadefile(templatefile, unitNo)
 </pre>
+        <p>You have access to URL variables:</p>
+<pre>
+case ('/search')
+  call cgi_get(dict, 'q', query)
+  call calculate(query)
+</pre>
+        <p>Jade files can also have template strings with each variable in a #{template}. Pass variables using the pagevars 2D array.<p>
+<pre>
+case ('/profile')
+  pagevars(1,1) = 'name'
+  pagevars(1,2) = 'Nick'
+  templatefile = 'template/profile.jade'
+  call jadetemplate(templatefile, unitNo, pagevars)
+</pre>
+        <p>In searches Fortran.io controller gets input from the model and URL variables, and displays it in the view.</p>
+<pre>
+case ('/search')
+  pagevars(1,1) = 'name'
+  pagevars(2,1) = 'latinName'
+  call cgi_get( dict, 'q', query)
+  call getOneMarsupial(query, pagevars(1,2), pagevars(2,2))
 
-        TODO: rendering template strings
-
-        TODO: example using search results
+  if (len(trim(name)) == 0) then
+    write(unitNo,AFORMAT) '<p>No results in this database :-(</p>'
+  else
+    ! template with string
+    templatefile = 'template/result.jade'
+    call jadetemplate(templatefile, unitNo, pagevars)
+  endif
+</pre>
       </div>
     </div>
   </body>

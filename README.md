@@ -155,64 +155,23 @@ case ('/search')
 
 ## Jade Templates
 
-In the template folder, you can put Jade templates (similar to HAML) but only in the simplest
-syntax. Template strings are not yet available.
+In the template folder, you can write HTML templates similar to Jade or HAML.
 
-If you want to have a loop or other structure, it's better to create a Jade partial and run the loop in Fortran code.
+If you want to have a loop or other structure, it's better to create a partial and run the loop in the Fortran controller.
 
 ```jade
 .container
   .col-sm-6
-    h3 Hello World
+    h3 Hello #{name}!
   .col-sm-6
     h3 Link
-    a(href="http://example.com") A link
+    a(href="http://example.com/profile/#{id}") A link
 ```
-
-Don't make blank lines in the middle of divs.
 
 ## SQLite Database
 
 You can connect to a SQLite database. The example on <a href="https://fortran.io">Fortran.io</a>
 lets you search through marsupials!
-
-You should have created the SQLite database already.
-
-```fortran
-subroutine getOneMarsupial(query, name, latinName, wikiLink, description)
-	! flexible parameter
-	character(len=*)		        :: query
-
-	! columns
-	character(len=50)			:: name, latinName, wikiLink, description
-
-  ! connect to the database
-	call sqlite3_open('marsupials.sqlite3', db)
-
-  ! prepare to receive column data types
-	allocate( column(4) )
-	call sqlite3_column_query( column(1), 'name', SQLITE_CHAR )
-	call sqlite3_column_query( column(2), 'latinName', SQLITE_CHAR )
-	call sqlite3_column_query( column(3), 'wikiLink', SQLITE_CHAR )
-	call sqlite3_column_query( column(4), 'description', SQLITE_CHAR )
-
-  ! make the query
-	call sqlite3_prepare_select( db, 'marsupials', column, stmt, "WHERE name = '" // trim(query) // "' LIMIT 4")
-
-  ! iterate through any results
-	i = 1
-	do
-		call sqlite3_next_row(stmt, column, finished)
-		if (finished) exit
-
-		call sqlite3_get_column(column(1), name)
-		call sqlite3_get_column(column(2), latinName)
-		call sqlite3_get_column(column(3), wikiLink)
-		call sqlite3_get_column(column(4), description)
-		i = i + 1
-	end do
-endsubroutine
-```
 
 ## HTTPS Certificate
 

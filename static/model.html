@@ -12,7 +12,7 @@
         <div class="col-sm-12">
           <div class="page-header">
             <h1>
-              FORTRAN.io
+              <a href="/">FORTRAN.io</a>
               <small>finally, a Fortran Web Framework</small>
             </h1>
           </div>
@@ -37,8 +37,41 @@
         </div>
       </div>
       <div class="row">
-        <p>The model uses a Fortran module to talk to SQLite</p>
-        TODO: database stuff
+        <p>The model uses FLIBS Fortran module and C files to talk to SQLite. You should create
+        the database, tables, and content ahead of time.</p>
+        <p>You should base your model on marsupial.f90 to make sure it includes the right features.
+        Here's how you can design a subroutine "getOneMarsupial"</p>
+<pre>
+subroutine getOneMarsupial(query, name, latinName)
+  ! expect the query
+  character(len=*)		  :: query
+  ! define the column return values
+  character(len=50)			:: name, latinName
+
+  ! connect to your database
+  call sqlite3_open('marsupials.sqlite3', db)
+
+  ! prepares query
+  allocate( column(2) )
+  call sqlite3_column_query( column(1), 'name', SQLITE_CHAR )
+  call sqlite3_column_query( column(2), 'latinName', SQLITE_CHAR )
+
+  ! actual query - where clause to the end
+  call sqlite3_prepare_select( db, 'marsupials', column, stmt, "WHERE name = '" // trim(query) // "'")
+
+  i = 1
+  do
+    ! iterate to end of returned rows
+    call sqlite3_next_row(stmt, column, finished)
+    if (finished) exit
+
+    ! use column array to fill in name and latinName
+    call sqlite3_get_column(column(1), name)
+    call sqlite3_get_column(column(2), latinName)
+    i = i + 1
+  end do
+endsubroutine
+</pre>
       </div>
     </div>
   </body>

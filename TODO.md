@@ -1,10 +1,10 @@
 models
-- test one at a time
 - test multiple
+- search is more flexible (LIKE, LOWER)
+- SQL escaping?
 
 views
 - spacing, commas, multiple params
-- template strings in content and attributes
 - HTML escaping
 - cool images for marsupial search
 - ignore blank lines

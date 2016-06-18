@@ -12,7 +12,7 @@
         <div class="col-sm-12">
           <div class="page-header">
             <h1>
-              FORTRAN.io
+              <a href="/">FORTRAN.io</a>
               <small>finally, a Fortran Web Framework</small>
             </h1>
           </div>
@@ -37,8 +37,8 @@
         </div>
       </div>
       <div class="row">
-        <p>The view is similar to Jade templates</p>
-
+        <p>The easiest way to serve files is to put them into the static directory.</p>
+        <p>For more dynamic and readable layouts, you can use an HTML templating system similar to Jade or HAML:</p>
 <pre>
 body
   h1 Hello World
@@ -48,10 +48,38 @@ body
     li
       a(href="http://example.com") Link
 </pre>
+        <p>You can insert variable names into your template:</p>
+<pre>
+h4
+  span #{name}
+  small #{occupation}
+</pre>
 
-        <p>Layout and container divs should be printed directly in the controller.</p>
+        <p>Control functions (for / if - else - endif) and container divs should be printed directly in the controller.</p>
+        <p>This is also where you pass info to the template engine:</p>
+<pre>
+! open .container
+write(unitNo,AFORMAT) '&lt;div class="container"&gt;'
 
-        TODO templates:
+! use a 2D array for key-value pairs -
+pagevars(1,1) = 'name'
+pagevars(1,2) = 'Nick'
+pagevars(2,1) = 'occupation'
+pagevars(2,2) = 'mapmaker'
+
+! use URL variable ?lang=__ to fill in this variable
+call cgi_get(dict, 'lang', language)
+
+if (language == 'english') then
+  templatefile = 'template/result-english.jade'
+else
+  templatefile = 'template/result-spanish.jade'
+endif
+call jadetemplate(templatefile, unitNo, pagevars)
+
+! close .container
+write(unitNo,AFORMAT) '&lt;/div&gt;'
+</pre>
       </div>
     </div>
   </body>
