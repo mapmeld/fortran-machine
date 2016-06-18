@@ -67,7 +67,7 @@ contains
         character(len=50), dimension(10,2) :: pagevars
 
         ! the script name
-        character(len=80)  :: scriptName
+        character(len=80)  :: scriptName, query
         character(len=12000) :: templatefile
 
         logical                           :: okInputs
@@ -114,7 +114,7 @@ contains
             call cgi_get( dict, 'q', query)
             call getOneMarsupial(query, pagevars(1,2), pagevars(2,2), pagevars(3,2), pagevars(4,2))
 
-            if (len(trim(name)) == 0) then
+            if (len(trim(pagevars(1,2))) == 0) then
               write(unitNo,AFORMAT) '<p>No results in this database :-(</p>'
             else
               ! template with string

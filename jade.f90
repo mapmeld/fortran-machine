@@ -78,7 +78,7 @@ module jade
           if (spaceless(1:1) == '(') then
             ! starts with a div attributes
             if (index(spaceless, ')') > index(spaceless, ' ')) then
-              tag = 'div' // spaceless(1: index(spaceless, ')')
+              tag = 'div' // spaceless(1: index(spaceless, ')'))
             else
               tag = 'div' // spaceless(1: index(spaceless, ' ') - 1)
             endif
