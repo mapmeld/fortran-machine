@@ -19,7 +19,12 @@ module jade
         exit
       endif
 
-      call string_replace(templatefile, '#{' // trim(replacements(i, 1)) // '}', trim(replacements(i, 2)))
+      do
+        if (index(templatefile, '#{' // trim(replacements(i, 1)) // '}') == 0) then 
+          exit
+        endif
+        call string_replace(templatefile, '#{' // trim(replacements(i, 1)) // '}', trim(replacements(i, 2)))
+      enddo
 
       i = i + 1
     enddo
@@ -56,6 +61,7 @@ module jade
         tag = 'div'
         className = spaceless(2: index(spaceless, ' ') - 1)
         if (index(className, '(') > 0) then
+          tag = trim(tag) // className( index(className, '(') : index(className, ')'))
           className = className(1 : index(className, '#') - 1)
         endif
         if (index(className, '#') > 0) then
@@ -68,6 +74,7 @@ module jade
           tag = 'div'
           elemID = spaceless(2: index(spaceless, ' ') - 1)
           if (index(elemID, '(') > 0) then
+            tag = trim(tag) // elemID( index(elemID, '(') : index(elemID, ')'))
             elemID = elemID(1 : index(elemID, '#') - 1)
           endif
           if (index(elemID, '.') > 0) then
@@ -87,17 +94,28 @@ module jade
             tag = spaceless(1: index(spaceless, ' ') - 1)
             if (index(tag, '.') > 0 .and. index(tag, '.') < index(tag, '(')) then
               tag = tag(1: index(tag, '.') - 1)
-              className = spaceless(index(spaceless, '.') : index(spaceless, ' '))
+              className = spaceless(index(spaceless, '.') : index(spaceless, '(') - 1)
             endif
             if (index(tag, '#') > 0 .and. index(tag, '#') < index(tag, '(')) then
               tag = tag(1: index(tag, '#') - 1)
-              elemID = elemID(index(spaceless, '#') : index(spaceless, ' '))
+              elemID = spaceless(index(spaceless, '#') : index(spaceless, '(') - 1)
+            endif
+            if (index(tag, '(') == 0) then
+              if (index(tag, '#') > 0) then
+                elemID = tag(index(tag, '#') : index(tag, ' '))
+                tag = tag(1: index(tag, '#') - 1)
+              endif
+              if (index(tag, '.') > 0) then
+                className = tag(index(tag, '.') : index(tag, ' '))
+                tag = tag(1: index(tag, '.') - 1)
+              endif
             endif
           endif
         endif
       endif
 
       ! handle multiple classes
+      call string_replace(className, '.', ' ')
       call string_replace(className, '.', ' ')
       ! just make sure I don't leave a # in the ID
       call string_replace(elemID, '#', '')
@@ -110,8 +128,14 @@ module jade
 
       ! determine close tag, ahead of time
       closeTag = tag
-      if (index(closeTag, '(') > 0) then
-        closeTag = closeTag(1 : index(closeTag, '(') - 1)
+      if (index(closeTag, ' ') > 0) then
+        closeTag = closeTag(1 : index(closeTag, ' '))
+      endif
+      if (index(closeTag, '#') > 0) then
+        closeTag = closeTag(1 : index(closeTag, '#') - 1)
+      endif
+      if (index(closeTag, '.') > 0) then
+        closeTag = closeTag(1 : index(closeTag, '.'))
       endif
 
       outputLine = ''
@@ -169,10 +193,12 @@ module jade
 
       lastSpaceCount = spaceCount
 
-      if (unitNo == 0) then
-        templatefile = trim(templatefile) // outputLine
-      else
-        write(unitNo, AFORMAT) outputLine
+      if (.not. trim(closeTag) == '') then
+        if (unitNo == 0) then
+          templatefile = trim(templatefile) // outputLine
+        else
+          write(unitNo, AFORMAT) outputLine
+        endif
       endif
     end do
     close(templater)
