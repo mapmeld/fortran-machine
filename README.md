@@ -173,6 +173,71 @@ If you want to have a loop or other structure, it's better to create a partial a
 You can connect to a SQLite database. The example on <a href="https://fortran.io">Fortran.io</a>
 lets you search through marsupials!
 
+Here's how the getAllMarsupials subroutine loads data into arrays:
+
+```fortran
+subroutine getAllMarsupials(name, latinName, wikiLink, description)
+	! columns
+	character(len=50), dimension(8)	:: name, latinName, wikiLink, description
+
+	call sqlite3_open('marsupials.sqlite3', db)
+
+	allocate( column(4) )
+	call sqlite3_column_query( column(1), 'name', SQLITE_CHAR )
+	call sqlite3_column_query( column(2), 'latinName', SQLITE_CHAR )
+	call sqlite3_column_query( column(3), 'wikiLink', SQLITE_CHAR )
+	call sqlite3_column_query( column(4), 'description', SQLITE_CHAR )
+
+	call sqlite3_prepare_select( db, 'marsupials', column, stmt, "WHERE 1=1 LIMIT 8")
+
+	i = 1
+	do
+		call sqlite3_next_row(stmt, column, finished)
+		if (finished) exit
+
+		call sqlite3_get_column(column(1), name(i))
+		call sqlite3_get_column(column(2), latinName(i))
+		call sqlite3_get_column(column(3), wikiLink(i))
+		call sqlite3_get_column(column(4), description(i))
+		i = i + 1
+	end do
+endsubroutine
+```
+
+Then in the Fortran controller, you loop through:
+
+```fortran
+call getAllMarsupials(names, latinNames, wikiLinks, descriptions)
+
+i = 1
+do
+	pagevars(1,2) = names(i)
+	pagevars(2,2) = latinNames(i)
+	pagevars(3,2) = wikiLinks(i)
+	pagevars(4,2) = descriptions(i)
+	if (len(trim(pagevars(1,2))) == 0 .or. i == 5) then
+		exit
+	else
+		! template with string
+		templatefile = 'template/result.jade'
+		call jadetemplate(templatefile, unitNo, pagevars)
+		i = i + 1
+	endif
+enddo
+```
+
+Then the individual result template:
+
+```jade
+.row
+  .col-sm-12
+    h4
+      a(href="https://en.wikipedia.org#{wikiLink}") #{name}
+    em #{latinName}
+    hr
+    p #{description}
+```
+
 ## HTTPS Certificate
 
 Don't forget to get a free HTTPS Certificate using LetsEncrypt!
