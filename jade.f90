@@ -19,12 +19,7 @@ module jade
         exit
       endif
 
-      do
-        if (index(templatefile, '#{' // trim(replacements(i, 1)) // '}') == 0) then 
-          exit
-        endif
-        call string_replace(templatefile, '#{' // trim(replacements(i, 1)) // '}', trim(replacements(i, 2)))
-      enddo
+      call string_replace(templatefile, '#{' // trim(replacements(i, 1)) // '}', trim(replacements(i, 2)))
 
       i = i + 1
     enddo
@@ -46,7 +41,17 @@ module jade
     lastIndent = 0
     do
       read(templater, '(A)', IOSTAT=io) inputLine
-      if (io < 0) exit
+      if (io < 0) then
+        outputLine = '</' // &
+          trim(tagLevels(lastIndent)) // &
+          '>'
+        if (unitNo == 0) then
+          templatefile = trim(templatefile) // outputLine
+        else
+          write(unitNo, AFORMAT) outputLine
+        endif
+        exit
+      endif
 
       spaceless = trim(inputLine)
       call compact(spaceless)
@@ -115,7 +120,6 @@ module jade
       endif
 
       ! handle multiple classes
-      call string_replace(className, '.', ' ')
       call string_replace(className, '.', ' ')
       ! just make sure I don't leave a # in the ID
       call string_replace(elemID, '#', '')
