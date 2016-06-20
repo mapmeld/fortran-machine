@@ -64,11 +64,14 @@ module string_helpers
 
       integer                         :: k
 
-      k = index( string, substr )
-      if ( k > 0 ) then
+      do
+        k = index( string, substr )
+        if ( k > 0 ) then
           call string_delete( string, k, len(substr) )
           call string_insert( string, k, replace )
-      endif
-
+        else
+          exit
+        endif
+      enddo
   end subroutine string_replace
 endmodule
