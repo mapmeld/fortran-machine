@@ -45,13 +45,15 @@ include ../../config/options.mk
 
 LIBRARIES	=	libfsqlite.a \
 
+INC_SQLITE3	=	$(shell dirname `find /usr -name sqlite3.h -print -quit`)
+
 #
 # Use the correct macro for interfacing between Fortran and C and
 # add the directory where the Sqlite3 header file can be found
 #
-#DEFINES	=	-DDBL_UNDERSCORE -I../../../sqlite
-#DEFINES	=	-DLOWERCASE -I../../../sqlite
-DEFINES	=	-I../../../sqlite
+#DEFINES	=	-DDBL_UNDERSCORE -I$(INC_SQLITE3)
+DEFINES		=	-DLOWERCASE -I$(INC_SQLITE3)
+#DEFINES	=	-I$(INC_SQLITE3)
 
 
 all:	$(LIBRARIES)
