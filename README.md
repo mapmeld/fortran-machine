@@ -14,25 +14,25 @@ Major credit due to:
 Log in and install dependencies
 
 ```
-sudo apt-get update
-sudo apt-get upgrade -y
+# create the user and home directory
+adduser fortran --gecos ""
+usermod -a -G sudo fortran
 
-sudo apt-get install nginx gfortran spawn-fcgi git libfcgi-dev sqlite3
+# switch to new user
+su fortran
+cd ~
+
+# install git and clone the repo
+sudo apt-get update
+sudo apt-get install -y git
+git clone https://github.com/mapmeld/fortran-machine.git
+
+# Install dependencies
+cd fortran-machine
+sudo ./install_deps_ubu.sh
 ```
 
 Go to your IP address - you should see the "Welcome to nginx!" page
-
-```
-# create the user and home directory
-useradd fortran
-passwd fortran
-# set password
-mkdir /home/fortran
-cd /home/fortran
-
-# clone the repo
-git clone https://github.com/mapmeld/fortran-machine.git
-```
 
 Change the location in /etc/nginx/sites-available/default :
 
@@ -62,25 +62,8 @@ Test doc
 Let's go from test page to Fortran script:
 
 ```
-# enter the directory
-cd fortran-machine
-
-# compile the modules with your version of Fortran
-gfortran -c flibs-0.9/flibs/src/cgi/cgi_protocol.f90
-gfortran -c flibs-0.9/flibs/src/cgi/fcgi_protocol.f90
-gfortran -c flibs-0.9/flibs/src/sqlite/fsqlite.f90
-gfortran -c string_helpers.f90
-gfortran -c jade.f90
-gfortran -c marsupial.f90
-
-# find your sqlite
-find / -name 'libsqlite3.a'
-> /usr/lib/x86_64-linux-gnu/libsqlite3.a
-# copy sqlite to local directory
-cp /usr/lib/x86_64-linux-gnu/libsqlite3.a ./
-
 # compile the test server
-gfortran -o fortran_fcgi fortran_fcgi.F90 marsupial.f90 jade.o string_helpers.o fsqlite.o csqlite.o libsqlite3.a cgi_protocol.o fcgi_protocol.o -ldl -lfcgi -pthread -Wl,--rpath -Wl,/usr/local/lib
+make
 ```
 
 Now change nginx config /etc/nginx/sites-available/default
@@ -106,16 +89,7 @@ spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
 After changing the source code, you can recompile and restart your server with:
 
 ```
-ps aux | grep fcgi
-# returns process ID of running server, if it's running
-
-kill -9 _process_id_of_running_server
-
-# recompile
-gfortran -o fortran_fcgi fortran_fcgi.F90 marsupial.f90 jade.o string_helpers.o fsqlite.o csqlite.o libsqlite3.a cgi_protocol.o fcgi_protocol.o -ldl -lfcgi -pthread -Wl,--rpath -Wl,/usr/local/lib
-
-# respawn fcgi
-spawn-fcgi -a 127.0.0.1 -p 9000 ./fortran_fcgi
+./restart.sh
 ```
 
 ## Add a static folder
