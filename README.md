@@ -14,6 +14,10 @@ Major credit due to:
 Log in and install dependencies
 
 ```
+# update Ubuntu
+sudo apt-get update
+sudo apt-get upgrade
+
 # create the user and home directory
 adduser fortran --gecos ""
 usermod -a -G sudo fortran
@@ -23,7 +27,6 @@ su fortran
 cd ~
 
 # install git and clone the repo
-sudo apt-get update
 sudo apt-get install -y git
 git clone https://github.com/mapmeld/fortran-machine.git
 
