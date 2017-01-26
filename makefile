@@ -6,6 +6,10 @@ LIBSQLITE3=$(shell find /usr -name libsqlite3.a -print -quit)
 FORTRAN=gfortran
 FORTRANFLAGS=-ldl -lfcgi -pthread -Wl,-rpath -Wl,/usr/lib
 
+ifndef $(LIBSQLITE3)
+FORTRANFLAGS=-ldl -lfcgi -lsqlite3 -pthread -Wl,-rpath -Wl,/usr/lib
+endif
+
 OBJECTS = \
 	marsupial.o \
 	jade.o \
