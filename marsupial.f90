@@ -40,8 +40,8 @@ module marsupial
     call sqlite3_column_query( column(3), 'wikiLink', SQLITE_CHAR )
     call sqlite3_column_query( column(4), 'description', SQLITE_CHAR )
 
-    call string_replace(query, "'", "_")
-    call sqlite3_prepare_select( db, 'marsupials', column, stmt, "WHERE LOWER(name) LIKE '%" // trim(query) // "%' LIMIT 4")
+    call string_replace(query, "'", "''")
+    call sqlite3_prepare_select( db, 'marsupials', column, stmt, "WHERE INSTR(LOWER(name), LOWER('" // trim(query) // "')) LIMIT 4")
 
     i = 1
     do
