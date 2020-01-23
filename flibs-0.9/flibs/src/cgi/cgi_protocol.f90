@@ -277,15 +277,15 @@ subroutine cgi_store_dict( dict, string )
             endif
         endif
 
-        call cgi_decode_string( buffer(1:k-1) )
-
         !
         ! Store the string
         !
         keq = index( buffer(1:k-1), '=' )
         if ( keq > 0 ) then
             key = buffer(1:keq-1)
+            call cgi_decode_string( key )
             data%value = buffer(keq+1:k-1)
+            call cgi_decode_string( data%value )
 
             if ( .not. associated( dict ) ) then
                 call dict_create( dict, key, data )
