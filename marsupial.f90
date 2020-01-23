@@ -32,6 +32,9 @@ module marsupial
     character(len=*)		  :: query
     character(len=50)			:: name, latinName, wikiLink, description
 
+    ! If not found, we want to clear name so the caller knows.
+    name = ""
+
     call sqlite3_open('marsupials.sqlite3', db)
 
     allocate( column(4) )
