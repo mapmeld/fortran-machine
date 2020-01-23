@@ -277,15 +277,15 @@ subroutine cgi_store_dict( dict, string )
             endif
         endif
 
-        call cgi_decode_string( buffer(1:k-1) )
-
         !
         ! Store the string
         !
         keq = index( buffer(1:k-1), '=' )
         if ( keq > 0 ) then
             key = buffer(1:keq-1)
+            call cgi_decode_string( key )
             data%value = buffer(keq+1:k-1)
+            call cgi_decode_string( data%value )
 
             if ( .not. associated( dict ) ) then
                 call dict_create( dict, key, data )
@@ -315,6 +315,9 @@ subroutine cgi_decode_string( string )
 
     integer :: k
     integer :: ch
+    integer :: n
+    integer :: p
+    integer :: ierr
 
     !
     ! First the +'s
@@ -329,12 +332,20 @@ subroutine cgi_decode_string( string )
     !
     ! Now %xx
     !
+    n = len(string)
+    p = 1
     do
-        k = index( string, '%' )
-        if ( k .le. 0 ) exit
+        k = index( string(p:), '%' ) + p - 1
+        if ( k .lt. p .or. k+2 .gt. n) exit
 
-        read( string(k+1:k+2), '(z2)' ) ch
+        read( string(k+1:k+2), '(z2)', iostat=ierr ) ch
+        if ( ierr /= 0 ) then
+            p = k + 1
+            cycle
+        endif
         string(k:) = achar(ch) // string(k+3:)
+        n = n - 2
+        p = k + 1
     enddo
 end subroutine cgi_decode_string
 
