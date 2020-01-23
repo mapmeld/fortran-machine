@@ -62,13 +62,15 @@ module string_helpers
       character(len=*), intent(in)    :: substr
       character(len=*), intent(in)    :: replace
 
-      integer                         :: k
+      integer                         :: k, p
 
+      p = 1
       do
-        k = index( string, substr )
+        k = index( string(p:), substr )
         if ( k > 0 ) then
-          call string_delete( string, k, len(substr) )
-          call string_insert( string, k, replace )
+          call string_delete( string(p:), k, len(substr) )
+          call string_insert( string(p:), k, replace )
+          p = p + k - 1 + len(replace)
         else
           exit
         endif
