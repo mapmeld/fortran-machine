@@ -8,6 +8,7 @@ Major credit due to:
 - Ricolindo Carino and Arjen Markus's Fortran FastCGI program and tutorial - in many ways this started as an update to this tutorial :  http://flibs.sourceforge.net/fortran-fastcgi-nginx.html
 - String utils by George Benthian http://www.gbenthien.net/strings/index.html
 - <a href="https://github.com/branning">Philip Branning</a> for improving and documenting the install process, especially the SQLite parts
+- <a href="https://github.com/divVerent">divVerent</a> for fixing a server crash bug due to URL params and SQL
 
 ## Create an Ubuntu server
 
