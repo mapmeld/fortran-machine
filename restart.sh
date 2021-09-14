@@ -3,7 +3,7 @@
 # Restart fortran-machine
 
 # Kill server, if running
-pkill fcgi
+pkill -f fortran_fcgi
 
 # Recompile server
 rm fortran_fcgi
